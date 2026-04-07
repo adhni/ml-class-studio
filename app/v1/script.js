@@ -65,9 +65,33 @@
   const VIEWS = {
     home: {
       label: "Home",
-      title: "Choose a week",
+      title: "Choose a studio",
       summary: "Open one focused studio at a time.",
-      prompt: "Each week card below loads the matching dataset and control setup."
+      prompt: "Start with Foundations or open the lecture week you need. Related worksheets are linked separately when this repo has them."
+    },
+    foundations: {
+      label: "Foundations",
+      title: "Basics + KNN",
+      summary: "Start with x and y, then compare classifiers with KNN in focus.",
+      prompt: "Use Iris first, then switch to Toy nonlinear to see why KNN behaves like a local rule.",
+      tutorialPath: "reference/tutorial/tut2.html",
+      controls: ["dataset", "problem", "validation", "classification"],
+      preset: {
+        datasetId: "iris",
+        validationMode: "holdout",
+        stratify: true,
+        framingMode: "classification",
+        focusModel: "knn",
+        knnK: 7,
+        scatterX: 2,
+        scatterY: 3
+      },
+      copy: {
+        problem:
+          "Keep this short: make sure you know what x and y mean, then move into the classifier comparison below.",
+        classification:
+          "Use KNN as the starting point here. Compare it with the other models, but treat KNN as the main reference."
+      }
     },
     week2: {
       label: "Week 2",
@@ -86,7 +110,7 @@
       },
       copy: {
         visual:
-          "Use the controls above or expand More settings to change the two raw features, then compare that pair with the lower-dimensional PCA and MDS views."
+          "Use the controls above or open Settings to change the two raw features, then compare that pair with the lower-dimensional PCA and MDS views."
       }
     },
     week3: {
@@ -113,32 +137,8 @@
     },
     week4: {
       label: "Week 4",
-      title: "Basics + KNN",
-      summary: "Start with x and y, then compare classifiers with KNN in focus.",
-      prompt: "Use Iris first, then switch to Toy nonlinear to see why KNN behaves like a local rule.",
-      tutorialPath: "reference/tutorial/tut2.html",
-      controls: ["dataset", "problem", "validation", "classification"],
-      preset: {
-        datasetId: "iris",
-        validationMode: "holdout",
-        stratify: true,
-        framingMode: "classification",
-        focusModel: "knn",
-        knnK: 7,
-        scatterX: 2,
-        scatterY: 3
-      },
-      copy: {
-        problem:
-          "Keep this short: make sure you know what x and y mean, then move into the classifier comparison below.",
-        classification:
-          "Use KNN as the starting point this week. Compare it with the other models, but treat KNN as the main reference."
-      }
-    },
-    week5: {
-      label: "Week 5",
-      title: "Logistic Regression + LDA",
-      summary: "Use smoother linear classifiers on overlapping classes.",
+      title: "Logistic Regression",
+      summary: "Use logistic regression as the main linear classifier, then compare it with LDA.",
       prompt: "Start with Penguins, inspect logistic regression first, then compare it with LDA on the same split.",
       tutorialPath: "reference/tutorial/tut5.html",
       controls: ["dataset", "validation", "classification"],
@@ -156,9 +156,9 @@
           "This week is about model-based linear boundaries. Read the confusion matrix together with the logistic or LDA summary rather than looking at accuracy alone."
       }
     },
-    week6: {
-      label: "Week 6",
-      title: "Trees + Random Forests",
+    week5: {
+      label: "Week 5",
+      title: "Decision Trees",
       summary: "See how a tree chooses splits, then compare it with a forest.",
       prompt: "Start with Penguins, inspect the split explorer first, then compare the single tree with the forest on the same dataset.",
       tutorialPath: "reference/tutorial/tut6.html",
@@ -178,8 +178,8 @@
           "This week is about why a split is chosen, what the first tree rules look like, and how a forest stabilises one tree without making the difficult rows disappear."
       }
     },
-    week7: {
-      label: "Week 7",
+    week6: {
+      label: "Week 6",
       title: "Neural Networks",
       summary: "Train a small multilayer perceptron and compare it with simpler baselines.",
       prompt: "Start with Toy nonlinear. Increase hidden units or epochs and watch whether the neural boundary becomes more useful than the linear baselines.",
@@ -200,8 +200,8 @@
           "Keep the interface light here: compare the neural net against a few strong baselines, then check whether the hidden layer is actually buying you a better fit."
       }
     },
-    week8: {
-      label: "Week 8",
+    week7: {
+      label: "Week 7",
       title: "Explainability / XAI",
       summary: "Explain what the model is using, globally and for one row.",
       prompt: "Start with Penguins and the random forest, then switch focus models to compare what each explanation style can and cannot tell you.",
@@ -228,8 +228,8 @@
           "This week is about interpretation, not just ranking models. Compare the global importance view with the local explanation for one selected row."
       }
     },
-    week10: {
-      label: "Week 10",
+    week8: {
+      label: "Week 8",
       title: "Support Vector Machines",
       summary: "Compare linear and nonlinear SVM boundaries.",
       prompt: "Start with Toy nonlinear. Compare linear SVM with RBF SVM, then change C and gamma to see how the boundary responds.",
@@ -272,29 +272,8 @@
           "Treat the PCA plots as a comparison space for the two clustering methods. The aim this week is method contrast, not metric theory."
       }
     },
-    week11: {
-      label: "Week 11/12",
-      title: "Cluster Evaluation",
-      summary: "Judge whether the discovered groups are actually useful.",
-      prompt: "Start with Toy clusters, then compare the metrics with what your eye says in PCA space.",
-      tutorialPath: "reference/tutorial/tut12.html",
-      controls: ["dataset", "clustering"],
-      preset: {
-        datasetId: "toy_clusters",
-        validationMode: "holdout",
-        stratify: true,
-        framingMode: "clustering",
-        clusterK: 3,
-        scatterX: 0,
-        scatterY: 1
-      },
-      copy: {
-        clustering:
-          "This week is about judging the result. Read silhouette, WCSS, adjusted Rand, and the merge summary together instead of trusting one number."
-      }
-    },
-    week11b: {
-      label: "Week 11B",
+    week10: {
+      label: "Week 10",
       title: "Model-based Clustering",
       summary: "Compare Gaussian-mixture clustering with the geometric clustering methods.",
       prompt: "Start with Wine, keep k and the mixture component count aligned, then see where a probabilistic model groups points differently from k-means or hierarchical clustering.",
@@ -313,6 +292,27 @@
       copy: {
         clustering:
           "This week adds a probabilistic clustering model. Compare its PCA-space grouping with the geometric methods, but remember the fit still happens in the full standardized feature space."
+      }
+    },
+    week11: {
+      label: "Week 11",
+      title: "Cluster Evaluation",
+      summary: "Judge whether the discovered groups are actually useful.",
+      prompt: "Start with Toy clusters, then compare the metrics with what your eye says in PCA space.",
+      tutorialPath: "reference/tutorial/tut12.html",
+      controls: ["dataset", "clustering"],
+      preset: {
+        datasetId: "toy_clusters",
+        validationMode: "holdout",
+        stratify: true,
+        framingMode: "clustering",
+        clusterK: 3,
+        scatterX: 0,
+        scatterY: 1
+      },
+      copy: {
+        clustering:
+          "This week is about judging the result. Read silhouette, WCSS, adjusted Rand, and the merge summary together instead of trusting one number."
       }
     }
   };
@@ -744,7 +744,7 @@
     cache.split = createTrainTestSplit(dataset.target, state.testFraction, state.stratify, state.seed + 11);
     cache.folds = createKFolds(dataset.target, state.kFolds, state.stratify, state.seed + 23);
     cache.classification = classificationViews().has(state.viewId) ? evaluateClassificationModels(dataset) : null;
-    cache.neural = state.viewId === "week7" ? evaluateNeuralNetwork(dataset) : null;
+    cache.neural = state.viewId === "week6" ? evaluateNeuralNetwork(dataset) : null;
     cache.clustering = evaluateClustering(dataset, cache.pca);
 
     renderAppChrome();
@@ -800,10 +800,10 @@
     setVisible(elements.tutorialPath, !isHome && Boolean(view.tutorialPath));
     setVisible(elements.viewTutorialPath, !isHome && Boolean(view.tutorialPath));
     setVisible(elements.viewPresetBtn, !isHome);
-    setVisible(elements.clusterEvaluationPanel, state.viewId === "week11" || state.viewId === "week11b");
-    setVisible(elements.modelClusteringPanel, state.viewId === "week11b");
-    setVisible(elements.classificationKnnControl, state.viewId === "week4");
-    setVisible(elements.classificationTreeControl, state.viewId === "week6");
+    setVisible(elements.clusterEvaluationPanel, state.viewId === "week11");
+    setVisible(elements.modelClusteringPanel, state.viewId === "week10");
+    setVisible(elements.classificationKnnControl, state.viewId === "foundations");
+    setVisible(elements.classificationTreeControl, state.viewId === "week5");
 
     elements.problemIntro.textContent = view.copy?.problem || "";
     elements.visualIntro.textContent = view.copy?.visual || "";
@@ -823,7 +823,7 @@
   }
 
   function classificationViews() {
-    return new Set(["week4", "week5", "week6", "week7", "week8", "week10"]);
+    return new Set(["foundations", "week4", "week5", "week6", "week7", "week8"]);
   }
 
   function renderQuickControls() {
@@ -856,6 +856,11 @@
 
   function quickControlConfig(viewId) {
     const byView = {
+      foundations: [
+        { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
+        { key: "focusModel", label: "Focus model", type: "select", options: classificationModelOptions() },
+        { key: "knnK", label: "KNN k", type: "range", min: 1, max: 25, step: 2 }
+      ],
       week2: [
         { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
         { key: "scatterX", label: "X feature", type: "select", options: featureOptions() },
@@ -868,45 +873,40 @@
       ],
       week4: [
         { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
-        { key: "focusModel", label: "Focus model", type: "select", options: classificationModelOptions() },
-        { key: "knnK", label: "KNN k", type: "range", min: 1, max: 25, step: 2 }
-      ],
-      week5: [
-        { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
         { key: "focusModel", label: "Focus model", type: "select", options: classificationModelOptions(["logistic", "lda"]) }
       ],
-      week6: [
+      week5: [
         { key: "splitFeature", label: "Split feature", type: "select", options: featureOptions() },
         { key: "focusModel", label: "Focus model", type: "select", options: classificationModelOptions(["tree", "forest"]) },
         { key: "treeDepth", label: "Tree depth", type: "range", min: 1, max: 8, step: 1 }
       ],
-      week7: [
+      week6: [
         { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
         { key: "nnHidden", label: "Hidden units", type: "range", min: 3, max: 24, step: 1 },
         { key: "nnEpochs", label: "Epochs", type: "range", min: 60, max: 320, step: 20 }
       ],
-      week8: [
+      week7: [
         { key: "focusModel", label: "Focus model", type: "select", options: classificationModelOptions() },
         { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
         { key: "xaiIndex", label: "Selected row", type: "range", min: 1, max: cache.dataset?.n || 1, step: 1, displayValue: state.xaiIndex + 1 }
+      ],
+      week8: [
+        { key: "focusModel", label: "Focus model", type: "select", options: classificationModelOptions(["svm_linear", "svm_rbf"]) },
+        { key: "svmC", label: "SVM C", type: "range", min: 0.2, max: 3, step: 0.2 },
+        { key: "svmGamma", label: "RBF gamma", type: "range", min: 0.2, max: 3, step: 0.2 }
       ],
       week9: [
         { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
         { key: "clusterK", label: "Clusters", type: "range", min: 2, max: 8, step: 1 }
       ],
       week10: [
-        { key: "focusModel", label: "Focus model", type: "select", options: classificationModelOptions(["svm_linear", "svm_rbf"]) },
-        { key: "svmC", label: "SVM C", type: "range", min: 0.2, max: 3, step: 0.2 },
-        { key: "svmGamma", label: "RBF gamma", type: "range", min: 0.2, max: 3, step: 0.2 }
+        { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
+        { key: "clusterK", label: "Clusters", type: "range", min: 2, max: 8, step: 1 },
+        { key: "gmmComponents", label: "Mixture parts", type: "range", min: 2, max: 8, step: 1 }
       ],
       week11: [
         { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
         { key: "clusterK", label: "Clusters", type: "range", min: 2, max: 8, step: 1 }
-      ],
-      week11b: [
-        { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
-        { key: "clusterK", label: "Clusters", type: "range", min: 2, max: 8, step: 1 },
-        { key: "gmmComponents", label: "Mixture parts", type: "range", min: 2, max: 8, step: 1 }
       ]
     };
     return byView[viewId] || [];
@@ -1141,13 +1141,13 @@
   }
 
   function focusModelAllowedByView() {
-    if (state.viewId === "week5") {
+    if (state.viewId === "week4") {
       return ["logistic", "lda"];
     }
-    if (state.viewId === "week6") {
+    if (state.viewId === "week5") {
       return ["tree", "forest"];
     }
-    if (state.viewId === "week10") {
+    if (state.viewId === "week8") {
       return ["svm_linear", "svm_rbf"];
     }
     return null;
@@ -1398,7 +1398,7 @@
   }
 
   function renderWeek6Lab() {
-    if (state.viewId !== "week6") {
+    if (state.viewId !== "week5") {
       return;
     }
     const dataset = cache.dataset;
@@ -1419,7 +1419,7 @@
   }
 
   function renderNeuralLab() {
-    if (state.viewId !== "week7") {
+    if (state.viewId !== "week6") {
       return;
     }
     const neural = cache.neural;
@@ -1762,7 +1762,7 @@
   }
 
   function renderXaiLab() {
-    if (state.viewId !== "week8") {
+    if (state.viewId !== "week7") {
       return;
     }
     const evaluation = cache.classification;
@@ -1930,7 +1930,7 @@
     hierarchical.ari = dataset.hasLabels ? adjustedRandIndex(subsetY, hierarchical.assignments) : null;
 
     let modelBased = null;
-    if (state.viewId === "week11b") {
+    if (state.viewId === "week10") {
       modelBased = runGaussianMixture(subsetX, state.gmmComponents, state.seed + 67);
       modelBased.silhouette = silhouetteScore(distances, modelBased.assignments, state.gmmComponents);
       modelBased.wcss = withinClusterSumSquares(subsetX, modelBased.assignments, state.gmmComponents);
