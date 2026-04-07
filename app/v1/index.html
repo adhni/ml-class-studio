@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ML Class Studio - V1 Prototype</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <h1>ML Class Studio</h1>
+      <p class="sidebar-intro">
+        Static teaching app for core machine learning topics: framing, visualisation,
+        validation, classification, and clustering.
+      </p>
+
+      <div class="control-group">
+        <h2>Global Setup</h2>
+
+        <label for="datasetSelect">Dataset</label>
+        <select id="datasetSelect">
+          <option value="iris">Iris</option>
+          <option value="penguins">Penguins</option>
+          <option value="wine">Wine</option>
+          <option value="toy_linear">Toy: linear classes</option>
+          <option value="toy_nonlinear">Toy: nonlinear classes</option>
+          <option value="toy_clusters">Toy: clustering blobs</option>
+        </select>
+
+        <label for="analysisSeed">Analysis seed</label>
+        <div class="range-row">
+          <input id="analysisSeed" type="range" min="1" max="999" step="1" value="123" />
+          <input id="analysisSeed_num" type="number" min="1" max="999" step="1" value="123" />
+        </div>
+      </div>
+
+      <div class="control-group">
+        <h2>Shared Validation Controls</h2>
+
+        <label for="validationMode">Evaluation mode</label>
+        <select id="validationMode">
+          <option value="holdout">Train/test split</option>
+          <option value="cv">k-fold cross-validation</option>
+        </select>
+
+        <label for="testFraction">Test fraction</label>
+        <div class="range-row">
+          <input id="testFraction" type="range" min="0.15" max="0.45" step="0.05" value="0.25" />
+          <input id="testFraction_num" type="number" min="0.15" max="0.45" step="0.05" value="0.25" />
+        </div>
+
+        <label for="kFolds">CV folds</label>
+        <div class="range-row">
+          <input id="kFolds" type="range" min="3" max="10" step="1" value="5" />
+          <input id="kFolds_num" type="number" min="3" max="10" step="1" value="5" />
+        </div>
+
+        <label class="inline-check">
+          <input id="stratifyToggle" type="checkbox" checked />
+          Stratification on/off
+        </label>
+      </div>
+
+      <div class="control-group">
+        <h2>Model Controls</h2>
+
+        <label for="knnK">KNN neighbours (k)</label>
+        <div class="range-row">
+          <input id="knnK" type="range" min="1" max="25" step="2" value="7" />
+          <input id="knnK_num" type="number" min="1" max="25" step="2" value="7" />
+        </div>
+
+        <label for="treeDepth">Decision tree depth</label>
+        <div class="range-row">
+          <input id="treeDepth" type="range" min="1" max="8" step="1" value="4" />
+          <input id="treeDepth_num" type="number" min="1" max="8" step="1" value="4" />
+        </div>
+
+        <label for="clusterK">Clustering k</label>
+        <div class="range-row">
+          <input id="clusterK" type="range" min="2" max="8" step="1" value="3" />
+          <input id="clusterK_num" type="number" min="2" max="8" step="1" value="3" />
+        </div>
+      </div>
+
+      <div class="control-group">
+        <h2>Section Navigation</h2>
+        <nav class="nav-links">
+          <a href="#problem-framing">1. Problem Framing</a>
+          <a href="#visualisation-lab">2. Visualisation Lab</a>
+          <a href="#resampling-lab">3. Resampling / Validation</a>
+          <a href="#classification-lab">4. Classification Lab</a>
+          <a href="#clustering-lab">5. Clustering Lab</a>
+        </nav>
+      </div>
+
+      <button id="rerunBtn" class="primary-btn">Run analysis</button>
+      <p class="small-note" id="datasetMeta"></p>
+    </aside>
+
+    <main class="content">
+      <header class="page-header card">
+        <h2>V1 Prototype: Core Machine Learning Topics</h2>
+        <p>
+          This app grounds the topic order in course material: visualisation and dimension reduction,
+          resampling strategies, classical classifiers, and cluster quality diagnostics.
+        </p>
+        <p class="caption">
+          Slide grounding: Week 2 visualisation, Week 3 re-sampling, Weeks 4 and 5 classifiers,
+          Week 9 clustering, and Week 11 clustering evaluation.
+        </p>
+      </header>
+
+      <section id="problem-framing" class="card section">
+        <div class="section-title">
+          <span class="kicker">Section 1</span>
+          <h3>Problem Framing</h3>
+        </div>
+
+        <div class="panel-grid three">
+          <article class="panel">
+            <h4>Classification</h4>
+            <p>Predict a category label (for example species or class) from input features.</p>
+          </article>
+          <article class="panel">
+            <h4>Regression</h4>
+            <p>Predict a continuous numeric outcome from input features.</p>
+          </article>
+          <article class="panel">
+            <h4>Clustering</h4>
+            <p>Group observations by similarity without using the class labels during fitting.</p>
+          </article>
+        </div>
+
+        <div class="panel-grid two">
+          <article class="panel">
+            <h4>Interactive framing selector</h4>
+            <label for="framingMode">Learning setup</label>
+            <select id="framingMode">
+              <option value="classification">Classification</option>
+              <option value="regression">Regression</option>
+              <option value="clustering">Clustering</option>
+            </select>
+            <p id="framingSummary" class="caption"></p>
+          </article>
+
+          <article class="panel">
+            <h4>What do x and y mean?</h4>
+            <div id="xyDefinition" class="mono-block"></div>
+            <p class="caption">
+              Plain-English caption: in supervised learning, <code>x</code> is the feature vector and
+              <code>y</code> is the target. In clustering, we typically use <code>x</code> only while
+              keeping labels for evaluation.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="visualisation-lab" class="card section">
+        <div class="section-title">
+          <span class="kicker">Section 2</span>
+          <h3>Visualisation Lab</h3>
+        </div>
+
+        <div class="panel">
+          <h4>Pairwise scatter controls</h4>
+          <div class="row-inline">
+            <label for="scatterX">X feature</label>
+            <select id="scatterX"></select>
+            <label for="scatterY">Y feature</label>
+            <select id="scatterY"></select>
+          </div>
+          <p class="caption" id="pairScatterSummary"></p>
+        </div>
+
+        <div class="panel-grid three">
+          <article class="panel">
+            <h4>Pairwise scatter</h4>
+            <svg id="pairScatterPlot" viewBox="0 0 540 420"></svg>
+            <p class="caption" id="pairScatterCaption"></p>
+          </article>
+          <article class="panel">
+            <h4>PCA projection (PC1 vs PC2)</h4>
+            <svg id="pcaPlot" viewBox="0 0 540 420"></svg>
+            <p class="caption" id="pcaCaption"></p>
+          </article>
+          <article class="panel">
+            <h4>Classical MDS projection</h4>
+            <svg id="mdsPlot" viewBox="0 0 540 420"></svg>
+            <p class="caption" id="mdsCaption"></p>
+          </article>
+        </div>
+      </section>
+
+      <section id="resampling-lab" class="card section">
+        <div class="section-title">
+          <span class="kicker">Section 3</span>
+          <h3>Resampling / Validation Lab</h3>
+        </div>
+
+        <div class="panel-grid two">
+          <article class="panel">
+            <h4>Train/test split balance</h4>
+            <table id="splitBalanceTable" class="data-table"></table>
+            <p class="caption" id="splitCaption"></p>
+          </article>
+          <article class="panel">
+            <h4>k-fold class balance</h4>
+            <table id="foldBalanceTable" class="data-table"></table>
+            <p class="caption" id="foldCaption"></p>
+          </article>
+        </div>
+      </section>
+
+      <section id="classification-lab" class="card section">
+        <div class="section-title">
+          <span class="kicker">Section 4</span>
+          <h3>Classification Lab</h3>
+        </div>
+
+        <article class="panel">
+          <h4>Model comparison: KNN, Logistic Regression, LDA, Decision Tree</h4>
+          <table id="classificationMetricsTable" class="data-table"></table>
+          <p class="caption" id="classificationModeCaption"></p>
+        </article>
+
+        <div class="panel-grid two">
+          <article class="panel">
+            <h4>Confusion matrix + model summary</h4>
+            <label for="focusModel">Inspect model</label>
+            <select id="focusModel">
+              <option value="knn">KNN</option>
+              <option value="logistic">Logistic regression</option>
+              <option value="lda">LDA</option>
+              <option value="tree">Decision tree</option>
+            </select>
+            <table id="confusionTable" class="data-table"></table>
+            <div id="modelSummary" class="mono-block"></div>
+            <p class="caption" id="confusionCaption"></p>
+          </article>
+
+          <article class="panel">
+            <h4>Decision boundary (2D toy datasets)</h4>
+            <svg id="boundaryPlot" viewBox="0 0 540 420"></svg>
+            <p class="caption" id="boundaryCaption"></p>
+          </article>
+        </div>
+      </section>
+
+      <section id="clustering-lab" class="card section">
+        <div class="section-title">
+          <span class="kicker">Section 5</span>
+          <h3>Clustering Lab</h3>
+        </div>
+
+        <article class="panel">
+          <h4>Clustering quality comparison</h4>
+          <table id="clusteringTable" class="data-table"></table>
+          <p class="caption" id="clusteringCaption"></p>
+        </article>
+
+        <div class="panel-grid two">
+          <article class="panel">
+            <h4>k-means in PCA space</h4>
+            <svg id="kmeansPlot" viewBox="0 0 540 420"></svg>
+            <p class="caption" id="kmeansCaption"></p>
+          </article>
+          <article class="panel">
+            <h4>Hierarchical clustering in PCA space</h4>
+            <svg id="hierPlot" viewBox="0 0 540 420"></svg>
+            <p class="caption" id="hierCaption"></p>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="data/iris.js"></script>
+  <script src="data/wine.js"></script>
+  <script src="data/penguins.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

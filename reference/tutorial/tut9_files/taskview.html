@@ -1,0 +1,1009 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0251)https://monash.bluera.com/monashbpiMoodle/tview.aspx?blockid=Ak_ZX09zu&culture=en&userid=tqs4Rq7igXli4HPliZiNDgyUzSGoQeZWqLRid60aOPSEiAX_G1KkwFQBLuAAz2aDvmJMvPaMEOn4mJqfpgCHab9Ligqoau3g_dSoK5JVnp5aj1wuZ5zM472iZ2aFiZ-QA4tWEETNqvis6bjpEz-paWOCpgwOuRBXop -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title></title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  
+  <script type="text/javascript" src="./jquery-3.4.1.min.js"></script>
+  <script type="text/javascript" src="./globalfunc.js"></script>
+  <script type="text/javascript" src="./browserdetect.js"></script>
+  <script type="text/javascript" src="./wsGridView.js"></script>
+  
+  <link rel="stylesheet" type="text/css" href="./webapp.css">
+  
+  <link rel="shortcut icon" href="https://monash.bluera.com/monashbpiMoodle/images/favicon.ico">
+ 
+  <script type="text/javascript">
+    var animDuration = ((BrowserDetect.browser == "Explorer") && (parseInt(BrowserDetect.version, 10) == 7)) ? 1 : 300;
+    var strUiCulture = 'en-US';
+    var _basePathGlobal = '/monashbpiMoodle/';
+    
+    function closePanel() {
+      hideElementById('mPanelDiv');
+      removeModal();
+  }
+
+  function iOS() {
+
+      var iDevices = [
+    'iPad Simulator',
+    'iPhone Simulator',
+    'iPod Simulator',
+    'iPad',
+    'iPhone',
+    'iPod'
+  ];
+
+      while (iDevices.length) {
+          if (navigator.platform === iDevices.pop()) { return true; }
+      }
+
+      return false;
+  }
+
+    function expandCollapseTitle() {
+      if (document.getElementById('titleDiv').style.height == "0px") {
+          
+            var h = document.getElementById('titleP').offsetHeight + 25;
+            $('#titleDiv').animate({ height: eval(h) }, animDuration);
+            
+            document.getElementById('titleSpan').innerHTML = "[&ndash;]";
+            
+      }
+      else {
+          $('#titleDiv').animate({ height: 0 }, animDuration);
+            document.getElementById('titleSpan').innerHTML = "[+]";
+        }
+
+        setTimeout(function() { publishIframeHeight() }, animDuration);
+    }
+
+
+    function expandCollapseFilters() {
+      if (document.getElementById('filtersContainer').style.height == "0px") {
+        if (document.getElementById('filtersTable') != undefined) {
+          var h = document.getElementById('filtersTable').offsetHeight + 35;
+          $('#filtersContainer').animate({ height: eval(h) }, animDuration);
+          document.getElementById('filterSpan').innerHTML = "[&ndash;]";
+        }
+      }
+      else {
+          $('#filtersContainer').animate({ height: 0 }, animDuration);
+        document.getElementById('filterSpan').innerHTML = "[+]";
+      }
+      setTimeout(function() { publishIframeHeight() }, animDuration);
+    }
+
+  </script>
+
+  
+  <script type="text/javascript" src="./taskview.js"></script>
+  
+  <!-- CTD: Vérifier si iFrameResize est encore fonctionnel -->
+  <script type="text/javascript" src="./crossDomainIframeResize.js"></script>
+  
+  
+  <link type="text/css" href="./webappBlue.css" rel="stylesheet">
+  
+  <script type="text/javascript">
+      var taskviewCols = eval('(' + '{}' + ')');
+  </script>
+  
+  <style type="text/css">
+    body {margin:0px; padding:5px 8px; background-color:#ddd; }
+    #appContainer {padding:0px; width:100%; min-width:240px; margin:0px auto; position:relative;}
+    
+    .bTitle {width:100%; /*height:30px;*/ padding:0px; position:relative; margin-bottom:3px;}
+    .bTitle .titleText {padding:8px 5px 8px 28px; font:12px Arial; color:#fff; width:69%; }
+    .bTitle img {cursor:pointer; position:absolute;}
+    .bTitle .imgDesc {top:4px; left:3px;}
+    .bTitle .imgLoupe {top:5px; right:30px;}
+    .bTitle .imgFilter {top:5px; right:10px;}
+    .bModal {width:100%; height:0px; padding:0px; position:absolute; top:33px; overflow:hidden;}
+    .bModal > img {position:absolute; right:30px; top:23px; cursor:pointer; }
+    .txtInput {width:175px; height:23px; border:2px solid #888; font:12px "Courier New"; color:#999; background-color:#fff; padding:4px 28px 2px 5px; position:absolute; top:12px; right:22px; }
+    .bData {width:100%; height:auto; padding:0px; font:11px/13px Arial; position:relative; background-color:#fff; margin-bottom:3px;}
+    .bData > .bCat {margin:0px 5px 5px 5px; }
+    .bData > .bDesc {margin:0px 5px 5px 5px; }
+    
+    .prgBar { width: 50px; } /*override le length de 100px dans le layout par defaut*/
+    
+    .firstDiv {padding:5px 0px 5px 3px; margin-right:60px; }
+    
+    .bDesc { display: table; width:100%; }
+    .bDesc .secondDiv { display:table-cell; text-align: left; vertical-align: top; }
+    
+    .bDesc .bRate { display:table-cell; text-align: right; width:100px; }
+    
+    .bRate .rValue { float:right; padding:6px 8px 0px 0px; font-size:10px; }
+    .bRate .clearFloat { clear: both; }
+    
+    .secondDiv {padding:2px 0px 2px 3px; }
+
+    .bData > .bStat {padding:0px 0px 0px 8px;}
+    .bData > .bStat img {cursor:pointer; border:0px solid white;}
+    
+    .bData > .bLink {padding:0px 0px 8px 8px;}
+    .bData > .bGrade {padding:0px 0px 8px 8px;}
+    
+    .bData > .bType {padding:0px 0px 5px 8px;}
+    
+    .bMsg {width:100%; height:0px; padding:0px; overflow:hidden; margin:2px 0px 0px 0px;}
+    .bMsg > p {font:11px/14px Arial; color:#333; margin:3px 8px; padding:8px; }
+    .bFooter {width:100%; height:30px; padding:0px; position:relative; margin:3px 0px;}
+    
+    .showItemLabel {margin:5px 4px 5px 2px; padding:0px; font:11px Arial; color:#333; text-align:right;}
+    #blockGridViewPagingLabel {position:absolute; top:2px; right:180px; }
+    
+    A {text-decoration:underline; }
+    A:link {color:#006699; }
+    A:visited {color:#006699;}
+    A:active {color:#006699;}
+    A:hover {color:#006699; background-color:White;}
+
+    .displayNone {display:none; }
+    .opacity80 {opacity:0.80; -moz-opacity:0.80;  -ms-filter:alpha(opacity=80); filter:alpha(opacity=80);}
+    .opacity30 {opacity:0.30; -moz-opacity:0.30;  -ms-filter:alpha(opacity=30); filter:alpha(opacity=30);}
+    /*.gData td {border:0px solid white; padding:0px;}*/
+    
+    #bDataTemplate, #tViewData, #oldFilters {display:none;}
+    #descP {font:11px/13px Arial; color:#fff; margin:5px 8px;}
+    
+    .tbFilters {margin:15px 12px; float:right;}
+    .tbFilters td {font:11px/13px Arial; text-align:right;}
+    .divInput {border:2px solid #999; margin-left:10px;}
+    .filterTitle {font-size:12px; font-weight:bold; height:20px; margin:0px;}
+    .gPaging {width:175px;}
+    .gPaging td {font-size:9px;}
+    .defaultMsgDiv {padding:0px; width:100%; margin:0px auto; position:relative;}
+    .returnBtnDiv {background-color:#aaa; padding:0px; margin:0px; text-align:right;}
+    .divInput {width:150px;}
+    .divInput select {width:150px;}
+    
+    #preloadImg {}
+  </style>
+        
+</head>
+
+<body>
+<div id="totalContainer"> <!-- TotalContainer pour savoir le height total de la page pour le iframe resize-->
+  <form name="aspnetForm" method="post" action="https://monash.bluera.com/monashbpiMoodle/tview.aspx?blockid=Ak_ZX09zu&amp;culture=en&amp;userid=tqs4Rq7igXli4HPliZiNDgyUzSGoQeZWqLRid60aOPSEiAX_G1KkwFQBLuAAz2aDvmJMvPaMEOn4mJqfpgCHab9Ligqoau3g_dSoK5JVnp5aj1wuZ5zM472iZ2aFiZ-QA4tWEETNqvis6bjpEz-paWOCpgwOuRBXop" id="aspnetForm">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="dCuNJ29zEVOaYtUSjV9Y7j11TZQtPcRJPyy5yoemkYj/2evK0q9WPzY9sruKF6twZsg+XywqlyHW+JkQIJehhhRSs6jSUJI9ZX3tyevPMMPh1QRd">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="./WebResource.axd" type="text/javascript"></script>
+
+
+<script src="./ScriptResource.axd" type="text/javascript"></script>
+<script src="./ScriptResource(1).axd" type="text/javascript"></script>
+<script src="./js" type="text/javascript"></script>
+<div>
+
+	<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="5EA4AB9F">
+	<input type="hidden" name="__VIEWSTATEENCRYPTED" id="__VIEWSTATEENCRYPTED" value="">
+</div>
+    <div id="appContainer">
+      <div id="divPrevContainerId" class="divPrevContainer">
+        
+  <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$cphscriptManager$wsScriptManager', 'aspnetForm', [], [], [], 90, 'ctl00');
+//]]>
+</script>
+
+
+        
+        
+  <!-- CTD: Vérifier si Return URL control est encore fonctionnel -->
+  
+  
+  <!--Default Return Message -->
+  <div class="defaultMsgDiv"><p>You don't have any surveys to complete right now. Future surveys will be visible here when ready to complete.</p></div>
+
+  <pre style="display:none">    
+  </pre>
+  
+
+        
+
+        
+        
+  <div style="display:none;">
+    <input id="idQueryString" type="hidden" value="">
+    <input id="idCurrentSortColumn" type="hidden" value="">
+    <input id="idCurrentSortDirection" type="hidden" value="">
+    <input id="idBlockSearchBy" type="hidden" value="">        
+    <input id="idAddSort" type="hidden" value="">
+  </div>
+  
+  <div id="bDataTemplate">
+    <div class="bData normal">
+      <div class="bDesc">
+        <div class="secondDiv">$description$</div>
+      
+        <div class="bRate">
+            <div class="rValue">$rr$</div>
+            <!-- <img src="/monashbpiMoodle/images/tview/tListRate.png" alt="" />  -->
+            <div class="clearFloat"></div>
+        </div>
+                       
+      </div>
+      <div class="bCat"><div class="firstDiv">$CatSubCat$</div></div>
+
+      <div class="bType">$taskType$</div>
+      
+      <table border="0" cellpadding="0" cellspacing="0" class="bStat">
+        <tbody><tr valign="middle">          
+          <td style="height:20px;">$status$$other$$alert$</td>
+          <td><img class="imgAlert" src="./alert.png" alt="" onclick="expandCollapseMsg(&#39;msgId&#39;)"></td>
+        </tr>
+      </tbody></table>
+      <div id="msgId" class="bMsg">
+        <p><b>$msgTitle$</b><br>$msgContent$</p>
+      </div>
+      <div class="bGrade">$gradeBlocking$: $value$</div>
+      <div class="bLink">$link$</div>
+    </div>
+  </div>
+  
+  <div id="tViewData"></div>
+  <div id="oldFilters"></div>
+  
+  <div id="titleBarDiv" class="bTitle" style="display:none;">
+    <div class="titleText">&nbsp;&nbsp;<label id="nbItemsLbl"></label></div>
+    <img class="imgDesc bBox" src="./tListTitle-w.png" alt="" onclick="expandCollapseDesc(this);">
+    <img class="imgLoupe bBox " src="./loupeIcon-w.png" alt="" onclick="expandCollapseSearch(this); ">
+    <img class="imgFilter bBox " src="./filterIcon-w.png" alt="" onclick="expandCollapseFilters(this);">
+  </div>
+  
+  <div id="lViewData"></div>
+  <div class="bFooter">
+    <div id="blockGridViewPaging"></div>
+    <div id="blockGridViewPagingLabel"></div>
+  </div>
+  
+  <div id="searchDiv" class="bModal bBox">
+    <input type="text" id="idSearchKey" class="txtInput bBox" value="" onclick="txtSearchOnFocus(this, &#39;&#39;);" onblur="setTextFieldValue(this, &#39;&#39;);" onkeypress="return searchKeyPressEvent(event);">
+    <img src="./loupe.jpg" alt="" onclick="getGridView();">
+  </div>
+  
+  <div id="descDiv" class="bModal bBox">
+    <p id="descP" class="bBox"></p>
+  </div>
+  
+  <div id="filterDiv" class="bModal bBox divFilters">
+  </div>
+  
+  
+
+        
+    
+      </div>
+    </div>
+    
+    
+  
+<script type="text/javascript"> function __ws_OnError() { gotoURL('/monashbpiMoodle/error500.aspx'); } </script></form>
+
+  
+ <script type="text/javascript"> 
+ //--Automated resources generated javascript tags by Thoransoft GenResJStags--
+var ___Ok___ = 'Ok'; 
+var ___SystemLanguage___ = 'Language'; 
+var ___InvalidURL___ = 'The URL entered is invalid.'; 
+var ___ConfirmDelete___ = 'Are you sure you want to delete this element?'; 
+var ___Delete___ = 'Delete'; 
+var ___filterOptIn___ = 'Include'; 
+var ___FrequencySyncNowDone___ = 'Syncing data completed'; 
+var ___FreqSyncError___ = 'Error while synchronizing. Please validate your Blue Web Service information.'; 
+var ___tsDesc_01___ = 'Open'; 
+var ___tsDesc_02___ = 'In progress'; 
+var ___tsDesc_03___ = 'Completed'; 
+var ___tsDesc_04___ = 'Not Ready'; 
+var ___tsDesc_05___ = 'Presumbitted'; 
+var ___tsDesc_06___ = 'Expired'; 
+var ___BlockCreatorName___ = 'Block creator'; 
+var ___BlockGradeBlockingDateBeforeTaskEnd___ = 'task end date'; 
+var ___BlockGradeBlockingDateBeforeTaskStart___ = 'task start date'; 
+var ___BlockCreatorNameError___ = 'Please input a block creator before saving'; 
+var ___BlockGradeBlockingEndError___ = 'Please input a date end'; 
+var ___BlockGradeBlockingStartError___ = 'Please input a date start'; 
+var ___BlockNameError___ = 'Please input a block name before saving'; 
+var ___BlockSaveError___ = 'on return: Error while saving block'; 
+var ___BlockSaveOk___ = 'Block saved successfully'; 
+var ___BlockDeleted___ = 'Block deleted sucessfully'; 
+var ___filterCancelBtn___ = 'Cancel'; 
+var ___filterLeftItemNotSelected___ = 'Please enter or select an item to add or replace.'; 
+var ___filterNameFieldErrMsg___ = 'The filter name is required'; 
+var ___filterRightItemNotSelected___ = 'Please select the item you want to replace (in the box on the right side)'; 
+var ___filterNoItemsErrMsg___ = 'Please add at least one item to the filter'; 
+var ___filterLoadingFilterDetails___ = 'Getting a filter detail'; 
+var ___filterLoadingFilters___ = 'Loading filters...'; 
+var ___filterSaveErr___ = 'Save filter error. Please contact you system administrator or try again later.'; 
+var ___filterSavePleaseWait___ = 'Saving filter, please wait ...'; 
+var ___filterWasInserted___ = 'A new filter was inserted'; 
+var ___filterWasUpdated___ = 'Filter was updated'; 
+var ___filterDeleteErr___ = 'Error on server while deleting a filter'; 
+var ___filterWasDeleted___ = 'Filter was deleted'; 
+var ___BBLINKerror___ = 'The Blue dashboard block encountered a critical error'; 
+var ___filterDeleteAlreadyUsed___ = 'This filter is already used by a block. Please modify block before deleting this filter'; 
+var ___blockLoadingFilters___ = 'Loading project filters...'; 
+var ___blockLoadingTags___ = 'Loading tags...'; 
+var ___blockLoadingSpecificFilters___ = 'Loading tasks or reports filters...'; 
+var ___BBLINKColDateEcheance___ = 'End date'; 
+var ___BBLINKColFiltre___ = 'Filters'; 
+var ___filterDeleteNone___ = 'There is no filter to delete.'; 
+var ___filtersTaskFilter___ = 'Task Filter'; 
+var ___BlockConfirmEditSave___ = 'Do you really want to save and modify the content of the block? Any changes will affect the content on the host system.'; 
+var ___filtersConfirmEditSave___ = 'Do you really want to save and modify the content of the filter? Any changes will affect the content on the host system.'; 
+var ___filtersProjectFilter___ = 'Project Filter'; 
+var ___StatusBoxErrAppear___ = 'Errors appear in'; 
+var ___StatusBoxMsgAppear___ = 'Regular messages appear in'; 
+var ___StatusBoxSuccMsgAppear___ = 'Successful messages appear in'; 
+var ___XmlBlockAllowSearching___ = 'Hide search box'; 
+var ___XmlBlockAllowSortingFiltering___ = 'Allow column sorting and filtering'; 
+var ___XmlBlockDefaultReturn___ = 'Return value'; 
+var ___XmlBlockDesc___ = 'Description'; 
+var ___XmlBlockNbTotalItemLabelTag___ = 'Number of items label'; 
+var ___XmlBlockSearchBtn___ = 'Search button label'; 
+var ___XmlBlockSearchText___ = 'Search description label'; 
+var ___XmlContent___ = 'Value'; 
+var ___XmlTag___ = 'Attribute'; 
+var ___AltWait___ = 'wait'; 
+var ___filterConfirmChooseFlt___ = 'Do you really want to change the filter type? All the modifications on this filter page will be lost.'; 
+var ___Equals___ = 'equals'; 
+var ___ConfirmAreYouSure___ = 'Yes I am sure'; 
+var ___True___ = 'True'; 
+var ___BlockDays2WaitError___ = 'Please enter a number between 0 and 999 for Days prior to removal'; 
+var ___BlockPreview___ = 'Block Preview'; 
+var ___BlockSettings___ = 'Block Settings'; 
+var ___After___ = 'After'; 
+var ___Before___ = 'Before'; 
+var ___BlockDaysEnd___ = 'days'; 
+var ___BlockDaysStart___ = 'days'; 
+var ___BlockRelativeEndError___ = 'Please enter a number (0,1,2,...) for relative date End ___ days'; 
+var ___BlockRelativeStartError___ = 'Please enter a number (0,1,2,...) for relative date Start ___ days'; 
+var ___filterParseSQLErr___ = 'SQL cannot process your filter. Please verify your syntax.'; 
+var ___BlockGradeBlockingEndLateError___ = 'The end date must be greater than the start date'; 
+var ___BlockSavingBlockWait___ = 'Saving block...'; 
+var ___BlockCol1_Report___ = 'Report type'; 
+var ___BlockCol1_Task___ = 'Task type'; 
+var ___BlockCol2_Report___ = 'Description'; 
+var ___BlockCol2_Task___ = 'Description'; 
+var ___BlockCol3_Report___ = 'End date'; 
+var ___BlockCol3_Task___ = 'End date'; 
+var ___BlockCol4_Task___ = 'Status'; 
+var ___BlockCol5_Report___ = 'Link'; 
+var ___BlockCol5_Task___ = 'Link'; 
+var ___BlockColumnDescGroup___ = 'Columns layout'; 
+var ___SearchByKeywords___ = 'Search by keywords'; 
+var ___CalApr___ = 'Apr'; 
+var ___CalAug___ = 'Aug'; 
+var ___CalDec___ = 'Dec'; 
+var ___CalFeb___ = 'Feb'; 
+var ___CalJan___ = 'Jan'; 
+var ___CalJeudi___ = 'Th'; 
+var ___CalJul___ = 'Jul'; 
+var ___CalJun___ = 'Jun'; 
+var ___CalLundi___ = 'M'; 
+var ___CalMardi___ = 'T'; 
+var ___CalMar___ = 'Mar'; 
+var ___CalMay___ = 'May'; 
+var ___CalMercredi___ = 'W'; 
+var ___CalNov___ = 'Nov'; 
+var ___CalOct___ = 'Oct'; 
+var ___CalSamedi___ = 'S'; 
+var ___CalscwClear___ = 'Clear'; 
+var ___CalscwDateDisablingError___ = ' is not a Date object.'; 
+var ___CalscwDoesNotExistMsg___ = 'The entered date does not exist.'; 
+var ___CalscwInvalidAlertA___ = 'Invalid date ('; 
+var ___CalscwInvalidDateMsg___ = 'The entered date is invalid.\n'; 
+var ___CalscwOutOfRangeMsg___ = 'The entered date is out of range.'; 
+var ___CalscwRangeDisablingError___ = ' should consist of two elements.'; 
+var ___CalscwToday___ = 'Today'; 
+var ___CalSep___ = 'Sep'; 
+var ___CalVendredi___ = 'F'; 
+var ___scwDrag___ = 'click here to drag'; 
+var ___Sunday___ = 'Su'; 
+var ___red___ = 'red'; 
+var ___BlockColAlert_Alert___ = 'Alert'; 
+var ___BlockNotifPositiveNumber___ = 'Please enter a positive number between 0 and 999'; 
+var ___DatasourcesLoading___ = 'Loading datasources...'; 
+var ___BlockNoPublishDate___ = 'Not published'; 
+var ___DatasourceEmptyFile___ = 'File is empty. Please specify a file to upload.'; 
+var ___DatasourcesAnalyzingFile___ = 'Analyzing file content...'; 
+var ___DatasourceUploadSuccess___ = 'File successfully uploaded'; 
+var ___DatasourcesErrorNameEmpty___ = 'The datasource name must not be empty'; 
+var ___DatasourcesDeleting___ = 'Deletings datasource...'; 
+var ___DatasourcesErrorDescEmpty___ = 'The description must not be blank'; 
+var ___DatasourcesSaved___ = 'Datasource saved successfully'; 
+var ___DatasourcesSaving___ = 'Saving datasources (Depending on the filesize this could take up to minutes) ...'; 
+var ___fbViewBlkLoadingParams___ = 'Loading feedback view block parameters'; 
+var ___fbViewBlkLoadingSubjects___ = 'Loading feedback view subjects'; 
+var ___fbViewBlkLoadingDetails___ = 'Loading feedback view details'; 
+var ___fbViewBlkLoadingGrid___ = 'Loading feedback view grid'; 
+var ___fbViewBlkLoadingSubjectsValues___ = 'Loading subject values'; 
+var ___fbViewBlkLoadingDrilldownData___ = 'Loading drilldown data'; 
+var ___fbvSubjectValueSelector___ = 'Subject value'; 
+var ___feedbackViewTitle___ = 'Feedback View'; 
+var ___feedbackViewPrintTitle___ = 'Feedback View printing'; 
+var ___fbvLblCriteria___ = 'Criteria:'; 
+var ___fbvLblDatasourceName___ = 'Datasource Name:'; 
+var ___fbvLblFilters___ = 'Filters'; 
+var ___BlockNoDrillDownDataSourceColumnCheckedError___ = 'At least one column must be checked in the Drilldown datasource'; 
+var ___BlockNoMainDataSourceColumnCheckedError___ = 'At least one column must be checked in the Main datasource'; 
+var ___BlockSelectDataSource___ = 'Select datasource'; 
+var ___filtersFeedBackFilter___ = 'Feedback Filter'; 
+var ___filterSelectAll___ = 'Select All'; 
+var ___BlockSelectFilterDrillDown___ = 'Select filter'; 
+var ___BlockSelectFilterMain___ = 'Select filter'; 
+var ___BlockNoMainDataSourceError___ = 'A main datasource needs to be selected'; 
+var ___filterConfirmChangeDataSource___ = 'Do you really want to change the datasource? The modifications for your filters will be lost.'; 
+var ___BlockPleaseAddTagError___ = 'Please add a tag before saving'; 
+var ___BlockOptionPrint___ = 'Print button'; 
+var ___DatasourcesNoFile___ = 'Please upload a file first'; 
+var ___SwitchTableView___ = 'Switch view'; 
+var ___BlockLoadingBlockWait___ = 'Loading block...'; 
+var ___FiltersNoDatasource___ = 'There are no datasources found.'; 
+var ___BlockPublishManualMsgError___ = 'Please make a selection in the Select Block options before publishing'; 
+var ___BlockSaveBlockNameError___ = 'The Block Name in Blackboard is limited to 50 characters:'; 
+var ___BlockColCat___ = 'Category'; 
+var ___BlockColSubCat___ = 'Sub-category'; 
+var ___BlockColPublishDate___ = 'Publish Date'; 
+var ___DatasourceConnecting___ = 'Connecting to database'; 
+var ___DatasourceErrorMandatory___ = 'Please input server name'; 
+var ___DatasourceErrorMandatoryDatabase___ = 'Please input database name for connection'; 
+var ___DatasourceErrorMandatoryPassword___ = 'Please input the password for the connection'; 
+var ___DatasourceErrorMandatoryUsername___ = 'Please input the username for the connection'; 
+var ___DatasourceObjectNoSelection___ = 'There is no view or table in the specified catalog. Cannot proceed. Please select another source.'; 
+var ___DatasourcesConnectionError___ = 'An error occured while connecting to remote datasource'; 
+var ___BlockMapingColumnName___ = 'Mapping column name'; 
+var ___BlockFiltersOptions___ = 'Filters Options'; 
+var ___BlockAllFilters___ = 'All'; 
+var ___BlockShowItemsPerPage___ = 'Items per page'; 
+var ___WaitLoadingGridView___ = 'Please wait while the list loads'; 
+var ___getSubjectViewContent___ = 'Get subject view content. Please wait.'; 
+var ___svAutoManualColumn___ = 'Schedule'; 
+var ___svManageColumn___ = 'viewManage'; 
+var ___svOptInOutColumn___ = 'Status'; 
+var ___svPaperOnlineColumn___ = 'Method'; 
+var ___svProjectNameColumn___ = 'projectName'; 
+var ___svSIDColumn___ = 'subjects'; 
+var ___getSubjectViewList___ = 'Getting subject list. Please wait.'; 
+var ___startStopProject___ = 'Start/Stop Project. Please wait.'; 
+var ___ErrorStartStopProject___ = 'An error occurred while trying to start or stop a project'; 
+var ___filtersBluePrivilegesFilter___ = 'Privilege Filter'; 
+var ___DatasouceErrorSqlInfo___ = 'This datasource has no SQL connection informations'; 
+var ___DatasouceValidatingDatasource___ = 'Validating Datasource (Depending on the filesize this could take up to minutes) ...'; 
+var ___DatasourceErrorInvalidType___ = 'Invalid datasource type '; 
+var ___BlockDefaultValueBlockTitle___ = 'Block Title'; 
+var ___BlockDefaultValueDescription___ = 'Description'; 
+var ___BlockDefaultValueDisplayAllMessages___ = 'Display All Messages'; 
+var ___BlockDefaultValueEnableInvitationTitle___ = 'Invitation Title'; 
+var ___BlockDefaultValueEnableInvitationValue___ = 'Invitation Value'; 
+var ___BlockDefaultValueHyperlinksDisplay___ = 'Hyperlinks Display'; 
+var ___BlockDefaultValueManualReminderTitle___ = 'Manual Reminder Title'; 
+var ___BlockDefaultValueManualReminderValue___ = 'Manual Reminder Value'; 
+var ___BlockDefaultValueNumberOfItems___ = 'Number of Items'; 
+var ___BlockDefaultValuePaging___ = 'Paging'; 
+var ___BlockDefaultValueRemiderTitle___ = 'Reminder Title'; 
+var ___BlockDefaultValueRemiderValue___ = 'Reminder Value'; 
+var ___BlockDefaultValueReturn___ = 'Return Value (when no tasks are returned)'; 
+var ___BlockDefaultValueSearchButton___ = 'Search Button'; 
+var ___BlockDefaultValueSearchDescription___ = 'Search Description'; 
+var ___FeebackBlockDefaultValueFooter___ = 'Footer'; 
+var ___FeebackBlockDefaultValueHeader___ = 'Header'; 
+var ___FeebackBlockDefaultValueItemsTotal___ = 'Total Items'; 
+var ___FeebackBlockDefaultValueSearchButton___ = 'Search Button'; 
+var ___FeebackBlockDefaultValueSearchBy___ = 'Search By'; 
+var ___FeebackBlockDefaultValueSelectSubject___ = 'Select Subject'; 
+var ___FeebackBlockDefaultValueShowing___ = 'Showing (per page)'; 
+var ___FeebackBlockDefaultValueShowMore___ = 'Show More'; 
+var ___FeebackBlockDefaultValueShowResult___ = 'Show Results'; 
+var ___SVBlockDefaultContent___ = 'Content'; 
+var ___SVBlockDefaultDashboardTitle___ = 'Dashboard title'; 
+var ___SVBlockDefaultHeader___ = 'Header'; 
+var ___SVBlockDefaultNumberOfItems___ = 'Number of Items'; 
+var ___SVBlockDefaultReturnSV___ = 'Return to subject management'; 
+var ___SVBlockDefaultSearchButton___ = 'Search Button '; 
+var ___SVBlockDefaultSearchSubjectWatermark___ = 'Search Subject Watermark'; 
+var ___PlatformNotLicensed___ = 'This platform is not licensed'; 
+var ___BlockReportFilters___ = 'Report filters'; 
+var ___BlockTaskFilters___ = 'Task filters'; 
+var ___LicenseApplySuccess___ = 'License applied successfully'; 
+var ___LicenseIsEmpty___ = 'The license field is empty!'; 
+var ___dsUpdateSuccess___ = 'The datasource is valid. Save to confirm your changes.'; 
+var ___RenewLTIKeysSuccess___ = 'New Consumer Keys and Shared Secrets were generated.'; 
+var ___NoneFilter___ = '- none -'; 
+var ___SavingInProgress__ = '(Saving...)'; 
+var ___RefreshingResponseRate__ = '(Refreshing...)'; 
+var ___SettingsValidateURL___ = 'Validating URL...'; 
+var ___ViewLogs___ = 'View log files'; 
+var ___BlockColGradeBlocking___ = 'Grade Blocking'; 
+var ___confirmDeleteImage___ = 'Confirm delete'; 
+var ___DeleteImage___ = 'Please wait while deleting the image(s)'; 
+var ___ImageEmptyFile___ = 'File is empty. Please specify a file to upload'; 
+var ___ImageSaveFail___ = 'The saving process has failed'; 
+var ___ImageSaveSuccess___ = 'The image has been saved'; 
+var ___ImageUploadSuccess___ = 'File successfully uploaded'; 
+var ___LoadImgContainer___ = 'Please wait while loading the image(s)'; 
+var ___SaveImage___ = 'Please wait while saving the image'; 
+var ___ShowPreview___ = 'Please wait while the image information is loading'; 
+var ___UploadImage___ = 'Please wait while the image is uploading'; 
+var ___ManualBlueDataSyncStarted___ = 'The Blue projects data sync has started. Please check back later in the sync log for the result of the sync.'; 
+var ___ManualDataSourceSyncStarted___ = 'The manual datasource sync has started. Please check back later in the sync log for the result of the sync.'; 
+var ___ConnectionTypeError___ = 'Unable to verify connection type.'; 
+var ___ConfirmDeleteImages___ = 'By deleting these images, you will no longer be able to use them but they will remain on the server in case you are already using them. Are you sure you want to delete them?'; 
+var ___DatasourceErrorRefreshed___ = 'There was an error refreshing the datasource.'; 
+var ___WrongImageFile___ = 'The file you uploaded was not processed sucessfully because file type was not recognized as compatible'; 
+var ___DatasourceRefreshOK___ = 'Datasource was refreshed successfully'; 
+var ___DatasourceErrValidatingUpdate___ = 'There was an error validating the update'; 
+var ___DeleteImageButton___ = 'Delete image'; 
+var ___UpdaterDownloadUpdate___ = 'Download an update'; 
+var ___UpdaterShowCritical___ = 'BPI has experienced an error in the update process, and BPI can no longer be accessed. You must contact your support team to reaccess BPI.'; 
+var ___UploadingFile___ = 'Uploading File'; 
+var ___OtherKeysRegen___ = 'Regenerate'; 
+var ___ConfEnigmatizerRegen___ = 'Are you sure you want to regenerate the Enigmatizer Key? This will affect all applications using the enigmatizer.'; 
+var ___EnigmatizerRegen___ = 'The Enigmatizer Token has been Regenerated sucessfully'; 
+var ___SbViewApplySettings___ = 'Copy this %1 settings to:'; 
+var ___SbViewAutomatic___ = 'automatic'; 
+var ___SbViewCopyAllOptedIn___ = 'All opted in subjects in project'; 
+var ___SbViewCopyAllSubjects___ = 'All subjects in project'; 
+var ___SbViewCopySettings___ = 'copy <%1> settings'; 
+var ___SbViewDownload___ = 'download'; 
+var ___SbViewManual___ = 'manual'; 
+var ___SbViewOnline___ = 'online'; 
+var ___SbViewOptedIn___ = 'opted in'; 
+var ___SbViewOptedOut___ = 'opted out'; 
+var ___SbViewOptIn___ = 'click to opt-in'; 
+var ___SbViewOptOut___ = 'click to opt-out'; 
+var ___SbViewPaper___ = 'paper'; 
+var ___SbViewSaving___ = 'Saving subject list. Please wait.'; 
+var ___SbViewSelOnline___ = 'select online'; 
+var ___SbViewSelPaper___ = 'select paper'; 
+var ___SbViewStep___ = 'Step'; 
+var ___SbViewSwitchAutomatic___ = 'switch to automatic'; 
+var ___SbViewSwitchManual___ = 'switch to manual'; 
+var ___BlockTaskDefaultMessage___ = 'There are no records found.'; 
+var ___BBLinkTurnOFF___ = 'Turn Off'; 
+var ___BBLinkTurnON___ = 'Turn On'; 
+var ___BlockTaskItems___ = 'item(s)'; 
+var ___BlockLinkLabelEmpty___ = 'The link tag cannot be empty'; 
+var ___EntityDefaultValueDescription___ = 'Description'; 
+var ___EntityDefaultValueDisplayAllMessages___ = 'Display All Messages'; 
+var ___EntityDefaultValueSearchDescription___ = 'Search Description'; 
+var ___EntityDefaultValueSearchButton___ = 'Search Button'; 
+var ___EntityDefaultValueNumberOfItems___ = 'Number of Items'; 
+var ___EntityDefaultValueHyperlinksDisplay___ = 'Hyperlinks Display'; 
+var ___EntityDefaultValueReturn___ = 'Return Value (when no tasks are returned)'; 
+var ___EntityDefaultValuePaging___ = 'Paging'; 
+var ___EntityCol1_Task___ = 'Task type'; 
+var ___EntityCol2_Task___ = 'Description'; 
+var ___EntityCol3_Task___ = 'End date'; 
+var ___EntityCol4_Task___ = 'Status'; 
+var ___EntityCol5_Task___ = 'Link'; 
+var ___EntityColCat___ = 'Category'; 
+var ___EntityColSubCat___ = 'Sub-category'; 
+var ___EntityColAlert_Alert___ = 'Alert'; 
+var ___EntityColGradeBlocking___ = 'Grade Blocking'; 
+var ___entityLoadingFilters___ = 'Loading project filters...'; 
+var ___entityLoadingSpecificFilters___ = 'Loading tasks or reports filters...'; 
+var ___EntityCreatorName___ = 'Created by'; 
+var ___EntityLoadingWait___ = 'Loading entity...'; 
+var ___EntityStartError___ = 'Please input a date start'; 
+var ___EntityEndError___ = 'Please input a date end'; 
+var ___EntityEndLateError___ = 'The end date must be greater than the start date'; 
+var ___EntityRelativeStartError___ = 'Please enter a number (0,1,2,...) for relative date Start ___ days'; 
+var ___EntityRelativeEndError___ = 'Please enter a number (0,1,2,...) for relative date End ___ days'; 
+var ___EntityDisabledWarning___ = ' The entity is disabled, please reset entity accordingly.'; 
+var ___EntitySavingWait___ = 'Saving pathway...'; 
+var ___EntitySaveError___ = 'on return: Error while saving pathway'; 
+var ___EntitySaveOk___ = 'Pathway Saved Successfully'; 
+var ___EntitySaveEntityNameError___ = 'The Pathway Name in Blackboard is limited to 50 characters:'; 
+var ___EntityNameError___ = 'Please enter a Pathway name before saving'; 
+var ___EntityCreatorNameError___ = 'Please enter a Pathway creator before saving'; 
+var ___Cancel___ = 'Cancel'; 
+var ___EntityDeleted___ = 'Pathway deleted sucessfully'; 
+var ___filtersCourseFilter___ = 'Course Filter'; 
+var ___EntitySettingsError___ = 'Please enter proper values in the settings'; 
+var ___EntityCourseFilterError___ = 'Please select a valid course filter'; 
+var ___PlatformExist___ = 'The maximum number of pathways allowed for this platform has been reached.'; 
+var ___filterDeleteAlreadyUsedByEntity___ = 'This filter is already used by a pathway. Please modify pathway before deleting this filter'; 
+var ___ConfirmReset___ = 'Are you sure you want to reset the pathway?'; 
+var ___EntityReset___ = 'Pathway is resetting...'; 
+var ___EntityResetErr___ = 'Error while reset pathway'; 
+var ___EntityResetBtn___ = 'Reset Pathway'; 
+var ___EntityPeopleSoftResetDesc___ = 'Note: <font style=\'font-weight:bold\'>Reset the pathway</font> to remove all grade blocking created by Blue.'; 
+var ___EntityPeopleSoftResetMsg___ = 'All grade blockings made by Blue have been successully reset.'; 
+var ___EntityBlackboardResetDesc___ = 'Note: <font style=\'font-weight:bold\'>Reset the pathway</font> to remove all course blocking created by Blue.'; 
+var ___EntityBlackboardResetMsg___ = 'All course blockings made by Blue have been successully reset.'; 
+var ___EntityGenericResetDesc___ = 'Note: <font style=\'font-weight:bold\'>Reset the pathway</font> to clear all information from the output table.'; 
+var ___EntityGenericResetMsg___ = 'All data from Blue has been successully removed.'; 
+var ___BlockErrorTagEmpty___ = 'The tag cannot be blank'; 
+var ___EnhancedBlockColCheckedErr___ = 'At least one table column must be enabled.'; 
+var ___EnhancedBlockGracePeriodErr___ = 'The grace period must be a postive integer.'; 
+var ___SettingsBPIAdminCreateBtn___ = 'Create user'; 
+var ___SettingsBPIAdminEmailErr___ = 'The email is blank'; 
+var ___SettingsBPIAdminPasswdErr___ = 'The admin password is blank.'; 
+var ___SettingsBPIAdminUserErr___ = 'The admin username is blank.'; 
+var ___SettingsBPIAdminEditBtn___ = 'Modify user'; 
+var ___SettingsBPIAdminEditWarningEmail___ = 'The user \'blueadmin\' must change its email address in the mail settings menu of the Settings page'; 
+var ___EntityDateSettingError___ = 'Pathway start date must be prior to end date.'; 
+var ___EntityClearBlacklistWait___ = 'Clear pathway blacklist...'; 
+var ___EntityClearBlacklistError___ = 'on return: Error while clear pathway blacklist'; 
+var ___EntityClearBlacklistOk___ = 'Pathway blacklist clear Successfully'; 
+var ___EntityClearWhitelistWait___ = 'Clear pathway whitelist...'; 
+var ___EntityClearWhitelistError___ = 'on return: Error while clear pathway whitelist'; 
+var ___EntityClearWhitelistOk___ = 'Pathway whitelist clear Successfully'; 
+var ___filtersSubjectDemographicFieldFilter___ = 'Subject Field Filter'; 
+</script>
+  
+  <script type="text/javascript">
+      $(function() {
+          var ddllist = document.getElementsByTagName("select");
+          for (i = 0; i < ddllist.length; i++) {
+              //resetter les DDL des filtres, sauf pour celui du Items per page
+              if (ddllist[i].id != 'idDDLMaxItemPage') {
+                  ddllist[i].selectedIndex = 0;
+              }
+          }
+
+          //On roule le webservice pour obtenir les données.
+          loadTaskList();
+          loadFilters();
+          setTimeout("publishIframeHeight()", 500);
+
+          //Fonction pour fermer toutes les div modal.
+          $(window).click(function(e) {
+              if (e.target.className.indexOf('bBox') < 0) {
+                  var h = document.getElementById('searchDiv').style.height;
+                  if ((h != "") && (h != "0px")) { expandCollapseSearch($('.imgLoupe')[0]); }
+
+                  var h = document.getElementById('descDiv').style.height;
+                  if ((h != "") && (h != "0px")) { expandCollapseDesc($('.imgDesc')[0]); }
+
+                  var h = document.getElementById('filterDiv').style.height;
+                  if ((h != "") && (h != "0px")) { expandCollapseFilters($('.imgFilter')[0]); }
+              }
+          });
+      });
+
+      function loadTaskList() {
+          var nbItems = document.getElementById('gvItemsCount');
+          if (nbItems == undefined) { document.getElementById('nbItemsLbl').innerHTML = ""; }
+          else {
+              document.getElementById('nbItemsLbl').innerHTML = "&ndash;&nbsp;&nbsp;" + (nbItems.innerText || nbItems.textContent) + " " + ___BlockTaskItems___;
+          }
+
+          document.getElementById('lViewData').innerHTML = "";
+          var dLst = document.getElementsByClassName('gData');
+
+          //Il n'y a pas de données retournées
+          if ($('#tViewData .gList .gData td').length <= 1) {
+              $('.showItemLabel').hide();
+              //document.getElementById('lViewData').innerHTML = ___BlockTaskDefaultMessage___;
+              return;
+          }
+
+          var dTemplate = document.getElementById('bDataTemplate').innerHTML;
+          for (i = 0; i < dLst.length; i++) {
+              var dColumns = dLst[i].getElementsByTagName('td');
+              if (dColumns.length > 0) {
+                  blockData = (i % 2 == 0) ? dTemplate : dTemplate.replace("normal", "opacity80");
+                  blockData = replaceRow(blockData, dColumns);
+                  document.getElementById('lViewData').innerHTML += blockData;
+              }
+          }
+
+          //CQ 3.5 bug fix: I DON'T KNOW WHY BUT IN IE11, THE TOP VALUE RETURN IS ZERO. BUT WHEN I RUN THE CODE A SECOND TIME, THE TOP
+          //VALUE IS NOT ZERO ANYMORE. WTF!?!
+          var sss = ($('#lViewData').offset()).top;
+
+          var topModal = ($('#lViewData').offset()).top;
+          if (($('#titleBarDiv').offset()).top > 9) { $('.bModal').css({ top: (topModal - 5) + 'px' }); }
+          else { $('.bModal').css({ top: (topModal - 9) + 'px' }); }
+      }
+
+
+      function replaceRow(dTemplate, dColumns) {
+          //Categorie / Sub-categorie
+          if ((taskviewCols.Category != undefined) && (taskviewCols.SubCategory != undefined)) {
+              var separator = "";
+              //On regarde si c'est vide ou nbsp, pour ne pas mettre de séparateur inutilement
+              if (dColumns[taskviewCols.Category].innerHTML.trim() != "" && dColumns[taskviewCols.Category].innerHTML.trim() != "&nbsp;")
+                  separator = " / ";
+              dTemplate = dTemplate.replace("$CatSubCat$", dColumns[taskviewCols.Category].innerHTML + separator + dColumns[taskviewCols.SubCategory].innerHTML);
+          }
+          else {
+              //Categorie
+              if (taskviewCols.Category != undefined) { dTemplate = dTemplate.replace("$CatSubCat$", dColumns[taskviewCols.Category].innerHTML); }
+
+              //SubCategorie
+              if (taskviewCols.SubCategory != undefined) { dTemplate = dTemplate.replace("$CatSubCat$", dColumns[taskviewCols.SubCategory].innerHTML); }
+          }
+
+          if ((taskviewCols.Category == undefined) && (taskviewCols.SubCategory == undefined)) {
+              dTemplate = dTemplate.replace("bCat", "displayNone");
+              //dTemplate = dTemplate.replace("secondDiv", "firstDiv"); 
+          }
+
+          //Description [colonne Obligatoire]
+          var myDesc = dColumns[taskviewCols.Desc].getElementsByTagName('div');
+
+          //CQ 3.5: si jamais on a une erreur javascript: "TypeError: Cannot read property 'innerHTML' of undefined ",
+          //c'est parce que le html table du gridview n'est pas celui qui appartient a ce block. C'est parce qu'on a un 2e block task dans la page.
+          //Quand on fait un next page, ca va loader le session variable de la 2e table dans le webservice.
+          //Donc, on ne peut qu'avoir un seul task block pour le moment (a moins qu'on nomme les sessions variable avec le block id)          
+          dTemplate = dTemplate.replace("$description$", ((myDesc == undefined) ? dColumns[taskviewCols.Desc].innerHTML : myDesc[0].innerHTML));
+
+          //Response Rate
+          if (taskviewCols.ResponseRate == undefined) { dTemplate = dTemplate.replace("bRate", "displayNone"); }
+          else {
+              if (dColumns[taskviewCols.ResponseRate] != null) {
+                  dTemplate = dTemplate.replace("$rr$", dColumns[taskviewCols.ResponseRate].innerHTML);
+
+
+                  //si on n'a pas d'element html (c'est vide), on cache la cellule au complet
+                  //on verifie avec le % dans les cas qu'on n'a pas de progress bar mais qu'on a une valeur de %
+                  if (dColumns[taskviewCols.ResponseRate].innerHTML.indexOf("div") == -1 && dColumns[taskviewCols.ResponseRate].innerHTML.indexOf("%") == -1) dTemplate = dTemplate.replace("bRate", "displayNone");
+              }
+          }
+
+          //Task Type - Status - autres...
+          if (taskviewCols.TaskType == undefined) { dTemplate = dTemplate.replace("bType", "displayNone"); }
+          else {
+              if (dColumns[taskviewCols.TaskType] != null) {
+                  dTemplate = dTemplate.replace("$taskType$", dColumns[taskviewCols.TaskType].innerHTML);
+              }
+          }
+ 
+          if (dColumns[taskviewCols.Status] != null) {
+              dTemplate = dTemplate.replace("$status$", "<strong>" + ___svOptInOutColumn___ + ": </strong>" + dColumns[taskviewCols.Status].innerHTML);
+          }
+          else {
+              dTemplate = dTemplate.replace("$status$", "");
+          }
+
+          if (dColumns[taskviewCols.EndDate] != null && dColumns[taskviewCols.EndDate].getElementsByTagName('div')[0] != null) {
+              if (taskviewCols.EndDate != undefined) { dTemplate = dTemplate.replace("$other$", " - <strong>" + ___BBLINKColDateEcheance___ + ": </strong>" + dColumns[taskviewCols.EndDate].getElementsByTagName('div')[0].innerHTML); }
+              else { dTemplate = dTemplate.replace("$other$", ""); }
+              if (taskviewCols.Alert == undefined) {
+                  dTemplate = dTemplate.replace("imgAlert", "displayNone");
+                  dTemplate = dTemplate.replace("$alert$", "");
+              }
+              else {
+                  if (dColumns[taskviewCols.Alert].innerHTML == "&nbsp;") {
+                      dTemplate = dTemplate.replace("imgAlert", "displayNone");
+                      dTemplate = dTemplate.replace("$alert$", "");
+                  }
+                  else {
+                      dTemplate = dTemplate.replace("$alert$", " - ");
+                      dTemplate = dTemplate.replace(/msgId/g, dColumns[taskviewCols.Alert].id + '_alert');
+                      dTemplate = dTemplate.replace("$msgTitle$", dColumns[taskviewCols.Alert].getElementsByTagName('span')[0].innerHTML);
+                      dTemplate = dTemplate.replace("$msgContent$", dColumns[taskviewCols.Alert].getElementsByTagName('span')[1].innerHTML);
+                      $(".bMsg *").addClass('bBox');
+                  }
+              }
+          }
+          else {
+              // dColumns[taskviewCols.EndDate] == null
+              if (taskviewCols.EndDate == undefined)
+              { dTemplate = dTemplate.replace("$other$", ""); }
+              if (taskviewCols.Alert == undefined) {
+                  dTemplate = dTemplate.replace("imgAlert", "displayNone");
+                  dTemplate = dTemplate.replace("$alert$", "");
+              }
+              else {
+                  if (dColumns[taskviewCols.Alert].innerHTML == "&nbsp;") {
+                      dTemplate = dTemplate.replace("imgAlert", "displayNone");
+                      dTemplate = dTemplate.replace("$alert$", "");
+                  }
+                  else {
+                      dTemplate = dTemplate.replace("$alert$", " - ");
+                      dTemplate = dTemplate.replace(/msgId/g, dColumns[taskviewCols.Alert].id + '_alert');
+                      dTemplate = dTemplate.replace("$msgTitle$", dColumns[taskviewCols.Alert].getElementsByTagName('span')[0].innerHTML);
+                      dTemplate = dTemplate.replace("$msgContent$", dColumns[taskviewCols.Alert].getElementsByTagName('span')[1].innerHTML);
+                      $(".bMsg *").addClass('bBox');
+                  }
+              }
+          }
+
+          //Hyperlink display
+          if (taskviewCols.Link == undefined) { dTemplate = dTemplate.replace("bLink", "displayNone"); }
+          else {
+              if (dColumns[taskviewCols.Link] != null) {
+                  dTemplate = dTemplate.replace("$link$", dColumns[taskviewCols.Link].innerHTML);
+              }
+          }
+
+          //GradeBlocking
+          if (taskviewCols.GradeBlocking == undefined) { dTemplate = dTemplate.replace("bGrade", "displayNone"); }
+          else {
+              if (dColumns[taskviewCols.GradeBlocking] != null) {
+                  if (dColumns[taskviewCols.GradeBlocking].innerHTML == "&nbsp;") { dTemplate = dTemplate.replace("bGrade", "displayNone"); }
+                  else {
+                      dTemplate = dTemplate.replace("$gradeBlocking$", ___BlockColGradeBlocking___);
+                      dTemplate = dTemplate.replace("$value$", dColumns[taskviewCols.GradeBlocking].innerHTML);
+                  }
+              }
+          }
+ 
+          return dTemplate;
+      }
+
+      function expand(divId, h, eImg) { $('#' + divId).animate({ height: h }, animDuration); eImg.src = eImg.src.replace('-w.png', '-g.png'); }
+      function collapse(divId, eImg) { $('#' + divId).animate({ height: 0 }, animDuration); eImg.src = eImg.src.replace('-g.png', '-w.png'); }
+
+      function expandCollapseSearch(el) {
+          var h = document.getElementById('searchDiv').style.height;
+          if ((h == "0px") || (h == "")) { expand('searchDiv', 60, el); }
+          else { collapse('searchDiv', el); }
+
+          collapse('descDiv', $('.imgDesc')[0]);
+          collapse('filterDiv', $('.imgFilter')[0]);
+
+          setTimeout(function() { publishIframeHeight() }, animDuration);
+      }
+
+      function expandCollapseDesc(el) {
+          var h = document.getElementById('descP').offsetHeight + 25;
+          var h2 = document.getElementById('descDiv').style.height;
+
+          //Étant donné que la description est en position absolute, il faut calculer et setter le height du appContainer
+          if ((h2 == "0px") || (h2 == "")) {
+              expand('descDiv', eval(h), el);
+              setTimeout(function() {
+                  if ($("#appContainer").height() < $("#descDiv").height())
+                      $("#appContainer").height($("#descDiv").height());
+              }, animDuration);
+          }
+          else { collapse('descDiv', el); setTimeout(function() { $("#appContainer").css("height", ""); }, animDuration); }
+
+          collapse('searchDiv', $('.imgLoupe')[0]);
+          collapse('filterDiv', $('.imgFilter')[0]);
+
+          setTimeout(function() { publishIframeHeight(); }, animDuration);
+      }
+
+      function expandCollapseFilters(el) {
+          var h = document.getElementById('filterTable').offsetHeight + 35;
+          var h2 = document.getElementById('filterDiv').style.height;
+
+          //Étant donné que les filtres sont en position absolute, il faut calculer et setter le height du appContainer
+          //Mêmes calculs que dans checkFiltersBox, sauf qu'on a besoin de détecter si on est en mode collapse/expand
+          if ((h2 == "0px") || (h2 == "")) {
+              expand('filterDiv', eval(h), el);
+              setTimeout(function() {
+                  if ($("#appContainer").height() < $("#filterDiv").height())
+                      $("#appContainer").height($("#filterDiv").height());
+              }, animDuration);
+          }
+          else { collapse('filterDiv', el); setTimeout(function() { $("#appContainer").css("height", ""); }, animDuration); }
+
+          collapse('searchDiv', $('.imgLoupe')[0]);
+          collapse('descDiv', $('.imgDesc')[0]);
+
+          setTimeout(function() { publishIframeHeight(); }, animDuration);
+      }
+
+      function expandCollapseMsg(divId) {
+          var h = document.getElementById(divId).getElementsByTagName('p')[0].offsetHeight + 10;
+          var h2 = document.getElementById(divId).style.height;
+
+          if ((h2 == "0px") || (h2 == "")) { $('#' + divId).animate({ height: eval(h) }, animDuration); }
+          else { $('#' + divId).animate({ height: 0 }, animDuration); }
+
+          setTimeout(function() { publishIframeHeight() }, animDuration);
+      }
+
+
+      function loadFilters() {
+          tFilters = document.getElementById('idtableFiltersOptions');
+          if (tFilters != undefined) {
+
+              var filterContainer = "<table class='tbFilters' id='filterTable' border='0' cellpadding='0' cellspacing='0'>\n";
+              filterContainer += "<tr><td><p class='filterTitle'>" + ___BBLINKColFiltre___ + "</p></td></tr>\n";
+              var trs = tFilters.getElementsByTagName('tr');
+
+              //On veut ajouter ces filtres en premier
+              var ddl = ["idDDLCol1", "idDDLColCat", "idDDLColSubCat", "idDDLCol2", "idDDLCol4"];
+
+              //Aller boucler sur ces filtres et les rajouter au début si nécessaire
+              for (var i = 0; i < ddl.length; i++) {
+                  var obj = $(trs).find("select[name='" + ddl[i] + "']").get(0);
+                  if (obj != undefined) {
+                      filterContainer += "<tr>\n";
+                      var td1 = $(obj).closest("td").prev();  //Contient le label
+                      var td2 = $(obj).closest("td"); //Contientle input
+                      filterContainer += $(td1).get(0).outerHTML + "\n";
+                      filterContainer += $(td2).get(0).outerHTML + "\n";
+                      filterContainer += "</tr>\n";
+                  }
+              }
+
+              for (var i = 0; i < trs.length; i++) {
+                  filterContainer += "<tr>\n";
+                  var tds = trs[i].getElementsByTagName('td');
+                  for (var j = 0; j < 2; j++) { filterContainer += "<td>" + tds[j].innerHTML + "</td>\n"; }
+                  filterContainer += "</tr>\n";
+              }
+
+              for (var i = 0; i < trs.length; i++) {
+                  filterContainer += "<tr>\n";
+                  var tds = trs[i].getElementsByTagName('td');
+                  for (var j = 3; j < 5; j++) { filterContainer += "<td>" + ((tds[j] != undefined) ? tds[j].innerHTML : "") + "</td>\n"; }
+                  filterContainer += "</tr>\n";
+              }
+
+              filterContainer += "</table>\n";
+              document.getElementById('filterDiv').innerHTML = filterContainer;
+
+              $("#filterTable *").addClass('bBox');
+              $("#idtableFiltersOptions *").removeAttr('id');
+
+              //Pour que les filtres n'aparaissent pas deux fois
+              for (var i = 0; i < ddl.length; i++) {
+                  //On va vérifier si le filtre existe en double
+                  var obj = $("select[name='" + ddl[i] + "']").get(2);
+                  if (obj != undefined) {
+                      $(obj).closest("tr").remove();
+                  }
+              }
+          }
+      }
+
+      /** REDEFINITION au retour du getGridView */
+      function ___ongetGridView(result) {
+          WaitMachineProcessRemove(___WaitLoadingGridView___);   //Enlever les processes du waitMachine
+          if (result[0] == "error" && result[1] == "error") {
+              gotoURL('error500.aspx?errormessage=' + result[2]);
+          }
+          else {
+              document.getElementById('tViewData').innerHTML = result[0];
+              document.getElementById('blockGridViewPagingLabel').innerHTML = result[1];
+              document.getElementById('blockGridViewPaging').innerHTML = result[2];
+              taskviewCols = eval('(' + result[3] + ')');
+              loadTaskList();
+          }
+
+          setTimeout(function() {
+              checkFiltersBox();
+              publishIframeHeight();
+          }, 500);
+      }
+
+      //Étant donné que les filtres sont en position absolute, il faut calculer et setter le height du appContainer
+      //pour le crossDomainIframeResize
+      //Des calculs similaires sont effectués dans expandCollapseFilters()
+      function checkFiltersBox() {
+          if ($("#appContainer").height() < $("#filterDiv").height()) { $("#appContainer").height($("#filterDiv").height()); }
+          else { $("#appContainer").css("height", ""); }
+      }
+
+      window.onresize = function() { };
+  </script>
+
+  </div> <!--Fermeture du  TotalContainer -->
+
+
+</body></html>

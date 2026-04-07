@@ -1,0 +1,210 @@
+﻿body {margin:0px;
+	  font:9pt/12pt Arial;
+      color:#333;
+      cursor:default;
+      padding:20px;}
+
+#appContainer {}
+a { outline:none;}
+
+/* WebApp Title */
+h1 {font-size:1em; width:100%; margin-top:0px; padding-bottom:4px; border-bottom:1px solid #999; margin-bottom:0px; }
+h2 {font-size:1em; cursor:pointer; width:120px; margin-top:4px;}
+.expand {font:bold 10pt/13pt Arial; letter-spacing:1px;}
+.expand2 {font:normal 9pt/13pt Arial; letter-spacing:1px; /*vertical-align:middle;*/}
+.webappTitleDiv {width:100%; height:0px; overflow:hidden; background-color:#f7f7f7; padding:0px;}
+.webappTitleDiv p {margin:6px 25px 6px 15px; height:auto; font:9pt/12pt Arial;}
+/* Fin WebApp Title */
+
+/* Filters Container */
+.filtersContainer {width:100%; margin-right:-4px; height:0px; padding:0px; background-color:#f5f5f5; overflow:hidden; }
+.filtersTable {margin:20px; width:100%;} 
+.filtersTable td:first-child {width:70px;} 
+
+.divInput {width:200px; height:21px; border:1px solid #999; background-color:#fff; margin:2px 0px 3px 0px; padding:1px 2px 2px 2px;}
+.divInput input[type=text] {width:196px; height:18px; font:8pt Arial; border:1px solid #fff; margin:0px;}
+.divInput select {width:200px; height:20px; font:8pt Arial; border:2px solid #fff;}
+.filterBtn {font:7pt Arial, sans-serif; color:#333; padding:2px; margin:0px 30px 0px 0px; float:right }
+/* Fin Filters Container */
+
+/* Gridview Navigation */
+.gridpaging {position:relative; width:100%; margin:10px 0px 0px 0px; height:30px; background-color: Transparent; padding-top:4px; padding-bottom:4px; color:#333; font-size:8pt;}
+.gridpaging .searchKey { width: 200px;}
+.gridpaging .searchInput {color:#aaa; float:left; width:200px; height:20px; padding:2px; padding-left:27px; margin:3px 5px 0px 0px; font:9pt Arial; border:1px solid #999;}
+.gridpaging .loupe {position:absolute; left:5px; top:10px; }
+.gridpaging .searchBtn {float:left; font:8pt Arial, sans-serif; color:#333; /*padding:2px;*/ margin:4px 15px 0px 0px; height:26px;}
+
+.gridpaging .divFilter {float:left; margin:6px 0px 0px 2px; font-size:9pt; cursor:pointer; }
+
+.gridpaging A:link {text-decoration:none; color:#006699; }
+.gridpaging A:visited {text-decoration:none; color:#006699;}
+.gridpaging A:active {text-decoration:none; color:#006699;}
+.gridpaging A:hover {text-decoration:none; color:#333; background-color:yellow;}
+
+
+.gridpaging .ddlFilter {float:left; padding:2px; margin:3px 5px 0px 0px; font:8pt Arial; }
+.gridpaging .inputDte {float:left; margin:3px 2px 0px 0px; width:80px; font:8pt Arial; cursor:default; }
+.gridpaging .imgCal {float:left; margin:5px 5px 0px 0px;}
+.gridpaging .startBtn {position:absolute; right:33px; bottom:8px; width:auto; height:26px; cursor:pointer; font:8pt Arial, sans-serif; padding:2px 4px 4px 4px; }
+.gridpaging .printBtn {position:absolute; right:10px; bottom:10px; border:1px solid #333; cursor:pointer; }
+
+/* Remove extra space and padding*/
+.gridpagingVertical {margin:0px 0px 0px 0px; height:0px; padding: 0px 0px 0px 0px;}
+
+/* Vertical gridpaging */
+
+.gridpagingVertical > tbody > tr > td { display: block; text-align: left; margin: 0px 0px 0px 0px; margin-left: 0px; list-style: none; display: list-item; padding-left: 0;} 
+
+/* Search textfield */
+.gridpagingVertical .searchKey {width:auto;}
+.gridpagingVertical .searchInput {width:auto;}
+
+/* Search button */
+.gridpagingVertical > tbody > tr > td > .searchBtn { margin-bottom: 3px;}
+
+/* filters element */
+.gridpagingVertical > tbody > tr > .filtersTD {width: 100px;}
+.gridpagingVertical > tbody > tr > td > .divFilter { float: none; margin: 0px 0px 0px 0px;}
+
+/* paging element */
+.gridpagingVertical > tbody > tr > .paginationTD { width: 200px; }
+.gridpagingVertical > tbody > tr > td > .gPaging { float: none; width: 170px; }
+
+.gridpagingVertical > tbody > tr > td > div> span > .gPaging { float: none;}
+.gridpagingVertical > tbody > tr > td > div> span > .showItemLabel { float: none;}
+
+    /* this one is for subjectview */
+.gridpagingVertical > tbody > tr > td > .gPaging > .gPaging { float: none;}
+.gridpagingVertical > tbody > tr > td > .gPaging > .showItemLabel { float: left; margin: 0px 0px 0px 0px;}
+
+
+/* re-enable the displayNone class */
+.gridpagingVertical .displayNone {display: none;}
+
+/* filters Container */
+.filtersContainerVertical .divInput  {width: auto; border: none; background-color: #f5f5f5;}
+.filtersContainerVertical .divInput > select {border: 1px solid #999; width: auto; max-width: 100px; height:21px; }
+.filtersContainerVertical select  {width:auto;}
+
+/***/
+/* Grid view voir les css de web app
+/***/
+.appContainerResized {width: 740px;}
+.panelContainer {width:100%; height:500px; position:absolute; top:0px; left:0px; display:none; z-index:9999;}
+.panelContainerResized {width: 740px;}
+.manageContainer {padding: 60px 35px 30px 30px;display: block;}
+.subPanelManage {height:auto; background-color:#e7e7e7; border:2px solid #777; display:block; padding:24px 4px; position:relative}
+
+.backG {background-color:#ddd; position:fixed; width:100%; height: 30px; left:0px;}
+.back {padding:3px; top:0px; right:0px; left:0px; width:100%; text-align:right; z-index:1; height: 24px; min-width: 560px; margin-top: -20px;}
+.back A {position:relative; text-decoration:none; color:#006699; }
+.back A:link {text-decoration:none; color:#006699; }
+.back A:visited {text-decoration:none; color:#006699;}
+.back A:active {text-decoration:none; color:#006699;}
+.back A:hover {text-decoration:none; color:#333; background-color:yellow;}
+
+.lContent {border:2px solid #aaa; background-color:#fff; margin:10px 5px 0px 0px;}
+.lContent h1, .lContent p {margin:15px 15px 20px 15px;}
+
+.rContent {border:2px solid #aaa; background-color:#fff; margin:10px 0px 0px 5px; position:relative;}
+.rContent h1, .rContent p {margin:15px 15px 20px 15px;}
+.contentNA {position:absolute; top:0px; left:0px; width:100%; height:100%; background-color:#ccc;
+            opacity:0.50; -moz-opacity:0.50;  -ms-filter:alpha(opacity=50); filter:alpha(opacity=50);}
+
+.batonContainer {position:relative; height:20px; background-image:url('../images/graphbg.jpg'); border:2px solid #aaa; }
+.baton {position:absolute; height:20px; top:0px; background-color:#00b9b8;
+        opacity:0.60; -moz-opacity:0.60;  -ms-filter:alpha(opacity=60); filter:alpha(opacity=60);}
+
+.closeBtn {position:absolute; top:6px; right:6px; width:14px; height:14px; cursor:pointer;}
+.downloadPaper {margin:0px 10px 0px 20px;}
+.downloadPaper A {margin-left:5px; margin-top:10px; font:8pt Arial; padding:1px;}
+.downloadPaper A:link {text-decoration:underline; color:#006699; }
+.downloadPaper A:visited {text-decoration:underline; color:#006699;}
+.downloadPaper A:active {text-decoration:underline; color:#006699;}
+.downloadPaper A:hover {text-decoration:underline; color:#333; background-color:#ddd;}
+
+/* SubPanel avec divModal */
+#divModal { background-image:url('../images/webappBg.png');  }
+.mSubPanelDivOverFlow { padding:5px 15px 0px 15px; overflow-y:auto; }
+/* Fin SubPanel avec divModal */
+
+.previewPanel {border:1px dashed #333; 
+               -webkit-border-top-left-radius: 8px;
+			   -webkit-border-top-right-radius: 8px;
+			   -moz-border-radius-topleft: 8px;
+			   -moz-border-radius-topright: 8px;
+			   border-top-left-radius: 8px;
+			   border-top-right-radius: 8px;
+               -webkit-border-bottom-left-radius: 8px;
+			   -webkit-border-bottom-right-radius: 8px;
+			   -moz-border-radius-bottomleft: 8px;
+			   -moz-border-radius-bottomright: 8px;
+			   border-bottom-left-radius: 8px;
+			   border-bottom-right-radius: 8px; 
+			   width:740px;}
+
+.previewPanel .divPrevContainer {padding:15px; padding-bottom:0px;}
+
+/*Launcher*/
+.linkButton {background-color: #EFEFEF;
+                    border: 1px solid grey;
+                    text-decoration:none;
+                    color:black;
+                    padding-left: 10px; padding-right: 10px; padding-top: 2px; padding-bottom: 2px;
+                    -moz-border-radius: 3px;        /*mozilla */
+                    -webkit-border-radius: 3px;     /*safari,chrome */
+                    border-radius: 4px;             /*ie9 */
+                    background: -webkit-gradient(linear, left top, left bottom, from(#FAFAFA), to(#aadcef)); /* for webkit browsers */
+                    background: -moz-linear-gradient(top,  #FAFAFA,  #aadcef); /* for firefox 3.6+ */ 
+                    }
+
+.hrTitle {margin:20px 15px 0px 15px; padding-bottom:4px; border-bottom:1px solid #819AC0; color:#617491; font-weight:bold;}
+.hrTitle h3 {border-bottom: 1px solid black; }
+
+P {margin:4px 15px 0px 15px; color:#333;}
+
+.divButtonLauncher { text-align:right; margin: 2px 15px 15px 0px; }
+
+.errorMesssage {color: Red;}
+/*Launcher - End*/
+
+.displayNone { display:none; }
+
+/* Preview Web App (présentement seulement Subject View)*/
+.wAppSettings {width:730px; margin-top:35px; }
+.wAppSettings h2 {font-size:1.3em; width:100%;}
+.settingGrid th {background-color: #0099CC;
+				 border-bottom: 1px solid #AAA;
+				 color: White;
+				 height: 25px;
+				 padding: 7px;
+				 text-align: left;}
+				 
+.settingGrid tr:hover {background-color:#EBF5FF; cursor:default;}
+.settingGrid td {border-bottom: 1px solid #AAAAAA; padding:4px 7px; }
+.settingGrid td[colspan] {font-weight:bold; background-color:#E6E6E6; height:25px;}
+
+.previewLauncherTitle {margin:20px 15px 0px 15px; padding-bottom:4px; border-bottom:1px solid #819AC0; color:#617491; font-weight:bold;}
+.previewLauncherDesc {margin:4px 15px 0px 15px; color:#333;}
+.previewLauncherBtn { text-align:right; margin: 2px 15px 15px 0px; }
+.previewLauncherBtn input[type=button] {margin:0px; *margin-top:2px; cursor:pointer; font:7pt Arial; height:26px; padding:0px 4px 4px 4px; *padding:0px; width:auto;}
+/* Fin Preview Web App (présentement seulement Subject View)*/
+
+#gridPaging {border:1px solid #999; }
+
+
+/* Response Rate Progress Bar 
+.gList td div.prgBar{width:100px; height:12px; border:solid 1px Black; display:inline-block; padding:0px; text-align:left; position:absolute; top:0px; left:0px;}
+.gList td div.prgBar .prgBarInside {height:inherit; padding:0px; border:none; display:inline-block;}
+*/
+
+.prgBarContainer { padding:0px; display:inline-block; text-align:right; background-color:transparent; border-style:none; }
+.prgBar { width:100px; height:12px; border:solid 1px Black; display:inline-block; padding:0px; text-align:left; position:relative; top:0px; left:0px; }
+.prgBar .prgBarInside { height:inherit; padding:0px; border:none; display:inline-block; }
+.libelle {}
+
+/* Block navigation */
+
+.navigTable {display: table;width:100%;}
+.navigRow {display: table-row;}
+.navigCell {display: table-cell;}

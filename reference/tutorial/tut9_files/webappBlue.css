@@ -1,0 +1,53 @@
+﻿.webappTitleDiv {width:100%; height:0px; overflow:hidden; background-color:#f7f7f7;}
+/* Gridview */
+.tbListMenu {}
+
+.showItemLabel {float:right; font:9pt/12pt Arial; margin:8px 6px 0px 0px;}
+.gPaging {float:right; font:bold 9pt/11pt Arial, margin:3px 4px 0px 0px;}
+.gPaging input[type=button]{font:8pt Arial; cursor:pointer; height:22px; margin-left:-3px; width:24px; padding-left:4px; padding-right:4px; }
+.gPaging input[type=text] {font:6pt "Lucida Sans Unicode"; padding:2px; height:14px;}
+
+.gridview {width:auto; margin:0px 0px 15px 0px; overflow-x:none; height:auto; }
+
+.gList {margin-top:5px; /*border-top:2px solid #819AC0;*/ width:100%; /*border-bottom-style:none;*/ border-spacing: 0; border-collapse: collapse;}
+.gFooter {background-color:#ecf2f5;}
+.gSelected {padding-left:2px; padding-right:2px; border:1px solid #333;}
+.gItemOrder {color:yellow; }
+
+.gHeader {background-color:#819AC0; color:#fff; font:9pt/12pt Arial;text-align:center;padding: 0px 0px 0px auto;margin:0px 0px 0px 0px;}
+.gHeader th {text-align:center; width:70px; height:30px; border:1px solid #777; font-weight:normal ;padding;0px 0px 0px 0px;margin:0px 0px 0px 0px;}
+.gHeader span {font:normal 9pt/11pt Calibri; padding:0px; cursor:default;padding: 0px 0px 0px 0px;margin:0px 0px 0px 0px;}
+.gHeader A {font:9pt/12pt Arial; font-weight:normal; padding:2px 8px 2px 0px;padding: 0px 0px 0px 0px;margin:0px 0px 0px 0px;}
+.gHeader A:link {text-decoration:none; color:#fff;}
+.gHeader A:visited {text-decoration:none; color:#000;}
+.gHeader A:active {text-decoration:none; color:#000;}
+.gHeader A:hover {text-decoration:none; color:#000; /*background-color:yellow;*/}
+.gHeader table {text-align:center;margin-left:auto;margin-right:auto;}
+
+.gData {font:9pt Arial;}
+.gData:hover {background-color:#f7f7f7; cursor:normal;}
+.gData td {border:1px solid #777; height:30px; background-color:White;padding: 5px 5px 5px 5px;margin:0px 0px 0px auto;}
+.gData td A {margin-right:4px;margin:0px 0px 0px auto;}
+.gData td A:link {text-decoration:underline; color:#006699; }
+.gData td A:visited {text-decoration:underline; color:#006699;}
+.gData td A:active {text-decoration:underline; color:#006699;}
+.gData td A:hover {text-decoration:underline; color:#333; background-color:yellow;}
+/* Fin Gridview */
+
+/* Sous grille */
+.gListSub {margin-top:5px; border:2px solid #aaa; width:100%; }
+.gDataSub {font:9pt/11pt Arial; background-color:#fff;}
+.gDataSub td { background-color: White; }
+.gDataSub  h1, .gDataSub p {margin:15px 15px 0px 8px;}
+.gDataSub  h1 > span {font-size:0.9em; font-weight:normal;}
+/* Fin Sous grille */
+
+/*Highlight des rangées pour Canvas*/
+.highlightCourseID td { background-color:#FFFFB3;}
+
+/* Pour Taskview List Mode */
+.bTitle {background-color:#4388CC;}
+.bModal {background-color:#7cacdb;}
+.bMsg > p {background-color:#d9e7f5;}
+.divFilters {background-color:#b4cfeb;}
+    

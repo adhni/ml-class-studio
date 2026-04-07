@@ -1,0 +1,32 @@
+var WSBackEndTaskView=function() {
+WSBackEndTaskView.initializeBase(this);
+this._timeout = 0;
+this._userContext = null;
+this._succeeded = null;
+this._failed = null;
+}
+WSBackEndTaskView.prototype={
+_get_path:function() {
+ var p = this.get_path();
+ if (p) return p;
+ else return WSBackEndTaskView._staticInstance.get_path();},
+GetTaskGridView:function(queryStr,maxItemsPage,pageNo,strOrderBy,filtersValues,searchStr,addSort,succeededCallback, failedCallback, userContext) {
+return this._invoke(this._get_path(), 'GetTaskGridView',false,{queryStr:queryStr,maxItemsPage:maxItemsPage,pageNo:pageNo,strOrderBy:strOrderBy,filtersValues:filtersValues,searchStr:searchStr,addSort:addSort},succeededCallback,failedCallback,userContext); }}
+WSBackEndTaskView.registerClass('WSBackEndTaskView',Sys.Net.WebServiceProxy);
+WSBackEndTaskView._staticInstance = new WSBackEndTaskView();
+WSBackEndTaskView.set_path = function(value) { WSBackEndTaskView._staticInstance.set_path(value); }
+WSBackEndTaskView.get_path = function() { return WSBackEndTaskView._staticInstance.get_path(); }
+WSBackEndTaskView.set_timeout = function(value) { WSBackEndTaskView._staticInstance.set_timeout(value); }
+WSBackEndTaskView.get_timeout = function() { return WSBackEndTaskView._staticInstance.get_timeout(); }
+WSBackEndTaskView.set_defaultUserContext = function(value) { WSBackEndTaskView._staticInstance.set_defaultUserContext(value); }
+WSBackEndTaskView.get_defaultUserContext = function() { return WSBackEndTaskView._staticInstance.get_defaultUserContext(); }
+WSBackEndTaskView.set_defaultSucceededCallback = function(value) { WSBackEndTaskView._staticInstance.set_defaultSucceededCallback(value); }
+WSBackEndTaskView.get_defaultSucceededCallback = function() { return WSBackEndTaskView._staticInstance.get_defaultSucceededCallback(); }
+WSBackEndTaskView.set_defaultFailedCallback = function(value) { WSBackEndTaskView._staticInstance.set_defaultFailedCallback(value); }
+WSBackEndTaskView.get_defaultFailedCallback = function() { return WSBackEndTaskView._staticInstance.get_defaultFailedCallback(); }
+WSBackEndTaskView.set_enableJsonp = function(value) { WSBackEndTaskView._staticInstance.set_enableJsonp(value); }
+WSBackEndTaskView.get_enableJsonp = function() { return WSBackEndTaskView._staticInstance.get_enableJsonp(); }
+WSBackEndTaskView.set_jsonpCallbackParameter = function(value) { WSBackEndTaskView._staticInstance.set_jsonpCallbackParameter(value); }
+WSBackEndTaskView.get_jsonpCallbackParameter = function() { return WSBackEndTaskView._staticInstance.get_jsonpCallbackParameter(); }
+WSBackEndTaskView.set_path("/monashbpiMoodle/taskview-webservice.asmx");
+WSBackEndTaskView.GetTaskGridView= function(queryStr,maxItemsPage,pageNo,strOrderBy,filtersValues,searchStr,addSort,onSuccess,onFailed,userContext) {WSBackEndTaskView._staticInstance.GetTaskGridView(queryStr,maxItemsPage,pageNo,strOrderBy,filtersValues,searchStr,addSort,onSuccess,onFailed,userContext); }
