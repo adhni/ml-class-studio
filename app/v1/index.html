@@ -24,7 +24,9 @@
           <option value="week3">Week 3: Validation</option>
           <option value="week4">Week 4: Basics + KNN</option>
           <option value="week5">Week 5: Logistic + LDA</option>
-          <option value="week6">Week 6: Trees</option>
+          <option value="week6">Week 6: Trees + Forests</option>
+          <option value="week8">Week 8: Explainability / XAI</option>
+          <option value="week10">Week 10: SVM</option>
           <option value="week9">Week 9: Clustering methods</option>
           <option value="week11">Week 11/12: Cluster evaluation</option>
         </select>
@@ -111,6 +113,9 @@
           <option value="logistic">Logistic regression</option>
           <option value="lda">LDA</option>
           <option value="tree">Decision tree</option>
+          <option value="forest">Random forest</option>
+          <option value="svm_linear">Linear SVM</option>
+          <option value="svm_rbf">RBF SVM</option>
         </select>
 
         <label for="knnK">KNN neighbours (k)</label>
@@ -134,6 +139,43 @@
           <input id="clusterK" type="range" min="2" max="8" step="1" value="3" />
           <input id="clusterK_num" type="number" min="2" max="8" step="1" value="3" />
         </div>
+      </div>
+
+      <div class="control-group" data-control-group="forest">
+        <h2>Forest Controls</h2>
+
+        <label for="forestTrees">Random forest trees</label>
+        <div class="range-row">
+          <input id="forestTrees" type="range" min="5" max="51" step="2" value="21" />
+          <input id="forestTrees_num" type="number" min="5" max="51" step="2" value="21" />
+        </div>
+      </div>
+
+      <div class="control-group" data-control-group="svm">
+        <h2>SVM Controls</h2>
+
+        <label for="svmC">SVM C</label>
+        <div class="range-row">
+          <input id="svmC" type="range" min="0.2" max="3" step="0.2" value="1.2" />
+          <input id="svmC_num" type="number" min="0.2" max="3" step="0.2" value="1.2" />
+        </div>
+
+        <label for="svmGamma">RBF gamma</label>
+        <div class="range-row">
+          <input id="svmGamma" type="range" min="0.2" max="3" step="0.2" value="1" />
+          <input id="svmGamma_num" type="number" min="0.2" max="3" step="0.2" value="1" />
+        </div>
+      </div>
+
+      <div class="control-group" data-control-group="xai">
+        <h2>XAI Controls</h2>
+
+        <label for="xaiIndex">Selected row</label>
+        <div class="range-row">
+          <input id="xaiIndex" type="range" min="1" max="150" step="1" value="1" />
+          <input id="xaiIndex_num" type="number" min="1" max="150" step="1" value="1" />
+        </div>
+        <p id="xaiIndexNote" class="small-note"></p>
       </div>
 
       <div class="control-group" data-control-group="problem">
@@ -202,11 +244,31 @@
 
           <article class="week-card">
             <span class="week-chip">Week 6</span>
-            <h3>Trees</h3>
-            <p>Inspect threshold-style rules, confusion matrices, and tree depth.</p>
+            <h3>Trees + Forests</h3>
+            <p>Compare a single tree with a bagged forest and see what stability buys you.</p>
             <div class="week-card-actions">
               <button class="card-btn" type="button" data-view-target="week6">Open studio</button>
               <span class="tutorial-ref">Tutorial file: <code>reference/tutorial/tut6.html</code></span>
+            </div>
+          </article>
+
+          <article class="week-card">
+            <span class="week-chip">Week 8</span>
+            <h3>Explainability / XAI</h3>
+            <p>Inspect feature importance and local explanations for the model in focus.</p>
+            <div class="week-card-actions">
+              <button class="card-btn" type="button" data-view-target="week8">Open studio</button>
+              <span class="tutorial-ref">Tutorial file: <code>reference/tutorial/tut8.html</code></span>
+            </div>
+          </article>
+
+          <article class="week-card">
+            <span class="week-chip">Week 10</span>
+            <h3>SVM</h3>
+            <p>Compare linear and nonlinear SVM behaviour on clean and curved boundaries.</p>
+            <div class="week-card-actions">
+              <button class="card-btn" type="button" data-view-target="week10">Open studio</button>
+              <span class="tutorial-ref">Studio extension: no separate weekly tutorial file in this repo.</span>
             </div>
           </article>
 
@@ -334,7 +396,7 @@
         </div>
       </section>
 
-      <section id="classification-lab" class="card section week-section" data-views="week4 week5 week6">
+      <section id="classification-lab" class="card section week-section" data-views="week4 week5 week6 week8 week10">
         <div class="section-title">
           <span class="kicker" id="classificationKicker">Classification</span>
           <h3>Classification Studio</h3>
@@ -347,18 +409,41 @@
           <p class="caption" id="classificationModeCaption"></p>
         </article>
 
-        <div class="panel-grid two">
-          <article class="panel">
+        <div id="classificationDetailGrid" class="panel-grid two">
+          <article id="classificationSummaryPanel" class="panel">
             <h4>Confusion matrix + summary</h4>
             <table id="confusionTable" class="data-table"></table>
             <div id="modelSummary" class="mono-block"></div>
             <p class="caption" id="confusionCaption"></p>
           </article>
 
-          <article class="panel">
+          <article id="boundaryPanel" class="panel">
             <h4>Decision boundary</h4>
             <svg id="boundaryPlot" viewBox="0 0 540 420"></svg>
             <p class="caption" id="boundaryCaption"></p>
+          </article>
+        </div>
+      </section>
+
+      <section id="xai-lab" class="card section week-section" data-views="week8">
+        <div class="section-title">
+          <span class="kicker">Week 8</span>
+          <h3>Explainability Studio</h3>
+        </div>
+        <p id="xaiIntro" class="section-note"></p>
+
+        <div class="panel-grid two">
+          <article class="panel">
+            <h4>Global feature importance</h4>
+            <table id="xaiGlobalTable" class="data-table"></table>
+            <p class="caption" id="xaiGlobalCaption"></p>
+          </article>
+
+          <article class="panel">
+            <h4>Local explanation for selected row</h4>
+            <div id="xaiLocalSummary" class="mono-block"></div>
+            <table id="xaiLocalTable" class="data-table"></table>
+            <p class="caption" id="xaiLocalCaption"></p>
           </article>
         </div>
       </section>

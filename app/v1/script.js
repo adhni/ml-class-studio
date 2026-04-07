@@ -34,9 +34,13 @@
     stratify: true,
     knnK: 7,
     treeDepth: 4,
+    forestTrees: 21,
+    svmC: 1.2,
+    svmGamma: 1,
     clusterK: 3,
     framingMode: "classification",
     focusModel: "knn",
+    xaiIndex: 0,
     scatterX: 0,
     scatterY: 1
   };
@@ -148,24 +152,76 @@
     },
     week6: {
       label: "Week 6",
-      title: "Trees",
-      summary: "Use threshold-style rules and tree depth deliberately.",
-      prompt: "Start with Penguins, inspect the first tree split, then switch to Toy nonlinear to see how tree boundaries bend.",
+      title: "Trees + Random Forests",
+      summary: "Compare one tree with a bagged forest.",
+      prompt: "Start with Penguins, compare the single tree with the forest, then see which one is more stable on the same split.",
       tutorialPath: "reference/tutorial/tut6.html",
-      controls: ["dataset", "validation", "classification"],
+      controls: ["dataset", "validation", "classification", "forest"],
       preset: {
         datasetId: "penguins",
         validationMode: "holdout",
         stratify: true,
         framingMode: "classification",
-        focusModel: "tree",
+        focusModel: "forest",
         treeDepth: 4,
+        forestTrees: 21,
         scatterX: 0,
         scatterY: 2
       },
       copy: {
         classification:
-          "This week is about interpretability and splitting rules. Keep the focus model on the decision tree and watch how depth changes the summary."
+          "This week is about the trade-off between a single interpretable tree and a more stable ensemble. Compare tree and forest first."
+      }
+    },
+    week8: {
+      label: "Week 8",
+      title: "Explainability / XAI",
+      summary: "Explain what the model is using, globally and for one row.",
+      prompt: "Start with Penguins and the random forest, then switch focus models to compare what each explanation style can and cannot tell you.",
+      tutorialPath: "reference/tutorial/tut8.html",
+      controls: ["dataset", "validation", "classification", "forest", "svm", "xai"],
+      preset: {
+        datasetId: "penguins",
+        validationMode: "holdout",
+        stratify: true,
+        framingMode: "classification",
+        focusModel: "forest",
+        treeDepth: 4,
+        forestTrees: 21,
+        svmC: 1.2,
+        svmGamma: 1,
+        xaiIndex: 0,
+        scatterX: 0,
+        scatterY: 2
+      },
+      copy: {
+        classification:
+          "Use the classification outputs as context, then read the XAI section to see which features are driving the current model.",
+        xai:
+          "This week is about interpretation, not just ranking models. Compare the global importance view with the local explanation for one selected row."
+      }
+    },
+    week10: {
+      label: "Week 10",
+      title: "Support Vector Machines",
+      summary: "Compare linear and nonlinear SVM boundaries.",
+      prompt: "Start with Toy nonlinear. Compare linear SVM with RBF SVM, then change C and gamma to see how the boundary responds.",
+      tutorialPath: "",
+      controls: ["dataset", "validation", "classification", "svm"],
+      preset: {
+        datasetId: "toy_nonlinear",
+        validationMode: "holdout",
+        stratify: true,
+        framingMode: "classification",
+        focusModel: "svm_rbf",
+        svmC: 1.4,
+        svmGamma: 1.4,
+        scatterX: 0,
+        scatterY: 1
+      },
+      copy: {
+        classification:
+          "This week is about margin-based classifiers. Compare the linear SVM with the RBF version before deciding whether extra flexibility helped."
       }
     },
     week9: {
@@ -229,6 +285,7 @@
     } else {
       syncControlsFromState();
     }
+    syncXaiOptions();
     runAnalysis();
   }
 
@@ -263,8 +320,17 @@
       "knnK_num",
       "treeDepth",
       "treeDepth_num",
+      "forestTrees",
+      "forestTrees_num",
+      "svmC",
+      "svmC_num",
+      "svmGamma",
+      "svmGamma_num",
       "clusterK",
       "clusterK_num",
+      "xaiIndex",
+      "xaiIndex_num",
+      "xaiIndexNote",
       "framingMode",
       "framingSummary",
       "xyDefinition",
@@ -276,6 +342,12 @@
       "clusteringIntro",
       "clusteringKicker",
       "clusterEvaluationPanel",
+      "xaiIntro",
+      "xaiGlobalTable",
+      "xaiGlobalCaption",
+      "xaiLocalSummary",
+      "xaiLocalTable",
+      "xaiLocalCaption",
       "datasetMeta",
       "datasetTeachingNote",
       "standardisationSummary",
@@ -295,9 +367,12 @@
       "foldCaption",
       "classificationMetricsTable",
       "classificationModeCaption",
+      "classificationDetailGrid",
+      "classificationSummaryPanel",
       "focusModel",
       "confusionTable",
       "modelSummary",
+      "boundaryPanel",
       "confusionCaption",
       "boundaryPlot",
       "boundaryCaption",
@@ -344,14 +419,34 @@
       state.treeDepth = clamp(Math.round(value), 1, 8);
       runAnalysis();
     });
+    bindPair("forestTrees", "forestTrees_num", (value) => {
+      const oddTrees = Math.max(5, Math.round(value));
+      state.forestTrees = oddTrees % 2 === 0 ? oddTrees + 1 : oddTrees;
+      setPairValue("forestTrees", "forestTrees_num", state.forestTrees);
+      runAnalysis();
+    });
+    bindPair("svmC", "svmC_num", (value) => {
+      state.svmC = clamp(Number(value), 0.2, 3);
+      runAnalysis();
+    });
+    bindPair("svmGamma", "svmGamma_num", (value) => {
+      state.svmGamma = clamp(Number(value), 0.2, 3);
+      runAnalysis();
+    });
     bindPair("clusterK", "clusterK_num", (value) => {
       state.clusterK = clamp(Math.round(value), 2, 8);
       runAnalysis();
+    });
+    bindPair("xaiIndex", "xaiIndex_num", (value) => {
+      state.xaiIndex = clamp(Math.round(value) - 1, 0, Math.max(0, (cache.dataset?.n || 1) - 1));
+      setPairValue("xaiIndex", "xaiIndex_num", state.xaiIndex + 1);
+      renderXaiLab();
     });
 
     elements.datasetSelect.addEventListener("change", (event) => {
       state.datasetId = event.target.value;
       syncScatterOptions();
+      syncXaiOptions();
       runAnalysis();
     });
     elements.viewSelect.addEventListener("change", (event) => {
@@ -372,6 +467,7 @@
     elements.focusModel.addEventListener("change", (event) => {
       state.focusModel = event.target.value;
       renderModelInspection();
+      renderXaiLab();
     });
     elements.scatterX.addEventListener("change", (event) => {
       state.scatterX = Number(event.target.value);
@@ -479,6 +575,7 @@
     }
     syncControlsFromState();
     syncScatterOptions();
+    syncXaiOptions();
     elements.scatterX.value = state.scatterX;
     elements.scatterY.value = state.scatterY;
     if (rerun) {
@@ -498,7 +595,11 @@
     setPairValue("kFolds", "kFolds_num", state.kFolds);
     setPairValue("knnK", "knnK_num", state.knnK);
     setPairValue("treeDepth", "treeDepth_num", state.treeDepth);
+    setPairValue("forestTrees", "forestTrees_num", state.forestTrees);
+    setPairValue("svmC", "svmC_num", state.svmC);
+    setPairValue("svmGamma", "svmGamma_num", state.svmGamma);
     setPairValue("clusterK", "clusterK_num", state.clusterK);
+    setPairValue("xaiIndex", "xaiIndex_num", state.xaiIndex + 1);
   }
 
   function runAnalysis() {
@@ -508,7 +609,7 @@
     cache.mds = computeClassicalMDS(cache.pca.standardized, 2, state.seed + 5);
     cache.split = createTrainTestSplit(dataset.target, state.testFraction, state.stratify, state.seed + 11);
     cache.folds = createKFolds(dataset.target, state.kFolds, state.stratify, state.seed + 23);
-    cache.classification = evaluateClassificationModels(dataset);
+    cache.classification = classificationViews().has(state.viewId) ? evaluateClassificationModels(dataset) : null;
     cache.clustering = evaluateClustering(dataset, cache.pca);
 
     renderAppChrome();
@@ -518,6 +619,7 @@
     renderResamplingPanels();
     renderClassificationPanels();
     renderClusteringPanels();
+    renderXaiLab();
   }
 
   function renderAppChrome() {
@@ -558,6 +660,7 @@
     elements.resamplingIntro.textContent = view.copy?.resampling || "";
     elements.classificationIntro.textContent = view.copy?.classification || "";
     elements.clusteringIntro.textContent = view.copy?.clustering || "";
+    elements.xaiIntro.textContent = view.copy?.xai || "";
     elements.classificationKicker.textContent = view.label;
     elements.clusteringKicker.textContent = state.viewId === "week11" ? "Week 11/12" : "Week 9";
   }
@@ -565,6 +668,10 @@
   function getViewFromHash() {
     const hash = window.location.hash.replace("#", "");
     return VIEWS[hash] ? hash : null;
+  }
+
+  function classificationViews() {
+    return new Set(["week4", "week5", "week6", "week8", "week10"]);
   }
 
   function getActiveDataset() {
@@ -602,6 +709,17 @@
     }
     elements.scatterX.value = state.scatterX;
     elements.scatterY.value = state.scatterY;
+  }
+
+  function syncXaiOptions() {
+    const dataset = cache.dataset || getActiveDataset();
+    state.xaiIndex = clamp(state.xaiIndex, 0, Math.max(0, dataset.n - 1));
+    elements.xaiIndex.min = 1;
+    elements.xaiIndex.max = dataset.n;
+    elements.xaiIndex_num.min = 1;
+    elements.xaiIndex_num.max = dataset.n;
+    setPairValue("xaiIndex", "xaiIndex_num", state.xaiIndex + 1);
+    elements.xaiIndexNote.textContent = `${dataset.name}: row ${state.xaiIndex + 1} of ${dataset.n}`;
   }
 
   function renderProblemFraming() {
@@ -757,6 +875,9 @@
 
   function renderClassificationPanels() {
     const evaluation = cache.classification;
+    if (!evaluation) {
+      return;
+    }
     const rows = evaluation.order.map((modelId) => {
       const metrics = evaluation.metrics[modelId];
       return [
@@ -780,7 +901,9 @@
       return;
     }
 
-    const modelId = state.focusModel;
+    const modelId = evaluation.details[state.focusModel] ? state.focusModel : evaluation.order[0];
+    state.focusModel = modelId;
+    elements.focusModel.value = modelId;
     const modelEval = evaluation.details[modelId];
     const dataset = cache.dataset;
 
@@ -801,15 +924,13 @@
   function renderDecisionBoundary(modelId) {
     const dataset = cache.dataset;
     if (!dataset.id.startsWith("toy_") || dataset.p !== 2) {
-      renderMessageSvg(
-        elements.boundaryPlot,
-        "Decision boundaries are shown only for the 2D toy datasets so the geometry stays readable."
-      );
-      elements.boundaryCaption.textContent =
-        "Plain-English caption: switch to the linear or nonlinear toy dataset to see how each classifier carves up the feature space.";
+      setVisible(elements.boundaryPanel, false);
+      elements.classificationSummaryPanel.style.gridColumn = "1 / -1";
       return;
     }
 
+    setVisible(elements.boundaryPanel, true);
+    elements.classificationSummaryPanel.style.gridColumn = "";
     const model = fitModel(modelId, dataset.data, dataset.target, dataset.columns);
     const points = dataset.data.map((row, index) => ({
       x: row[0],
@@ -876,18 +997,47 @@
       "Plain-English caption: hierarchical clustering joins groups step by step. Small merge heights mean two groups were close when they joined, while large late-stage heights suggest broader separation between the remaining groups.";
   }
 
+  function renderXaiLab() {
+    if (state.viewId !== "week8") {
+      return;
+    }
+    const evaluation = cache.classification;
+    if (!evaluation || !elements.xaiGlobalTable) {
+      return;
+    }
+    const modelId = evaluation.fits[state.focusModel] ? state.focusModel : evaluation.order[0];
+    const fit = evaluation.fits[modelId];
+    const dataset = cache.dataset;
+    const index = clamp(state.xaiIndex, 0, Math.max(0, dataset.n - 1));
+    state.xaiIndex = index;
+    syncXaiOptions();
+
+    const global = buildGlobalExplanation(modelId, fit, dataset);
+    renderTable(elements.xaiGlobalTable, ["Feature", "Signal"], global.rows);
+    elements.xaiGlobalCaption.textContent = global.caption;
+
+    const local = buildLocalExplanation(modelId, fit, dataset, index);
+    elements.xaiLocalSummary.textContent = local.summary;
+    renderTable(elements.xaiLocalTable, ["Item", "Detail"], local.rows);
+    elements.xaiLocalCaption.textContent = local.caption;
+  }
+
   function evaluateClassificationModels(dataset) {
-    const modelIds = ["knn", "logistic", "lda", "tree"];
+    const modelIds = ["knn", "logistic", "lda", "tree", "forest", "svm_linear", "svm_rbf"];
     const labels = {
       knn: "KNN",
       logistic: "Logistic regression",
       lda: "LDA",
-      tree: "Decision tree"
+      tree: "Decision tree",
+      forest: "Random forest",
+      svm_linear: "Linear SVM",
+      svm_rbf: "RBF SVM"
     };
 
     const metrics = {};
     const details = {};
     const summaries = {};
+    const fits = {};
     const evaluationSplits =
       state.validationMode === "holdout"
         ? [{ train: cache.split.trainIndices, test: cache.split.testIndices }]
@@ -934,6 +1084,7 @@
 
       const fullFit = fitModel(modelId, dataset.data, dataset.target, dataset.columns);
       summaries[modelId] = buildModelSummary(modelId, fullFit, dataset);
+      fits[modelId] = fullFit;
       if (!firstFit) {
         firstFit = fullFit;
       }
@@ -944,7 +1095,8 @@
       labels,
       metrics,
       details,
-      summaries
+      summaries,
+      fits
     };
   }
 
@@ -989,6 +1141,12 @@
         return fitLDA(X, y, columns);
       case "tree":
         return fitDecisionTree(X, y, columns, state.treeDepth);
+      case "forest":
+        return fitRandomForest(X, y, columns, state.forestTrees, state.treeDepth, state.seed + 101);
+      case "svm_linear":
+        return fitLinearSvmOvr(X, y, columns, state.svmC, state.seed + 131);
+      case "svm_rbf":
+        return fitRbfSvmApprox(X, y, columns, state.svmC, state.svmGamma, state.seed + 151);
       default:
         throw new Error(`Unknown model ${modelId}`);
     }
@@ -1001,6 +1159,7 @@
       k,
       standard,
       classes: uniqueSorted(y),
+      trainingY: y.slice(),
       predict(rows) {
         const scaledRows = applyStandardization(rows, standard.mean, standard.std);
         return scaledRows.map((row) => {
@@ -1122,7 +1281,7 @@
 
   function fitDecisionTree(X, y, columns, maxDepth) {
     const featureNames = columns.slice();
-    const tree = buildTree(X, y, featureNames, 0, maxDepth);
+    const tree = buildTree(X, y, featureNames, 0, maxDepth, null);
     return {
       modelType: "tree",
       tree,
@@ -1133,7 +1292,82 @@
     };
   }
 
-  function buildTree(X, y, columns, depth, maxDepth) {
+  function fitRandomForest(X, y, columns, treeCount, maxDepth, seed) {
+    const rng = mulberry32(seed);
+    const trees = [];
+    const featureSubsample = Math.max(1, Math.floor(Math.sqrt(columns.length)));
+
+    for (let treeIndex = 0; treeIndex < treeCount; treeIndex += 1) {
+      const sampleX = [];
+      const sampleY = [];
+      for (let i = 0; i < X.length; i += 1) {
+        const pick = Math.floor(rng() * X.length);
+        sampleX.push(X[pick]);
+        sampleY.push(y[pick]);
+      }
+      trees.push(buildTree(sampleX, sampleY, columns.slice(), 0, maxDepth, { featureSubsample, rng }));
+    }
+
+    return {
+      modelType: "forest",
+      trees,
+      treeCount,
+      featureSubsample,
+      columns: columns.slice(),
+      predict(rows) {
+        return rows.map((row) => {
+          const votes = trees.map((tree) => predictTree(tree, row));
+          return majorityVote(votes);
+        });
+      }
+    };
+  }
+
+  function fitLinearSvmOvr(X, y, columns, cValue, seed) {
+    const standard = standardizeMatrix(X);
+    const classes = uniqueSorted(y);
+    const trained = trainLinearSvmOneVsRest(standard.X, y, classes, cValue, seed);
+    return {
+      modelType: "svm_linear",
+      standard,
+      columns: columns.slice(),
+      classes,
+      weights: trained.weights,
+      activeCount: trained.activeCount,
+      trainingX: standard.X,
+      trainingY: y.slice(),
+      predict(rows) {
+        const scaled = applyStandardization(rows, standard.mean, standard.std);
+        return predictLinearSvmOneVsRest(scaled, classes, trained.weights);
+      }
+    };
+  }
+
+  function fitRbfSvmApprox(X, y, columns, cValue, gamma, seed) {
+    const standard = standardizeMatrix(X);
+    const classes = uniqueSorted(y);
+    const featureMap = createRandomFourierMap(X[0].length, gamma, 90, seed);
+    const mapped = featureMap.transform(standard.X);
+    const trained = trainLinearSvmOneVsRest(mapped, y, classes, cValue, seed + 17);
+    return {
+      modelType: "svm_rbf",
+      standard,
+      columns: columns.slice(),
+      classes,
+      gamma,
+      featureMap,
+      weights: trained.weights,
+      activeCount: trained.activeCount,
+      trainingRows: X.map((row) => row.slice()),
+      trainingY: y.slice(),
+      predict(rows) {
+        const scaled = applyStandardization(rows, standard.mean, standard.std);
+        return predictLinearSvmOneVsRest(featureMap.transform(scaled), classes, trained.weights);
+      }
+    };
+  }
+
+  function buildTree(X, y, columns, depth, maxDepth, options) {
     const counts = countByLabel(y, uniqueSorted(y).length);
     const prediction = majorityVote(y);
     const node = {
@@ -1149,8 +1383,11 @@
 
     const baseImpurity = giniImpurity(y);
     let best = null;
+    const featureIndices = options?.featureSubsample
+      ? randomFeatureSubset(columns.length, options.featureSubsample, options.rng)
+      : range(columns.length);
 
-    for (let feature = 0; feature < columns.length; feature += 1) {
+    for (const feature of featureIndices) {
       const values = X.map((row) => row[feature]).slice().sort((a, b) => a - b);
       const thresholds = [];
       for (let i = 1; i < values.length; i += 1) {
@@ -1205,8 +1442,8 @@
       featureName: columns[best.feature],
       threshold: best.threshold,
       gain: best.gain,
-      left: buildTree(best.leftX, best.leftY, columns, depth + 1, maxDepth),
-      right: buildTree(best.rightX, best.rightY, columns, depth + 1, maxDepth)
+      left: buildTree(best.leftX, best.leftY, columns, depth + 1, maxDepth, options),
+      right: buildTree(best.rightX, best.rightY, columns, depth + 1, maxDepth, options)
     };
   }
 
@@ -1218,6 +1455,138 @@
       return predictTree(node.left, row);
     }
     return predictTree(node.right, row);
+  }
+
+  function predictTreeWithPath(node, row, path = []) {
+    if (node.type === "leaf") {
+      return { prediction: node.prediction, path, counts: node.counts || [] };
+    }
+    const rule = `${node.featureName} <= ${formatNumber(node.threshold, 2)}`;
+    if (row[node.feature] <= node.threshold) {
+      return predictTreeWithPath(node.left, row, path.concat(`${rule} -> left`));
+    }
+    return predictTreeWithPath(node.right, row, path.concat(`${rule} -> right`));
+  }
+
+  function trainLinearSvmOneVsRest(features, y, classes, cValue, seed) {
+    const lambda = 1 / Math.max(1, cValue * features.length);
+    const weights = [];
+    let activeCount = 0;
+
+    classes.forEach((cls, classIndex) => {
+      const w = new Array(features[0].length).fill(0);
+      let b = 0;
+      const order = range(features.length);
+      const rng = mulberry32(seed + classIndex * 31);
+
+      for (let epoch = 0; epoch < 28; epoch += 1) {
+        shuffle(order, rng);
+        order.forEach((rowIndex, step) => {
+          const eta = 0.18 / Math.sqrt(epoch * features.length + step + 1);
+          const yi = y[rowIndex] === cls ? 1 : -1;
+          const margin = yi * (dot(w, features[rowIndex]) + b);
+          for (let j = 0; j < w.length; j += 1) {
+            w[j] *= 1 - eta * lambda;
+          }
+          if (margin < 1) {
+            for (let j = 0; j < w.length; j += 1) {
+              w[j] += eta * cValue * yi * features[rowIndex][j];
+            }
+            b += eta * cValue * yi;
+          }
+        });
+      }
+
+      features.forEach((row, rowIndex) => {
+        const yi = y[rowIndex] === cls ? 1 : -1;
+        if (yi * (dot(w, row) + b) < 1) {
+          activeCount += 1;
+        }
+      });
+      weights.push({ w, b });
+    });
+
+    return { weights, activeCount };
+  }
+
+  function predictLinearSvmOneVsRest(rows, classes, weights) {
+    return rows.map((row) => {
+      const scores = weights.map((item) => dot(item.w, row) + item.b);
+      return classes[argMax(scores)];
+    });
+  }
+
+  function createRandomFourierMap(inputDim, gamma, components, seed) {
+    const rng = mulberry32(seed);
+    const omega = range(components).map(() =>
+      range(inputDim).map(() => randomNormal(rng) * Math.sqrt(2 * gamma))
+    );
+    const phase = range(components).map(() => rng() * Math.PI * 2);
+
+    return {
+      omega,
+      phase,
+      transform(rows) {
+        return rows.map((row) =>
+          omega.map((vector, featureIndex) => {
+            return Math.sqrt(2 / components) * Math.cos(dot(row, vector) + phase[featureIndex]);
+          })
+        );
+      }
+    };
+  }
+
+  function randomFeatureSubset(total, size, rng) {
+    const indices = range(total);
+    for (let i = indices.length - 1; i > 0; i -= 1) {
+      const j = Math.floor((rng ? rng() : Math.random()) * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    return indices.slice(0, size);
+  }
+
+  function computeTreeFeatureImportance(tree, featureCount) {
+    const importance = new Array(featureCount).fill(0);
+    traverseTree(tree, (node) => {
+      if (node.type === "split") {
+        importance[node.feature] += node.gain || 0;
+      }
+    });
+    return importance;
+  }
+
+  function averageAbsWeightsByFeature(weights, columns) {
+    const sums = new Array(columns.length).fill(0);
+    weights.forEach((item) => {
+      item.w.forEach((value, index) => {
+        sums[index] += Math.abs(value);
+      });
+    });
+    return columns
+      .map((name, index) => ({
+        name,
+        value: sums[index] / Math.max(1, weights.length)
+      }))
+      .sort((a, b) => b.value - a.value);
+  }
+
+  function permutationFeatureImportance(fit, dataset, seed) {
+    const baseline = computeAccuracy(dataset.target, fit.predict(dataset.data));
+    return dataset.columns
+      .map((name, featureIndex) => {
+        const shuffled = shuffle(
+          dataset.data.map((row) => row[featureIndex]).slice(),
+          mulberry32(seed + featureIndex * 17)
+        );
+        const mutated = dataset.data.map((row, rowIndex) => {
+          const copy = row.slice();
+          copy[featureIndex] = shuffled[rowIndex];
+          return copy;
+        });
+        const score = computeAccuracy(dataset.target, fit.predict(mutated));
+        return { name, value: baseline - score };
+      })
+      .sort((a, b) => b.value - a.value);
   }
 
   function buildModelSummary(modelId, fit, dataset) {
@@ -1256,8 +1625,202 @@
       return `LDA summary\n- Assumes each class is roughly Gaussian with a shared covariance matrix.\n- Strongest mean separation appears in ${spreads.join(", ")}.\n- Because LDA uses a pooled covariance estimate, it prefers smoother linear boundaries.`;
     }
 
+    if (modelId === "forest") {
+      const importance = computeTreeFeatureImportance(fit.trees[0], dataset.columns.length);
+      fit.trees.slice(1).forEach((tree) => {
+        const treeImportance = computeTreeFeatureImportance(tree, dataset.columns.length);
+        treeImportance.forEach((value, index) => {
+          importance[index] += value;
+        });
+      });
+      const top = dataset.columns
+        .map((name, index) => ({ name, value: importance[index] }))
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 3)
+        .map((item) => `${item.name} (${formatNumber(item.value, 2)})`);
+      return `Random forest summary\n- Uses ${fit.treeCount} trees with random feature subsets of size ${fit.featureSubsample}.\n- Forests reduce the instability of a single tree by averaging many bootstrap trees.\n- Strongest split signal appears in ${top.join(", ")}.`;
+    }
+
+    if (modelId === "svm_linear") {
+      const top = averageAbsWeightsByFeature(fit.weights, dataset.columns)
+        .slice(0, 3)
+        .map((item) => `${item.name} (${formatNumber(item.value, 2)})`);
+      return `Linear SVM summary\n- Uses hinge-loss optimisation with C = ${formatNumber(state.svmC, 1)} on standardised features.\n- Margin-active training points: ${fit.activeCount}.\n- Strongest linear margin directions appear in ${top.join(", ")}.`;
+    }
+
+    if (modelId === "svm_rbf") {
+      return `RBF SVM summary\n- Uses a nonlinear RBF-style feature map with C = ${formatNumber(state.svmC, 1)} and gamma = ${formatNumber(
+        state.svmGamma,
+        1
+      )}.\n- Margin-active training points: ${fit.activeCount}.\n- Higher gamma allows tighter bends, while lower gamma gives smoother boundaries.`;
+    }
+
     const stats = describeTree(fit.tree);
     return `Decision tree summary\n- Maximum depth is ${state.treeDepth}; realised depth is ${stats.depth} with ${stats.leaves} leaves.\n- First split: ${stats.firstSplit || "no split was useful on the full dataset"}.\n- Trees are easy to explain, but deep trees can fit local quirks rather than broad patterns.`;
+  }
+
+  function buildGlobalExplanation(modelId, fit, dataset) {
+    let importance = [];
+    let caption = "";
+
+    if (modelId === "logistic" || modelId === "svm_linear") {
+      importance = averageAbsWeightsByFeature(fit.weights, dataset.columns);
+      caption =
+        "Plain-English caption: these scores come from the average absolute weight size across the one-vs-rest linear models.";
+    } else if (modelId === "lda") {
+      importance = dataset.columns
+        .map((name, featureIndex) => {
+          const values = fit.means.map((mean) => mean[featureIndex]);
+          return { name, value: Math.max(...values) - Math.min(...values) };
+        })
+        .sort((a, b) => b.value - a.value);
+      caption =
+        "Plain-English caption: these scores show where the class means are most separated after standardisation.";
+    } else if (modelId === "tree") {
+      importance = dataset.columns
+        .map((name, index) => ({ name, value: computeTreeFeatureImportance(fit.tree, dataset.columns.length)[index] }))
+        .sort((a, b) => b.value - a.value);
+      caption =
+        "Plain-English caption: these scores add up the impurity reduction from every split that used each feature.";
+    } else if (modelId === "forest") {
+      const scores = new Array(dataset.columns.length).fill(0);
+      fit.trees.forEach((tree) => {
+        const treeScores = computeTreeFeatureImportance(tree, dataset.columns.length);
+        treeScores.forEach((value, index) => {
+          scores[index] += value;
+        });
+      });
+      importance = dataset.columns
+        .map((name, index) => ({ name, value: scores[index] / Math.max(1, fit.trees.length) }))
+        .sort((a, b) => b.value - a.value);
+      caption =
+        "Plain-English caption: these scores average split importance across the forest, so they show broad signal rather than one tree's path.";
+    } else {
+      importance = permutationFeatureImportance(fit, dataset, state.seed + 211);
+      caption =
+        "Plain-English caption: this model does not have simple feature coefficients here, so the app uses permutation importance based on how much accuracy drops when each feature is shuffled.";
+    }
+
+    return {
+      rows: importance.slice(0, 5).map((item) => [item.name, formatNumber(item.value, 3)]),
+      caption
+    };
+  }
+
+  function buildLocalExplanation(modelId, fit, dataset, index) {
+    const row = dataset.data[index];
+    const predicted = fit.predict([row])[0];
+    const predictedLabel = dataset.targetNames[predicted] || String(predicted);
+    const actualLabel = dataset.targetNames[dataset.target[index]] || String(dataset.target[index]);
+    const summary = `Selected row ${index + 1}\nActual: ${actualLabel}\nPredicted: ${predictedLabel}`;
+
+    if (modelId === "logistic" || modelId === "svm_linear") {
+      const scaled = applyStandardization([row], fit.standard.mean, fit.standard.std)[0];
+      const classIndex = fit.classes.indexOf(predicted);
+      const weights = fit.weights[classIndex].w;
+      const rows = dataset.columns
+        .map((name, featureIndex) => ({
+          item: name,
+          value: scaled[featureIndex] * weights[featureIndex]
+        }))
+        .sort((a, b) => Math.abs(b.value) - Math.abs(a.value))
+        .slice(0, 5)
+        .map((item) => [item.item, `${item.value >= 0 ? "+" : ""}${formatNumber(item.value, 3)}`]);
+      return {
+        summary,
+        rows,
+        caption:
+          "Plain-English caption: larger positive contributions push this row toward the predicted class in the current linear model."
+      };
+    }
+
+    if (modelId === "knn") {
+      const scaled = applyStandardization([row], fit.standard.mean, fit.standard.std)[0];
+      const neighbours = fit.standard.X
+        .map((trainRow, rowIndex) => ({
+          label: dataset.targetNames[fit.trainingY ? fit.trainingY[rowIndex] : 0] || String(fit.trainingY?.[rowIndex] || ""),
+          distance: euclidean(trainRow, scaled)
+        }))
+        .sort((a, b) => a.distance - b.distance)
+        .slice(0, Math.min(fit.k, 5))
+        .map((item, idx) => [`Neighbour ${idx + 1}`, `${item.label}, distance ${formatNumber(item.distance, 3)}`]);
+      return {
+        summary,
+        rows: neighbours,
+        caption:
+          "Plain-English caption: KNN explanations come from the nearby training points that voted for this prediction."
+      };
+    }
+
+    if (modelId === "lda") {
+      const scaled = applyStandardization([row], fit.standard.mean, fit.standard.std)[0];
+      const classIndex = fit.classes.indexOf(predicted);
+      const rows = dataset.columns
+        .map((name, featureIndex) => ({
+          item: name,
+          value: scaled[featureIndex] - fit.means[classIndex][featureIndex]
+        }))
+        .sort((a, b) => Math.abs(a.value) - Math.abs(b.value))
+        .slice(0, 5)
+        .map((item) => [item.item, `distance from class mean ${formatNumber(item.value, 3)}`]);
+      return {
+        summary,
+        rows,
+        caption:
+          "Plain-English caption: small distances mean this row looks close to the predicted class mean after standardisation."
+      };
+    }
+
+    if (modelId === "tree") {
+      const explanation = predictTreeWithPath(fit.tree, row);
+      return {
+        summary,
+        rows: explanation.path.slice(0, 6).map((step, idx) => [`Step ${idx + 1}`, step]),
+        caption:
+          "Plain-English caption: the tree explanation is the rule path followed from the root to the leaf."
+      };
+    }
+
+    if (modelId === "forest") {
+      const votes = new Map();
+      const featureCounts = new Map();
+      fit.trees.forEach((tree) => {
+        const explanation = predictTreeWithPath(tree, row);
+        votes.set(explanation.prediction, (votes.get(explanation.prediction) || 0) + 1);
+        explanation.path.forEach((step) => {
+          const feature = step.split(" <=")[0];
+          featureCounts.set(feature, (featureCounts.get(feature) || 0) + 1);
+        });
+      });
+      const voteRows = Array.from(votes.entries())
+        .sort((a, b) => b[1] - a[1])
+        .map(([label, count]) => [dataset.targetNames[label] || String(label), `${count} tree votes`]);
+      const featureRows = Array.from(featureCounts.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3)
+        .map(([name, count], idx) => [`Frequent split ${idx + 1}`, `${name} used on ${count} tree paths`]);
+      return {
+        summary,
+        rows: voteRows.concat(featureRows),
+        caption:
+          "Plain-English caption: the forest explanation shows the vote mix plus which features appeared most often on the tree paths for this row."
+      };
+    }
+
+    const neighbours = fit.trainingRows
+      .map((trainRow, rowIndex) => ({
+        label: dataset.targetNames[fit.trainingY[rowIndex]] || String(fit.trainingY[rowIndex]),
+        distance: euclidean(trainRow, row)
+      }))
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, 5)
+      .map((item, idx) => [`Nearby row ${idx + 1}`, `${item.label}, distance ${formatNumber(item.distance, 3)}`]);
+    return {
+      summary,
+      rows: neighbours,
+      caption:
+        "Plain-English caption: for the nonlinear SVM, the app shows nearby training cases because there is no short coefficient list in the original feature space."
+    };
   }
 
   function describeTree(tree) {
