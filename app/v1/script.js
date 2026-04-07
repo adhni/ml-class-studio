@@ -27,6 +27,7 @@
   const state = {
     datasetId: "iris",
     viewId: "home",
+    settingsOpen: false,
     seed: 123,
     validationMode: "holdout",
     testFraction: 0.25,
@@ -85,7 +86,7 @@
       },
       copy: {
         visual:
-          "Use the sidebar to change the two raw features, then compare that pair with the lower-dimensional PCA and MDS views."
+          "Use the controls above or expand More settings to change the two raw features, then compare that pair with the lower-dimensional PCA and MDS views."
       }
     },
     week3: {
@@ -349,6 +350,10 @@
       "applyPresetBtn",
       "tutorialPath",
       "homeView",
+      "settingsToggleBtn",
+      "settingsCloseBtn",
+      "settingsBackdrop",
+      "moreSettingsPanel",
       "quickControlsBar",
       "quickControlsTitle",
       "quickControlsGrid",
@@ -590,6 +595,15 @@
     elements.applyPresetBtn.addEventListener("click", () => {
       applyViewPreset(state.viewId);
     });
+    elements.settingsToggleBtn.addEventListener("click", () => {
+      setSettingsOpen(!state.settingsOpen);
+    });
+    elements.settingsCloseBtn.addEventListener("click", () => {
+      setSettingsOpen(false);
+    });
+    elements.settingsBackdrop.addEventListener("click", () => {
+      setSettingsOpen(false);
+    });
     elements.viewPresetBtn.addEventListener("click", () => {
       applyViewPreset(state.viewId);
     });
@@ -602,6 +616,11 @@
       const nextView = getViewFromHash();
       if (nextView && nextView !== state.viewId) {
         navigateToView(nextView);
+      }
+    });
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && state.settingsOpen) {
+        setSettingsOpen(false);
       }
     });
   }
@@ -649,6 +668,9 @@
       return;
     }
     state.viewId = viewId;
+    if (viewId === "home") {
+      state.settingsOpen = false;
+    }
     if (viewId !== "home") {
       applyViewPreset(viewId, false);
     } else {
@@ -742,12 +764,21 @@
     const view = VIEWS[state.viewId] || VIEWS.home;
     const isHome = state.viewId === "home";
     const visibleControls = new Set(view.controls || []);
+    const showSettingsDrawer = !isHome && state.settingsOpen;
+
+    if (isHome) {
+      state.settingsOpen = false;
+    }
 
     document.body.dataset.view = state.viewId;
+    document.body.classList.toggle("settings-open", showSettingsDrawer);
     setVisible(elements.homeView, isHome);
+    setVisible(elements.moreSettingsPanel, !isHome);
+    setVisible(elements.settingsBackdrop, showSettingsDrawer);
     setVisible(elements.quickControlsBar, !isHome);
     setVisible(elements.weekShell, !isHome);
     setVisible(elements.currentWeekBlock, !isHome);
+    elements.settingsToggleBtn.setAttribute("aria-expanded", String(showSettingsDrawer));
 
     elements.controlGroups.forEach((group) => {
       setVisible(group, !isHome && visibleControls.has(group.dataset.controlGroup));
@@ -802,7 +833,7 @@
 
     const view = VIEWS[state.viewId];
     const config = quickControlConfig(state.viewId);
-    elements.quickControlsTitle.textContent = `${view.label}: live controls`;
+    elements.quickControlsTitle.textContent = `${view.label}: controls`;
     elements.quickControlsGrid.innerHTML = config.map(renderQuickControlCard).join("");
 
     elements.quickControlsGrid.querySelectorAll("[data-quick-key]").forEach((input) => {
@@ -816,6 +847,11 @@
         input.addEventListener("change", handler);
       }
     });
+  }
+
+  function setSettingsOpen(nextOpen) {
+    state.settingsOpen = Boolean(nextOpen) && state.viewId !== "home";
+    renderAppChrome();
   }
 
   function quickControlConfig(viewId) {

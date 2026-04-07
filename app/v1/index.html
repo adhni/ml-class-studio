@@ -8,228 +8,46 @@
 </head>
 <body>
   <div class="layout">
-    <aside class="sidebar">
-      <p class="course-tag">ETC3250/5250</p>
-      <h1>Machine Learning Studio</h1>
-      <p class="sidebar-intro">
-        Pick a week, open the focused studio, and use the tutorial only as the worksheet beside it.
-      </p>
-
-      <div class="control-group">
-        <h2>Studio View</h2>
-        <label for="viewSelect">Current page</label>
-        <select id="viewSelect">
-          <option value="home">Home</option>
-          <option value="week2">Week 2: Visualisation</option>
-          <option value="week3">Week 3: Validation</option>
-          <option value="week4">Week 4: Basics + KNN</option>
-          <option value="week5">Week 5: Logistic + LDA</option>
-          <option value="week6">Week 6: Trees + Forests</option>
-          <option value="week7">Week 7: Neural Networks</option>
-          <option value="week8">Week 8: Explainability / XAI</option>
-          <option value="week9">Week 9: Clustering methods</option>
-          <option value="week10">Week 10: SVM</option>
-          <option value="week11">Week 11/12: Cluster evaluation</option>
-          <option value="week11b">Week 11B: Model-based clustering</option>
-        </select>
-      </div>
-
-      <div id="currentWeekBlock" class="control-group">
-        <h2>Current Week</h2>
-        <div class="status-chip">
-          <span id="currentWeekLabel"></span>
-          <strong id="currentWeekTitle"></strong>
-        </div>
-        <p id="currentWeekSummary" class="small-note"></p>
-        <div class="action-stack">
-          <button id="backHomeBtn" class="secondary-btn" type="button">Back to home</button>
-          <button id="applyPresetBtn" class="primary-btn compact-btn" type="button">Use recommended setup</button>
-          <p id="tutorialPath" class="small-note"></p>
-        </div>
-      </div>
-
-      <div class="control-group" data-control-group="dataset">
-        <h2>Dataset</h2>
-
-        <label for="datasetSelect">Dataset</label>
-        <select id="datasetSelect">
-          <option value="iris">Iris</option>
-          <option value="penguins">Penguins</option>
-          <option value="wine">Wine</option>
-          <option value="toy_linear">Toy: linear classes</option>
-          <option value="toy_nonlinear">Toy: nonlinear classes</option>
-          <option value="toy_clusters">Toy: clustering blobs</option>
-        </select>
-
-        <label for="analysisSeed">Analysis seed</label>
-        <div class="range-row">
-          <input id="analysisSeed" type="range" min="1" max="999" step="1" value="123" />
-          <input id="analysisSeed_num" type="number" min="1" max="999" step="1" value="123" />
-        </div>
-
-        <p class="small-note" id="datasetMeta"></p>
-        <p class="small-note" id="datasetTeachingNote"></p>
-      </div>
-
-      <div class="control-group" data-control-group="visual">
-        <h2>View Controls</h2>
-        <label for="scatterX">X feature</label>
-        <select id="scatterX"></select>
-        <label for="scatterY">Y feature</label>
-        <select id="scatterY"></select>
-      </div>
-
-      <div class="control-group" data-control-group="validation">
-        <h2>Validation</h2>
-
-        <label for="validationMode">Evaluation mode</label>
-        <select id="validationMode">
-          <option value="holdout">Train/test split</option>
-          <option value="cv">k-fold cross-validation</option>
-        </select>
-
-        <label for="testFraction">Test fraction</label>
-        <div class="range-row">
-          <input id="testFraction" type="range" min="0.15" max="0.45" step="0.05" value="0.25" />
-          <input id="testFraction_num" type="number" min="0.15" max="0.45" step="0.05" value="0.25" />
-        </div>
-
-        <label for="kFolds">CV folds</label>
-        <div class="range-row">
-          <input id="kFolds" type="range" min="3" max="10" step="1" value="5" />
-          <input id="kFolds_num" type="number" min="3" max="10" step="1" value="5" />
-        </div>
-
-        <label class="inline-check">
-          <input id="stratifyToggle" type="checkbox" checked />
-          Stratification
-        </label>
-      </div>
-
-      <div class="control-group" data-control-group="classification">
-        <h2>Classification Controls</h2>
-
-        <label for="focusModel">Focus model</label>
-        <select id="focusModel">
-          <option value="knn">KNN</option>
-          <option value="logistic">Logistic regression</option>
-          <option value="lda">LDA</option>
-          <option value="tree">Decision tree</option>
-          <option value="forest">Random forest</option>
-          <option value="svm_linear">Linear SVM</option>
-          <option value="svm_rbf">RBF SVM</option>
-        </select>
-
-        <div id="classificationKnnControl" class="sub-control">
-          <label for="knnK">KNN neighbours (k)</label>
-          <div class="range-row">
-            <input id="knnK" type="range" min="1" max="25" step="2" value="7" />
-            <input id="knnK_num" type="number" min="1" max="25" step="2" value="7" />
-          </div>
-        </div>
-
-        <div id="classificationTreeControl" class="sub-control">
-          <label for="treeDepth">Decision tree depth</label>
-          <div class="range-row">
-            <input id="treeDepth" type="range" min="1" max="8" step="1" value="4" />
-            <input id="treeDepth_num" type="number" min="1" max="8" step="1" value="4" />
-          </div>
-        </div>
-      </div>
-
-      <div class="control-group" data-control-group="clustering">
-        <h2>Clustering Controls</h2>
-
-        <label for="clusterK">Clustering k</label>
-        <div class="range-row">
-          <input id="clusterK" type="range" min="2" max="8" step="1" value="3" />
-          <input id="clusterK_num" type="number" min="2" max="8" step="1" value="3" />
-        </div>
-      </div>
-
-      <div class="control-group" data-control-group="forest">
-        <h2>Forest Controls</h2>
-
-        <label for="forestTrees">Random forest trees</label>
-        <div class="range-row">
-          <input id="forestTrees" type="range" min="5" max="51" step="2" value="21" />
-          <input id="forestTrees_num" type="number" min="5" max="51" step="2" value="21" />
-        </div>
-      </div>
-
-      <div class="control-group" data-control-group="trees">
-        <h2>Tree Mechanics</h2>
-
-        <label for="splitFeature">Split explorer feature</label>
-        <select id="splitFeature"></select>
-      </div>
-
-      <div class="control-group" data-control-group="neural">
-        <h2>Neural Net Controls</h2>
-
-        <label for="nnHidden">Hidden units</label>
-        <div class="range-row">
-          <input id="nnHidden" type="range" min="3" max="24" step="1" value="8" />
-          <input id="nnHidden_num" type="number" min="3" max="24" step="1" value="8" />
-        </div>
-
-        <label for="nnEpochs">Training epochs</label>
-        <div class="range-row">
-          <input id="nnEpochs" type="range" min="60" max="320" step="20" value="180" />
-          <input id="nnEpochs_num" type="number" min="60" max="320" step="20" value="180" />
-        </div>
-      </div>
-
-      <div class="control-group" data-control-group="svm">
-        <h2>SVM Controls</h2>
-
-        <label for="svmC">SVM C</label>
-        <div class="range-row">
-          <input id="svmC" type="range" min="0.2" max="3" step="0.2" value="1.2" />
-          <input id="svmC_num" type="number" min="0.2" max="3" step="0.2" value="1.2" />
-        </div>
-
-        <label for="svmGamma">RBF gamma</label>
-        <div class="range-row">
-          <input id="svmGamma" type="range" min="0.2" max="3" step="0.2" value="1" />
-          <input id="svmGamma_num" type="number" min="0.2" max="3" step="0.2" value="1" />
-        </div>
-      </div>
-
-      <div class="control-group" data-control-group="xai">
-        <h2>XAI Controls</h2>
-
-        <label for="xaiIndex">Selected row</label>
-        <div class="range-row">
-          <input id="xaiIndex" type="range" min="1" max="150" step="1" value="1" />
-          <input id="xaiIndex_num" type="number" min="1" max="150" step="1" value="1" />
-        </div>
-        <p id="xaiIndexNote" class="small-note"></p>
-      </div>
-
-      <div class="control-group" data-control-group="model-clustering">
-        <h2>Model-based Controls</h2>
-
-        <label for="gmmComponents">Mixture components</label>
-        <div class="range-row">
-          <input id="gmmComponents" type="range" min="2" max="8" step="1" value="3" />
-          <input id="gmmComponents_num" type="number" min="2" max="8" step="1" value="3" />
-        </div>
-      </div>
-
-      <div class="control-group" data-control-group="problem">
-        <h2>Problem Framing</h2>
-        <label for="framingMode">Learning setup</label>
-        <select id="framingMode">
-          <option value="classification">Classification</option>
-          <option value="regression">Regression</option>
-          <option value="clustering">Clustering</option>
-        </select>
-      </div>
-
-    </aside>
-
     <main class="content">
+      <section id="appControls" class="card app-controls">
+        <div class="app-controls-head">
+          <div class="app-controls-brand">
+            <h1>ETC3250/5250 Machine Learning Studio</h1>
+          </div>
+
+          <div class="app-controls-nav">
+            <label for="viewSelect">Studio view</label>
+            <select id="viewSelect">
+              <option value="home">Home</option>
+              <option value="week2">Week 2: Visualisation</option>
+              <option value="week3">Week 3: Validation</option>
+              <option value="week4">Week 4: Basics + KNN</option>
+              <option value="week5">Week 5: Logistic + LDA</option>
+              <option value="week6">Week 6: Trees + Forests</option>
+              <option value="week7">Week 7: Neural Networks</option>
+              <option value="week8">Week 8: Explainability / XAI</option>
+              <option value="week9">Week 9: Clustering methods</option>
+              <option value="week10">Week 10: SVM</option>
+              <option value="week11">Week 11/12: Cluster evaluation</option>
+              <option value="week11b">Week 11B: Model-based clustering</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="currentWeekBlock" class="app-status-row">
+          <div class="status-chip">
+            <span id="currentWeekLabel"></span>
+            <strong id="currentWeekTitle"></strong>
+          </div>
+          <p id="currentWeekSummary" class="small-note"></p>
+          <div class="action-stack">
+            <button id="backHomeBtn" class="secondary-btn" type="button">Back to home</button>
+            <button id="applyPresetBtn" class="primary-btn compact-btn" type="button">Use recommended setup</button>
+            <p id="tutorialPath" class="small-note"></p>
+          </div>
+        </div>
+
+      </section>
       <section id="homeView" class="card section">
         <header class="home-hero">
           <p class="page-tag">Course Companion</p>
@@ -354,13 +172,203 @@
 
       <section id="quickControlsBar" class="card quick-controls">
         <div class="quick-controls-head">
-          <div>
-            <p class="page-tag">Quick Adjust</p>
-            <h2 id="quickControlsTitle">Adjust the current view</h2>
-          </div>
+          <h2 id="quickControlsTitle">Adjust the current view</h2>
+          <button id="settingsToggleBtn" class="secondary-btn compact-btn settings-btn" type="button" aria-expanded="false">
+            Settings
+          </button>
         </div>
         <div id="quickControlsGrid" class="quick-controls-grid"></div>
       </section>
+
+      <div id="settingsBackdrop" class="settings-backdrop" hidden></div>
+      <aside id="moreSettingsPanel" class="settings-drawer" hidden>
+        <div class="settings-drawer-head">
+          <h3>More settings</h3>
+          <button id="settingsCloseBtn" class="secondary-btn compact-btn settings-close-btn" type="button">Close</button>
+        </div>
+        <div class="settings-drawer-body">
+          <div class="settings-grid">
+            <div class="control-group" data-control-group="dataset">
+              <h2>Dataset</h2>
+
+              <label for="datasetSelect">Dataset</label>
+              <select id="datasetSelect">
+                <option value="iris">Iris</option>
+                <option value="penguins">Penguins</option>
+                <option value="wine">Wine</option>
+                <option value="toy_linear">Toy: linear classes</option>
+                <option value="toy_nonlinear">Toy: nonlinear classes</option>
+                <option value="toy_clusters">Toy: clustering blobs</option>
+              </select>
+
+              <label for="analysisSeed">Analysis seed</label>
+              <div class="range-row">
+                <input id="analysisSeed" type="range" min="1" max="999" step="1" value="123" />
+                <input id="analysisSeed_num" type="number" min="1" max="999" step="1" value="123" />
+              </div>
+
+              <p class="small-note" id="datasetMeta"></p>
+              <p class="small-note" id="datasetTeachingNote"></p>
+            </div>
+
+            <div class="control-group" data-control-group="visual">
+              <h2>View Controls</h2>
+              <label for="scatterX">X feature</label>
+              <select id="scatterX"></select>
+              <label for="scatterY">Y feature</label>
+              <select id="scatterY"></select>
+            </div>
+
+            <div class="control-group" data-control-group="validation">
+              <h2>Validation</h2>
+
+              <label for="validationMode">Evaluation mode</label>
+              <select id="validationMode">
+                <option value="holdout">Train/test split</option>
+                <option value="cv">k-fold cross-validation</option>
+              </select>
+
+              <label for="testFraction">Test fraction</label>
+              <div class="range-row">
+                <input id="testFraction" type="range" min="0.15" max="0.45" step="0.05" value="0.25" />
+                <input id="testFraction_num" type="number" min="0.15" max="0.45" step="0.05" value="0.25" />
+              </div>
+
+              <label for="kFolds">CV folds</label>
+              <div class="range-row">
+                <input id="kFolds" type="range" min="3" max="10" step="1" value="5" />
+                <input id="kFolds_num" type="number" min="3" max="10" step="1" value="5" />
+              </div>
+
+              <label class="inline-check">
+                <input id="stratifyToggle" type="checkbox" checked />
+                Stratification
+              </label>
+            </div>
+
+            <div class="control-group" data-control-group="classification">
+              <h2>Classification Controls</h2>
+
+              <label for="focusModel">Focus model</label>
+              <select id="focusModel">
+                <option value="knn">KNN</option>
+                <option value="logistic">Logistic regression</option>
+                <option value="lda">LDA</option>
+                <option value="tree">Decision tree</option>
+                <option value="forest">Random forest</option>
+                <option value="svm_linear">Linear SVM</option>
+                <option value="svm_rbf">RBF SVM</option>
+              </select>
+
+              <div id="classificationKnnControl" class="sub-control">
+                <label for="knnK">KNN neighbours (k)</label>
+                <div class="range-row">
+                  <input id="knnK" type="range" min="1" max="25" step="2" value="7" />
+                  <input id="knnK_num" type="number" min="1" max="25" step="2" value="7" />
+                </div>
+              </div>
+
+              <div id="classificationTreeControl" class="sub-control">
+                <label for="treeDepth">Decision tree depth</label>
+                <div class="range-row">
+                  <input id="treeDepth" type="range" min="1" max="8" step="1" value="4" />
+                  <input id="treeDepth_num" type="number" min="1" max="8" step="1" value="4" />
+                </div>
+              </div>
+            </div>
+
+            <div class="control-group" data-control-group="clustering">
+              <h2>Clustering Controls</h2>
+
+              <label for="clusterK">Clustering k</label>
+              <div class="range-row">
+                <input id="clusterK" type="range" min="2" max="8" step="1" value="3" />
+                <input id="clusterK_num" type="number" min="2" max="8" step="1" value="3" />
+              </div>
+            </div>
+
+            <div class="control-group" data-control-group="forest">
+              <h2>Forest Controls</h2>
+
+              <label for="forestTrees">Random forest trees</label>
+              <div class="range-row">
+                <input id="forestTrees" type="range" min="5" max="51" step="2" value="21" />
+                <input id="forestTrees_num" type="number" min="5" max="51" step="2" value="21" />
+              </div>
+            </div>
+
+            <div class="control-group" data-control-group="trees">
+              <h2>Tree Mechanics</h2>
+
+              <label for="splitFeature">Split explorer feature</label>
+              <select id="splitFeature"></select>
+            </div>
+
+            <div class="control-group" data-control-group="neural">
+              <h2>Neural Net Controls</h2>
+
+              <label for="nnHidden">Hidden units</label>
+              <div class="range-row">
+                <input id="nnHidden" type="range" min="3" max="24" step="1" value="8" />
+                <input id="nnHidden_num" type="number" min="3" max="24" step="1" value="8" />
+              </div>
+
+              <label for="nnEpochs">Training epochs</label>
+              <div class="range-row">
+                <input id="nnEpochs" type="range" min="60" max="320" step="20" value="180" />
+                <input id="nnEpochs_num" type="number" min="60" max="320" step="20" value="180" />
+              </div>
+            </div>
+
+            <div class="control-group" data-control-group="svm">
+              <h2>SVM Controls</h2>
+
+              <label for="svmC">SVM C</label>
+              <div class="range-row">
+                <input id="svmC" type="range" min="0.2" max="3" step="0.2" value="1.2" />
+                <input id="svmC_num" type="number" min="0.2" max="3" step="0.2" value="1.2" />
+              </div>
+
+              <label for="svmGamma">RBF gamma</label>
+              <div class="range-row">
+                <input id="svmGamma" type="range" min="0.2" max="3" step="0.2" value="1" />
+                <input id="svmGamma_num" type="number" min="0.2" max="3" step="0.2" value="1" />
+              </div>
+            </div>
+
+            <div class="control-group" data-control-group="xai">
+              <h2>XAI Controls</h2>
+
+              <label for="xaiIndex">Selected row</label>
+              <div class="range-row">
+                <input id="xaiIndex" type="range" min="1" max="150" step="1" value="1" />
+                <input id="xaiIndex_num" type="number" min="1" max="150" step="1" value="1" />
+              </div>
+              <p id="xaiIndexNote" class="small-note"></p>
+            </div>
+
+            <div class="control-group" data-control-group="model-clustering">
+              <h2>Model-based Controls</h2>
+
+              <label for="gmmComponents">Mixture components</label>
+              <div class="range-row">
+                <input id="gmmComponents" type="range" min="2" max="8" step="1" value="3" />
+                <input id="gmmComponents_num" type="number" min="2" max="8" step="1" value="3" />
+              </div>
+            </div>
+
+            <div class="control-group" data-control-group="problem">
+              <h2>Problem Framing</h2>
+              <label for="framingMode">Learning setup</label>
+              <select id="framingMode">
+                <option value="classification">Classification</option>
+                <option value="regression">Regression</option>
+                <option value="clustering">Clustering</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </aside>
 
       <section id="weekShell" class="card section">
         <div class="section-title">
