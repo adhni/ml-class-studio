@@ -83,6 +83,9 @@
       "framingSummary",
       "xyDefinition",
       "datasetMeta",
+      "datasetTeachingNote",
+      "standardisationSummary",
+      "standardisationCaption",
       "scatterX",
       "scatterY",
       "pairScatterSummary",
@@ -110,6 +113,8 @@
       "kmeansCaption",
       "hierPlot",
       "hierCaption",
+      "hierSummary",
+      "hierSummaryCaption",
       "rerunBtn"
     ];
 
@@ -290,6 +295,7 @@
       clustering: `x = [feature_1, feature_2, ..., feature_p]\ny = optional reference label\n\nFit uses x only.\nIf labels exist, y is used afterward to judge cluster quality.`
     };
     elements.xyDefinition.textContent = xyBlock[state.framingMode];
+    renderStandardisationPanel();
   }
 
   function renderDatasetMeta() {
@@ -306,6 +312,37 @@
       lines.push(dataset.description);
     }
     elements.datasetMeta.textContent = lines.join(" ");
+    elements.datasetTeachingNote.textContent = buildDatasetTeachingNote(dataset);
+  }
+
+  function renderStandardisationPanel() {
+    const dataset = cache.dataset;
+    const stats = describeFeatureScales(dataset.data, dataset.columns);
+    elements.standardisationSummary.textContent =
+      `Raw feature spreads\n${stats.lines.join("\n")}\n\nLargest spread is about ${formatNumber(
+        stats.maxStd / Math.max(stats.minStd, 1e-9),
+        1
+      )}x the smallest.`;
+    elements.standardisationCaption.textContent =
+      "Plain-English caption: the app standardises features before PCA, MDS, KNN, logistic regression, LDA, and clustering so variables with larger units do not dominate the analysis just because of scale.";
+  }
+
+  function buildDatasetTeachingNote(dataset) {
+    const notes = {
+      iris:
+        "Iris is a clean introductory dataset. It helps show how visible class separation in plots often lines up with strong classifier performance.",
+      penguins:
+        "Penguins is more realistic: species overlap in some measurements, so confusion matrices and validation choices matter more than they do on Iris.",
+      wine:
+        "Wine has richer multivariate structure, so PCA and MDS become more informative. It is a good teaching case for dimension reduction before comparison.",
+      toy_linear:
+        "This toy dataset is intentionally friendly to linear boundaries, so it gives a baseline for what simple classification looks like when the geometry matches the model.",
+      toy_nonlinear:
+        "This toy dataset is intentionally curved, so local methods like KNN should look stronger than linear boundaries in both the scores and the decision map.",
+      toy_clusters:
+        "This toy dataset is useful for unsupervised learning: the labels are kept only for evaluation after clustering, not for fitting the clusters."
+    };
+    return notes[dataset.id] || "";
   }
 
   function renderVisualisationPanels() {
@@ -477,6 +514,7 @@
 
     elements.kmeansCaption.textContent = buildClusterCaption("k-means", clustering.kmeans, clustering);
     elements.hierCaption.textContent = buildClusterCaption("hierarchical clustering", clustering.hierarchical, clustering);
+    renderHierarchicalSummary(clustering.hierarchical);
   }
 
   function buildClusterCaption(name, result, clustering) {
@@ -490,6 +528,25 @@
       result.silhouette,
       3
     )}, so the clusters ${describeSilhouette(result.silhouette)}.${ariPart}${subsetNote}`;
+  }
+
+  function renderHierarchicalSummary(result) {
+    const finalClusters = result.clusters
+      .map((cluster, index) => `Cluster ${index + 1}: ${cluster.size} rows`)
+      .join("\n");
+    const recentMerges = result.mergeHistory
+      .slice(-5)
+      .map((merge, index) => {
+        return `Merge ${result.mergeHistory.length - 4 + index}: sizes ${merge.leftSize} + ${merge.rightSize} at height ${formatNumber(
+          merge.height,
+          3
+        )}`;
+      })
+      .join("\n");
+    elements.hierSummary.textContent =
+      `Final cluster sizes\n${finalClusters}\n\nRecent merges\n${recentMerges || "No merge history recorded."}`;
+    elements.hierSummaryCaption.textContent =
+      "Plain-English caption: hierarchical clustering joins groups step by step. Small merge heights mean two groups were close when they joined, while large late-stage heights suggest broader separation between the remaining groups.";
   }
 
   function evaluateClassificationModels(dataset) {
@@ -1096,6 +1153,7 @@
       size: 1,
       centroid: row.slice()
     }));
+    const mergeHistory = [];
 
     while (clusters.length > k) {
       let bestI = 0;
@@ -1128,6 +1186,11 @@
         size: mergedSize,
         centroid: mergedCentroid
       };
+      mergeHistory.push({
+        leftSize: first.size,
+        rightSize: second.size,
+        height: Math.sqrt(bestDistance)
+      });
 
       clusters = clusters.filter((_, index) => index !== bestI && index !== bestJ);
       clusters.push(merged);
@@ -1140,7 +1203,7 @@
       });
     });
 
-    return { assignments, clusters };
+    return { assignments, clusters, mergeHistory };
   }
 
   function silhouetteScore(distances, assignments, k) {
@@ -1741,6 +1804,21 @@
       target_names: ["Blob 1", "Blob 2", "Blob 3"],
       description:
         "A three-blob toy dataset with known labels kept only for evaluation, useful for comparing k-means and hierarchical clustering quality."
+    };
+  }
+
+  function describeFeatureScales(data, columns) {
+    const means = columnMeans(data);
+    const std = columnStd(data, means);
+    const ranked = columns
+      .map((name, index) => ({ name, std: std[index] }))
+      .sort((a, b) => b.std - a.std);
+    return {
+      lines: ranked
+        .slice(0, Math.min(4, ranked.length))
+        .map((item) => `${item.name}: sd ${formatNumber(item.std, 2)}`),
+      maxStd: ranked[0]?.std || 1,
+      minStd: ranked[ranked.length - 1]?.std || 1
     };
   }
 

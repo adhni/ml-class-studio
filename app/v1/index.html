@@ -97,6 +97,10 @@
 
       <button id="rerunBtn" class="primary-btn">Run analysis</button>
       <p class="small-note" id="datasetMeta"></p>
+      <div class="sidebar-note">
+        <h2>Dataset Teaching Note</h2>
+        <p id="datasetTeachingNote" class="small-note"></p>
+      </div>
     </aside>
 
     <main class="content">
@@ -155,6 +159,12 @@
             </p>
           </article>
         </div>
+
+        <article class="panel">
+          <h4>Why feature standardisation matters here</h4>
+          <div id="standardisationSummary" class="mono-block"></div>
+          <p class="caption" id="standardisationCaption"></p>
+        </article>
       </section>
 
       <section id="visualisation-lab" class="card section">
@@ -272,6 +282,12 @@
             <p class="caption" id="hierCaption"></p>
           </article>
         </div>
+
+        <article class="panel">
+          <h4>Hierarchical merge summary</h4>
+          <div id="hierSummary" class="mono-block"></div>
+          <p class="caption" id="hierSummaryCaption"></p>
+        </article>
       </section>
     </main>
   </div>

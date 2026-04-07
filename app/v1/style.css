@@ -161,6 +161,16 @@ input[type="range"] {
   margin-top: 10px;
 }
 
+.sidebar-note {
+  border-top: 1px solid var(--line);
+  margin-top: 12px;
+  padding-top: 12px;
+}
+
+.sidebar-note h2 {
+  margin-bottom: 6px;
+}
+
 .content {
   display: grid;
   gap: 16px;
