@@ -343,11 +343,73 @@ body.settings-open .settings-drawer {
   color: var(--muted);
 }
 
+.home-support-copy {
+  margin-top: 6px;
+}
+
 .home-meta {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
   margin-bottom: 16px;
+}
+
+.home-action-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.home-quick-start,
+.home-capability-strip {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 18px;
+}
+
+.launch-card,
+.capability-card {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  display: grid;
+  gap: 10px;
+}
+
+.launch-card h3,
+.capability-card p,
+.home-group-head h3 {
+  margin: 0;
+}
+
+.launch-pill {
+  justify-self: start;
+}
+
+.capability-card strong {
+  font-size: 15px;
+}
+
+.capability-card p {
+  color: var(--muted);
+}
+
+.home-group {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.home-group-head {
+  display: grid;
+  gap: 6px;
+}
+
+.home-group-head .page-tag {
+  justify-self: start;
 }
 
 .meta-pill {
@@ -367,6 +429,10 @@ body.settings-open .settings-drawer {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.week-card-grid.single {
+  grid-template-columns: 1fr;
+}
+
 .week-card {
   border: 1px solid var(--line);
   border-radius: 14px;
@@ -379,6 +445,23 @@ body.settings-open .settings-drawer {
 .week-card h3 {
   margin: 0;
   font-size: 22px;
+}
+
+.featured-card {
+  background: linear-gradient(180deg, #fdfefe 0%, #f3f8fb 100%);
+}
+
+.topic-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  border-radius: 999px;
+  padding: 4px 9px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #49606f;
+  background: #eef4f7;
 }
 
 .week-card p {
@@ -661,6 +744,8 @@ svg {
 }
 
 @media (max-width: 900px) {
+  .home-quick-start,
+  .home-capability-strip,
   .week-card-grid,
   .quick-controls-grid,
   .panel-grid.two,

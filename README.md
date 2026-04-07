@@ -2,6 +2,9 @@
 
 `app/v1/` contains a fully static teaching app for ETC3250/5250 machine learning topics. It is organized around the lecture-week sequence from `reference/slides/`, with related worksheet links from `reference/tutorial/` where those topic matches exist.
 
+Public site:
+`https://adhni.github.io/ml-class-studio/`
+
 The app is intended as a class companion:
 - lecture-week aligned
 - browser-based and reproducible
@@ -11,6 +14,7 @@ The app is intended as a class companion:
 ## What the app does
 
 - Provides a `Foundations` studio for `x`, `y`, and KNN before the numbered lecture weeks.
+- Emphasizes dimension reduction, supervised learning, clustering, model diagnosis, and explainability in the same browser workflow.
 - Covers lecture-week studios for visualisation, validation, logistic regression, decision trees, neural networks, XAI, SVM, clustering, model-based clustering, and cluster evaluation.
 - Uses built-in datasets and seeded toy data to keep the browser behaviour reproducible.
 - Shows plain-English captions under the main charts and tables instead of acting like a worksheet replacement.
