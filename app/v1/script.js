@@ -67,13 +67,13 @@
       label: "Home",
       title: "Choose a studio",
       summary: "Open one focused studio at a time.",
-      prompt: "Start with Foundations or open the lecture week you need. Related worksheets are linked separately when this repo has them."
+      prompt: "Start with Foundations for week-1 style basics, or open the lecture week you need. Related worksheets are linked separately when this repo has them."
     },
     foundations: {
       label: "Foundations",
       title: "Basics + KNN",
-      summary: "Start with x and y, then compare classifiers with KNN in focus.",
-      prompt: "Use Iris first, then switch to Toy nonlinear to see why KNN behaves like a local rule.",
+      summary: "An unnumbered companion studio for x, y, and KNN before the lecture-week sequence begins.",
+      prompt: "Use Iris first, then switch to Toy nonlinear to see why KNN behaves like a local rule. This studio supports the early course setup work rather than a numbered lecture slide deck.",
       tutorialPath: "reference/tutorial/tut2.html",
       controls: ["dataset", "problem", "validation", "classification"],
       preset: {
@@ -132,14 +132,14 @@
       },
       copy: {
         resampling:
-          "This week is about generalisation. Read the balance tables first, then decide whether the model scores are stable enough to trust."
+          "This week is about generalisation. This studio focuses on train/test splitting and cross-validation, which are the parts of the lecture most directly tied to model checking in the app."
       }
     },
     week4: {
       label: "Week 4",
       title: "Logistic Regression",
       summary: "Use logistic regression as the main linear classifier, then compare it with LDA.",
-      prompt: "Start with Penguins, inspect logistic regression first, then compare it with LDA on the same split.",
+      prompt: "Start with Penguins, inspect logistic regression first, then compare it with LDA on the same split. The app emphasizes the classification part of the lecture rather than the regularisation details.",
       tutorialPath: "reference/tutorial/tut5.html",
       controls: ["dataset", "validation", "classification"],
       preset: {
@@ -159,8 +159,8 @@
     week5: {
       label: "Week 5",
       title: "Decision Trees",
-      summary: "See how a tree chooses splits, then compare it with a forest.",
-      prompt: "Start with Penguins, inspect the split explorer first, then compare the single tree with the forest on the same dataset.",
+      summary: "See how a tree chooses splits, then use a forest as a stability check.",
+      prompt: "Start with Penguins, inspect the split explorer first, then read the single-tree outputs before using the forest comparison as a second opinion.",
       tutorialPath: "reference/tutorial/tut6.html",
       controls: ["dataset", "validation", "classification", "forest", "trees"],
       preset: {
@@ -168,14 +168,14 @@
         validationMode: "holdout",
         stratify: true,
         framingMode: "classification",
-        focusModel: "forest",
+        focusModel: "tree",
         treeDepth: 4,
         forestTrees: 21,
         splitFeature: 3
       },
       copy: {
         week6:
-          "This week is about why a split is chosen, what the first tree rules look like, and how a forest stabilises one tree without making the difficult rows disappear."
+          "This week is mainly about the tree itself: why a split is chosen, what the first rules look like, and where the tree struggles. Use the forest as a supporting comparison, not as the main object of study."
       }
     },
     week6: {
@@ -204,7 +204,7 @@
       label: "Week 7",
       title: "Explainability / XAI",
       summary: "Explain what the model is using, globally and for one row.",
-      prompt: "Start with Penguins and the random forest, then switch focus models to compare what each explanation style can and cannot tell you.",
+      prompt: "Start with Penguins and the random forest, then switch focus models to compare what each explanation style can and cannot tell you. This studio focuses on the interpretable outputs rather than the full lecture spread of XAI methods.",
       tutorialPath: "reference/tutorial/tut8.html",
       controls: ["dataset", "validation", "classification", "forest", "svm", "xai"],
       preset: {
@@ -232,7 +232,7 @@
       label: "Week 8",
       title: "Support Vector Machines",
       summary: "Compare linear and nonlinear SVM boundaries.",
-      prompt: "Start with Toy nonlinear. Compare linear SVM with RBF SVM, then change C and gamma to see how the boundary responds.",
+      prompt: "Start with Toy nonlinear. Compare linear SVM with RBF SVM, then change C and gamma to see how the boundary responds. This studio centers on the SVM part of the lecture week.",
       tutorialPath: "",
       controls: ["dataset", "validation", "classification", "svm"],
       preset: {
@@ -276,7 +276,7 @@
       label: "Week 10",
       title: "Model-based Clustering",
       summary: "Compare Gaussian-mixture clustering with the geometric clustering methods.",
-      prompt: "Start with Wine, keep k and the mixture component count aligned, then see where a probabilistic model groups points differently from k-means or hierarchical clustering.",
+      prompt: "Start with Wine, keep k and the mixture component count aligned, then see where a probabilistic model groups points differently from k-means or hierarchical clustering. This studio covers the model-based clustering half of the lecture week, not SOMs.",
       tutorialPath: "reference/tutorial/tut11.html",
       controls: ["dataset", "clustering", "model-clustering"],
       preset: {
@@ -1614,13 +1614,14 @@
     elements.week6ComparisonSummary.textContent =
       `Current focus: ${evaluation.labels[state.focusModel]}\n` +
       `Forest minus tree balanced accuracy: ${formatPct(gain)}\n` +
-      `${gain >= 0 ? "The forest is stabilising the tree on this dataset." : "The single tree is currently matching or beating the forest on this split."}`;
+      `${gain >= 0 ? "The forest is stabilising the tree on this dataset." : "The single tree is currently matching or beating the forest on this split."}\n` +
+      `Read this as a stability check, not as the main tree lesson.`;
     elements.week6MetricsCaption.textContent =
-      `${state.validationMode === "holdout" ? "These scores come from one reproducible train/test split." : `These scores come from ${state.kFolds}-fold cross-validation.`} Balanced accuracy gives each class equal weight, so it is useful when one species is easier or harder than the others.`;
+      `${state.validationMode === "holdout" ? "These scores come from one reproducible train/test split." : `These scores come from ${state.kFolds}-fold cross-validation.`} Start by reading the tree row, then use the forest row to see whether bagging improves stability. Balanced accuracy gives each class equal weight, so it is useful when one species is easier or harder than the others.`;
   }
 
   function renderWeek6FocusedModel(evaluation, dataset) {
-    const modelId = state.focusModel === "tree" || state.focusModel === "forest" ? state.focusModel : "forest";
+    const modelId = state.focusModel === "tree" || state.focusModel === "forest" ? state.focusModel : "tree";
     state.focusModel = modelId;
     elements.focusModel.value = modelId;
     const modelEval = evaluation.details[modelId];
@@ -1634,7 +1635,7 @@
   }
 
   function renderWeek6HardCases(dataset, evaluation) {
-    const modelId = state.focusModel === "tree" || state.focusModel === "forest" ? state.focusModel : "forest";
+    const modelId = state.focusModel === "tree" || state.focusModel === "forest" ? state.focusModel : "tree";
     const fit = evaluation.fits[modelId];
     const scored = dataset.data.map((row, index) => {
       const validatedPrediction = evaluation.details[modelId].byRow[index];
@@ -1665,14 +1666,14 @@
     ]);
     renderTable(elements.week6HardCasesTable, ["Row", "Actual", "Predicted", "Confidence", "Status"], rows);
     elements.week6HardCasesCaption.textContent =
-      `Plain-English caption: these are the rows the ${evaluation.labels[modelId].toLowerCase()} finds hardest. Misclassified rows are shown first, then the lowest-confidence correct rows. Confidence comes from the current full fitted model, while correctness comes from the chosen validation setup.`;
+      `Plain-English caption: these are the rows the ${evaluation.labels[modelId].toLowerCase()} finds hardest. Misclassified rows are shown first, then the lowest-confidence correct rows. Start with the tree, then switch to the forest if you want to see whether the same difficult rows remain difficult after bagging.`;
   }
 
   function renderWeek6Importance(dataset, forestFit) {
     const global = buildGlobalExplanation("forest", forestFit, dataset);
     renderTable(elements.week6ImportanceTable, ["Feature", "Signal"], global.rows);
     elements.week6ImportanceCaption.textContent =
-      "Plain-English caption: this keeps the forest-specific importance view inside Week 6, where it helps explain why the ensemble keeps revisiting certain variables across many trees.";
+      "Plain-English caption: this uses the forest as a supporting diagnostic. It shows which variables repeatedly reduce impurity across many trees, which complements the single-tree split view above.";
   }
 
   function renderClusteringPanels() {
