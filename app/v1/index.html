@@ -120,16 +120,20 @@
           <option value="svm_rbf">RBF SVM</option>
         </select>
 
-        <label for="knnK">KNN neighbours (k)</label>
-        <div class="range-row">
-          <input id="knnK" type="range" min="1" max="25" step="2" value="7" />
-          <input id="knnK_num" type="number" min="1" max="25" step="2" value="7" />
+        <div id="classificationKnnControl" class="sub-control">
+          <label for="knnK">KNN neighbours (k)</label>
+          <div class="range-row">
+            <input id="knnK" type="range" min="1" max="25" step="2" value="7" />
+            <input id="knnK_num" type="number" min="1" max="25" step="2" value="7" />
+          </div>
         </div>
 
-        <label for="treeDepth">Decision tree depth</label>
-        <div class="range-row">
-          <input id="treeDepth" type="range" min="1" max="8" step="1" value="4" />
-          <input id="treeDepth_num" type="number" min="1" max="8" step="1" value="4" />
+        <div id="classificationTreeControl" class="sub-control">
+          <label for="treeDepth">Decision tree depth</label>
+          <div class="range-row">
+            <input id="treeDepth" type="range" min="1" max="8" step="1" value="4" />
+            <input id="treeDepth_num" type="number" min="1" max="8" step="1" value="4" />
+          </div>
         </div>
       </div>
 
@@ -151,6 +155,13 @@
           <input id="forestTrees" type="range" min="5" max="51" step="2" value="21" />
           <input id="forestTrees_num" type="number" min="5" max="51" step="2" value="21" />
         </div>
+      </div>
+
+      <div class="control-group" data-control-group="trees">
+        <h2>Tree Mechanics</h2>
+
+        <label for="splitFeature">Split explorer feature</label>
+        <select id="splitFeature"></select>
       </div>
 
       <div class="control-group" data-control-group="neural">
@@ -216,7 +227,6 @@
         </select>
       </div>
 
-      <button id="rerunBtn" class="primary-btn" type="button">Run analysis</button>
     </aside>
 
     <main class="content">
@@ -345,10 +355,9 @@
       <section id="quickControlsBar" class="card quick-controls">
         <div class="quick-controls-head">
           <div>
-            <p class="page-tag">Live Controls</p>
+            <p class="page-tag">Quick Adjust</p>
             <h2 id="quickControlsTitle">Adjust the current view</h2>
           </div>
-          <p id="quickControlsNote" class="small-note"></p>
         </div>
         <div id="quickControlsGrid" class="quick-controls-grid"></div>
       </section>
@@ -455,7 +464,7 @@
         </div>
       </section>
 
-      <section id="classification-lab" class="card section week-section" data-views="week4 week5 week6 week8 week10">
+      <section id="classification-lab" class="card section week-section" data-views="week4 week5 week8 week10">
         <div class="section-title">
           <span class="kicker" id="classificationKicker">Classification</span>
           <h3>Classification Studio</h3>
@@ -480,6 +489,60 @@
             <h4>Decision boundary</h4>
             <svg id="boundaryPlot" viewBox="0 0 540 420"></svg>
             <p class="caption" id="boundaryCaption"></p>
+          </article>
+        </div>
+      </section>
+
+      <section id="week6-lab" class="card section week-section" data-views="week6">
+        <div class="section-title">
+          <span class="kicker">Week 6</span>
+          <h3>Trees And Forests Studio</h3>
+        </div>
+        <p id="week6Intro" class="section-note"></p>
+
+        <div class="panel-grid two">
+          <article class="panel">
+            <h4>Split explorer</h4>
+            <svg id="week6SplitPlot" viewBox="0 0 540 420"></svg>
+            <div id="week6SplitSummary" class="mono-block"></div>
+            <p id="week6SplitCaption" class="caption"></p>
+          </article>
+
+          <article class="panel">
+            <h4>First tree splits</h4>
+            <svg id="week6TreePlot" viewBox="0 0 540 420"></svg>
+            <div id="week6TreeSummary" class="mono-block"></div>
+            <p id="week6TreeCaption" class="caption"></p>
+          </article>
+        </div>
+
+        <div class="panel-grid two">
+          <article class="panel">
+            <h4>Tree versus forest</h4>
+            <table id="week6MetricsTable" class="data-table"></table>
+            <div id="week6ComparisonSummary" class="mono-block"></div>
+            <p id="week6MetricsCaption" class="caption"></p>
+          </article>
+
+          <article class="panel">
+            <h4>Focused model confusion</h4>
+            <table id="week6ConfusionTable" class="data-table"></table>
+            <div id="week6ModelSummary" class="mono-block"></div>
+            <p id="week6ConfusionCaption" class="caption"></p>
+          </article>
+        </div>
+
+        <div class="panel-grid two">
+          <article class="panel">
+            <h4>Hard cases</h4>
+            <table id="week6HardCasesTable" class="data-table"></table>
+            <p id="week6HardCasesCaption" class="caption"></p>
+          </article>
+
+          <article class="panel">
+            <h4>Forest importance</h4>
+            <table id="week6ImportanceTable" class="data-table"></table>
+            <p id="week6ImportanceCaption" class="caption"></p>
           </article>
         </div>
       </section>

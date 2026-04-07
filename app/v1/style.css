@@ -133,6 +133,11 @@ input[type="range"] {
   font-size: 14px;
 }
 
+.sub-control {
+  display: grid;
+  gap: 8px;
+}
+
 .range-row {
   display: grid;
   grid-template-columns: 1fr 90px;
@@ -187,10 +192,7 @@ input[type="range"] {
 }
 
 .quick-controls-head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 12px;
+  display: block;
   margin-bottom: 12px;
 }
 

@@ -35,6 +35,7 @@
     knnK: 7,
     treeDepth: 4,
     forestTrees: 21,
+    splitFeature: 0,
     nnHidden: 8,
     nnEpochs: 180,
     svmC: 1.2,
@@ -157,10 +158,10 @@
     week6: {
       label: "Week 6",
       title: "Trees + Random Forests",
-      summary: "Compare one tree with a bagged forest.",
-      prompt: "Start with Penguins, compare the single tree with the forest, then see which one is more stable on the same split.",
+      summary: "See how a tree chooses splits, then compare it with a forest.",
+      prompt: "Start with Penguins, inspect the split explorer first, then compare the single tree with the forest on the same dataset.",
       tutorialPath: "reference/tutorial/tut6.html",
-      controls: ["dataset", "validation", "classification", "forest"],
+      controls: ["dataset", "validation", "classification", "forest", "trees"],
       preset: {
         datasetId: "penguins",
         validationMode: "holdout",
@@ -169,12 +170,11 @@
         focusModel: "forest",
         treeDepth: 4,
         forestTrees: 21,
-        scatterX: 0,
-        scatterY: 2
+        splitFeature: 3
       },
       copy: {
-        classification:
-          "This week is about the trade-off between a single interpretable tree and a more stable ensemble. Compare tree and forest first."
+        week6:
+          "This week is about why a split is chosen, what the first tree rules look like, and how a forest stabilises one tree without making the difficult rows disappear."
       }
     },
     week7: {
@@ -328,6 +328,7 @@
       state.viewId = initialView;
     }
     syncScatterOptions();
+    syncSplitFeatureOptions();
     if (state.viewId !== "home") {
       applyViewPreset(state.viewId, false);
     } else {
@@ -350,7 +351,6 @@
       "homeView",
       "quickControlsBar",
       "quickControlsTitle",
-      "quickControlsNote",
       "quickControlsGrid",
       "weekShell",
       "viewKicker",
@@ -372,8 +372,11 @@
       "knnK_num",
       "treeDepth",
       "treeDepth_num",
+      "classificationKnnControl",
+      "classificationTreeControl",
       "forestTrees",
       "forestTrees_num",
+      "splitFeature",
       "nnHidden",
       "nnHidden_num",
       "nnEpochs",
@@ -397,6 +400,23 @@
       "resamplingIntro",
       "classificationIntro",
       "classificationKicker",
+      "week6Intro",
+      "week6SplitPlot",
+      "week6SplitSummary",
+      "week6SplitCaption",
+      "week6TreePlot",
+      "week6TreeSummary",
+      "week6TreeCaption",
+      "week6MetricsTable",
+      "week6ComparisonSummary",
+      "week6MetricsCaption",
+      "week6ConfusionTable",
+      "week6ModelSummary",
+      "week6ConfusionCaption",
+      "week6HardCasesTable",
+      "week6HardCasesCaption",
+      "week6ImportanceTable",
+      "week6ImportanceCaption",
       "clusteringIntro",
       "clusteringKicker",
       "clusterEvaluationPanel",
@@ -452,8 +472,7 @@
       "modelClusterPlot",
       "modelClusterCaption",
       "hierSummary",
-      "hierSummaryCaption",
-      "rerunBtn"
+      "hierSummaryCaption"
     ];
 
     ids.forEach((id) => {
@@ -494,6 +513,11 @@
       setPairValue("forestTrees", "forestTrees_num", state.forestTrees);
       runAnalysis();
     });
+    elements.splitFeature.addEventListener("change", (event) => {
+      state.splitFeature = Number(event.target.value);
+      renderQuickControls();
+      renderWeek6Lab();
+    });
     bindPair("nnHidden", "nnHidden_num", (value) => {
       state.nnHidden = clamp(Math.round(value), 3, 24);
       runAnalysis();
@@ -527,6 +551,7 @@
     elements.datasetSelect.addEventListener("change", (event) => {
       state.datasetId = event.target.value;
       syncScatterOptions();
+      syncSplitFeatureOptions();
       syncXaiOptions();
       runAnalysis();
     });
@@ -548,6 +573,7 @@
     elements.focusModel.addEventListener("change", (event) => {
       state.focusModel = event.target.value;
       renderModelInspection();
+      renderWeek6Lab();
       renderXaiLab();
     });
     elements.scatterX.addEventListener("change", (event) => {
@@ -572,7 +598,6 @@
         navigateToView(button.dataset.viewTarget);
       });
     });
-    elements.rerunBtn.addEventListener("click", runAnalysis);
     window.addEventListener("hashchange", () => {
       const nextView = getViewFromHash();
       if (nextView && nextView !== state.viewId) {
@@ -656,6 +681,7 @@
     }
     syncControlsFromState();
     syncScatterOptions();
+    syncSplitFeatureOptions();
     syncXaiOptions();
     elements.scatterX.value = state.scatterX;
     elements.scatterY.value = state.scatterY;
@@ -670,6 +696,7 @@
     elements.validationMode.value = state.validationMode;
     elements.stratifyToggle.checked = state.stratify;
     elements.framingMode.value = state.framingMode;
+    syncFocusModelOptions();
     elements.focusModel.value = state.focusModel;
     setPairValue("analysisSeed", "analysisSeed_num", state.seed);
     setPairValue("testFraction", "testFraction_num", state.testFraction);
@@ -677,6 +704,7 @@
     setPairValue("knnK", "knnK_num", state.knnK);
     setPairValue("treeDepth", "treeDepth_num", state.treeDepth);
     setPairValue("forestTrees", "forestTrees_num", state.forestTrees);
+    elements.splitFeature.value = state.splitFeature;
     setPairValue("nnHidden", "nnHidden_num", state.nnHidden);
     setPairValue("nnEpochs", "nnEpochs_num", state.nnEpochs);
     setPairValue("svmC", "svmC_num", state.svmC);
@@ -704,6 +732,7 @@
     renderVisualisationPanels();
     renderResamplingPanels();
     renderClassificationPanels();
+    renderWeek6Lab();
     renderClusteringPanels();
     renderNeuralLab();
     renderXaiLab();
@@ -719,7 +748,6 @@
     setVisible(elements.quickControlsBar, !isHome);
     setVisible(elements.weekShell, !isHome);
     setVisible(elements.currentWeekBlock, !isHome);
-    setVisible(elements.rerunBtn, !isHome);
 
     elements.controlGroups.forEach((group) => {
       setVisible(group, !isHome && visibleControls.has(group.dataset.controlGroup));
@@ -743,11 +771,14 @@
     setVisible(elements.viewPresetBtn, !isHome);
     setVisible(elements.clusterEvaluationPanel, state.viewId === "week11" || state.viewId === "week11b");
     setVisible(elements.modelClusteringPanel, state.viewId === "week11b");
+    setVisible(elements.classificationKnnControl, state.viewId === "week4");
+    setVisible(elements.classificationTreeControl, state.viewId === "week6");
 
     elements.problemIntro.textContent = view.copy?.problem || "";
     elements.visualIntro.textContent = view.copy?.visual || "";
     elements.resamplingIntro.textContent = view.copy?.resampling || "";
     elements.classificationIntro.textContent = view.copy?.classification || "";
+    elements.week6Intro.textContent = view.copy?.week6 || "";
     elements.clusteringIntro.textContent = view.copy?.clustering || "";
     elements.neuralIntro.textContent = view.copy?.neural || "";
     elements.xaiIntro.textContent = view.copy?.xai || "";
@@ -772,8 +803,6 @@
     const view = VIEWS[state.viewId];
     const config = quickControlConfig(state.viewId);
     elements.quickControlsTitle.textContent = `${view.label}: live controls`;
-    elements.quickControlsNote.textContent =
-      "These controls stay beside the output so you can see changes without jumping back to the sidebar.";
     elements.quickControlsGrid.innerHTML = config.map(renderQuickControlCard).join("");
 
     elements.quickControlsGrid.querySelectorAll("[data-quick-key]").forEach((input) => {
@@ -799,10 +828,7 @@
       week3: [
         { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
         { key: "validationMode", label: "Validation", type: "select", options: validationOptions() },
-        { key: "stratify", label: "Stratify", type: "checkbox" },
-        state.validationMode === "cv"
-          ? { key: "kFolds", label: "CV folds", type: "range", min: 3, max: 10, step: 1 }
-          : { key: "testFraction", label: "Test fraction", type: "range", min: 0.15, max: 0.45, step: 0.05 }
+        { key: "stratify", label: "Stratify", type: "checkbox" }
       ],
       week4: [
         { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
@@ -811,14 +837,12 @@
       ],
       week5: [
         { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
-        { key: "focusModel", label: "Focus model", type: "select", options: classificationModelOptions(["logistic", "lda"]) },
-        { key: "validationMode", label: "Validation", type: "select", options: validationOptions() }
+        { key: "focusModel", label: "Focus model", type: "select", options: classificationModelOptions(["logistic", "lda"]) }
       ],
       week6: [
-        { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
+        { key: "splitFeature", label: "Split feature", type: "select", options: featureOptions() },
         { key: "focusModel", label: "Focus model", type: "select", options: classificationModelOptions(["tree", "forest"]) },
-        { key: "treeDepth", label: "Tree depth", type: "range", min: 1, max: 8, step: 1 },
-        { key: "forestTrees", label: "Forest trees", type: "range", min: 5, max: 51, step: 2 }
+        { key: "treeDepth", label: "Tree depth", type: "range", min: 1, max: 8, step: 1 }
       ],
       week7: [
         { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
@@ -826,8 +850,8 @@
         { key: "nnEpochs", label: "Epochs", type: "range", min: 60, max: 320, step: 20 }
       ],
       week8: [
-        { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
         { key: "focusModel", label: "Focus model", type: "select", options: classificationModelOptions() },
+        { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
         { key: "xaiIndex", label: "Selected row", type: "range", min: 1, max: cache.dataset?.n || 1, step: 1, displayValue: state.xaiIndex + 1 }
       ],
       week9: [
@@ -835,7 +859,6 @@
         { key: "clusterK", label: "Clusters", type: "range", min: 2, max: 8, step: 1 }
       ],
       week10: [
-        { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
         { key: "focusModel", label: "Focus model", type: "select", options: classificationModelOptions(["svm_linear", "svm_rbf"]) },
         { key: "svmC", label: "SVM C", type: "range", min: 0.2, max: 3, step: 0.2 },
         { key: "svmGamma", label: "RBF gamma", type: "range", min: 0.2, max: 3, step: 0.2 }
@@ -937,6 +960,7 @@
       case "datasetId":
         state.datasetId = rawValue;
         syncScatterOptions();
+        syncSplitFeatureOptions();
         syncXaiOptions();
         runAnalysis();
         return;
@@ -963,7 +987,14 @@
         syncControlsFromState();
         renderQuickControls();
         renderModelInspection();
+        renderWeek6Lab();
         renderXaiLab();
+        return;
+      case "splitFeature":
+        state.splitFeature = clamp(Math.round(rawValue), 0, Math.max(0, (cache.dataset?.p || 1) - 1));
+        syncControlsFromState();
+        renderQuickControls();
+        renderWeek6Lab();
         return;
       case "xaiIndex":
         state.xaiIndex = clamp(Math.round(rawValue) - 1, 0, Math.max(0, (cache.dataset?.n || 1) - 1));
@@ -1073,6 +1104,32 @@
       .map(([value, label]) => ({ value, label }));
   }
 
+  function focusModelAllowedByView() {
+    if (state.viewId === "week5") {
+      return ["logistic", "lda"];
+    }
+    if (state.viewId === "week6") {
+      return ["tree", "forest"];
+    }
+    if (state.viewId === "week10") {
+      return ["svm_linear", "svm_rbf"];
+    }
+    return null;
+  }
+
+  function syncFocusModelOptions() {
+    const options = classificationModelOptions(focusModelAllowedByView());
+    if (!options.length) {
+      return;
+    }
+    elements.focusModel.innerHTML = options
+      .map((option) => `<option value="${escapeHtml(option.value)}">${escapeHtml(option.label)}</option>`)
+      .join("");
+    if (!options.some((option) => option.value === state.focusModel)) {
+      state.focusModel = options[0].value;
+    }
+  }
+
   function getActiveDataset() {
     const registry = datasetRegistry();
     const raw = registry[state.datasetId];
@@ -1108,6 +1165,16 @@
     }
     elements.scatterX.value = state.scatterX;
     elements.scatterY.value = state.scatterY;
+  }
+
+  function syncSplitFeatureOptions() {
+    const dataset = getActiveDataset();
+    const options = dataset.columns.map((label, index) => {
+      return `<option value="${index}">${escapeHtml(label)}</option>`;
+    });
+    elements.splitFeature.innerHTML = options.join("");
+    state.splitFeature = clamp(state.splitFeature, 0, dataset.columns.length - 1);
+    elements.splitFeature.value = state.splitFeature;
   }
 
   function syncXaiOptions() {
@@ -1294,6 +1361,27 @@
     renderModelInspection();
   }
 
+  function renderWeek6Lab() {
+    if (state.viewId !== "week6") {
+      return;
+    }
+    const dataset = cache.dataset;
+    const evaluation = cache.classification;
+    if (!dataset || !evaluation) {
+      return;
+    }
+
+    const treeFit = evaluation.fits.tree;
+    const forestFit = evaluation.fits.forest;
+    const split = computeSplitExplorer(dataset, state.splitFeature);
+    renderWeek6SplitExplorer(split, dataset);
+    renderWeek6TreeView(dataset, treeFit.tree);
+    renderWeek6Comparison(evaluation, dataset);
+    renderWeek6FocusedModel(evaluation, dataset);
+    renderWeek6HardCases(dataset, evaluation);
+    renderWeek6Importance(dataset, forestFit);
+  }
+
   function renderNeuralLab() {
     if (state.viewId !== "week7") {
       return;
@@ -1383,6 +1471,172 @@
     renderDecisionBoundarySvg(elements.boundaryPlot, model.predict, points, dataset.targetNames.length);
     elements.boundaryCaption.textContent =
       "Plain-English caption: the coloured background shows the class each model would predict across the plane. The points are the observed data, so sharp bends or patchy regions usually signal a more local decision rule.";
+  }
+
+  function computeSplitExplorer(dataset, featureIndex) {
+    const values = dataset.data.map((row) => row[featureIndex]).slice().sort((a, b) => a - b);
+    const thresholds = [];
+    for (let i = 1; i < values.length; i += 1) {
+      if (values[i] !== values[i - 1]) {
+        thresholds.push((values[i] + values[i - 1]) / 2);
+      }
+    }
+
+    const parentImpurity = giniImpurity(dataset.target);
+    const candidates = thresholds.map((threshold) => {
+      const leftY = [];
+      const rightY = [];
+      dataset.data.forEach((row, index) => {
+        if (row[featureIndex] <= threshold) {
+          leftY.push(dataset.target[index]);
+        } else {
+          rightY.push(dataset.target[index]);
+        }
+      });
+      const weightedImpurity =
+        (leftY.length / dataset.n) * giniImpurity(leftY) +
+        (rightY.length / dataset.n) * giniImpurity(rightY);
+      return {
+        threshold,
+        weightedImpurity,
+        gain: parentImpurity - weightedImpurity,
+        leftY,
+        rightY
+      };
+    });
+
+    const best = candidates.reduce((current, candidate) => {
+      if (!current || candidate.gain > current.gain) {
+        return candidate;
+      }
+      return current;
+    }, null);
+
+    return {
+      featureIndex,
+      featureName: dataset.columns[featureIndex],
+      parentImpurity,
+      candidates,
+      best
+    };
+  }
+
+  function renderWeek6SplitExplorer(split, dataset) {
+    renderWeek6SplitSvg(elements.week6SplitPlot, split);
+    if (!split.best) {
+      elements.week6SplitSummary.textContent = "No useful split candidates were found for this feature.";
+      elements.week6SplitCaption.textContent =
+        "Plain-English caption: if every candidate threshold leaves almost the same class mix on both sides, the tree has little reason to split here first.";
+      return;
+    }
+    const leftCounts = countByLabel(split.best.leftY, dataset.targetNames.length);
+    const rightCounts = countByLabel(split.best.rightY, dataset.targetNames.length);
+    elements.week6SplitSummary.textContent =
+      `Parent Gini: ${formatNumber(split.parentImpurity, 3)}\n` +
+      `Best threshold on ${split.featureName}: ${formatNumber(split.best.threshold, 2)}\n` +
+      `Weighted Gini after split: ${formatNumber(split.best.weightedImpurity, 3)}\n` +
+      `Impurity reduction: ${formatNumber(split.best.gain, 3)}\n` +
+      `Left side: ${summarizeCounts(leftCounts, dataset.targetNames)}\n` +
+      `Right side: ${summarizeCounts(rightCounts, dataset.targetNames)}`;
+    elements.week6SplitCaption.textContent =
+      "Plain-English caption: lower weighted Gini means the split leaves purer child nodes. This is the core rule a classification tree is optimizing when it searches for the next split.";
+  }
+
+  function renderWeek6TreeView(dataset, tree) {
+    const axes = chooseWeek6Axes(tree, dataset);
+    const points = dataset.data.map((row, index) => ({
+      x: row[axes.xIndex],
+      y: row[axes.yIndex],
+      classId: dataset.target[index],
+      label: dataset.targetNames[dataset.target[index]]
+    }));
+    renderWeek6TreeSvg(elements.week6TreePlot, points, axes, tree);
+    const leftSplit = tree.type === "split" && tree.left?.type === "split" ? `${tree.left.featureName} <= ${formatNumber(tree.left.threshold, 2)}` : "no second left split";
+    const rightSplit = tree.type === "split" && tree.right?.type === "split" ? `${tree.right.featureName} <= ${formatNumber(tree.right.threshold, 2)}` : "no second right split";
+    elements.week6TreeSummary.textContent =
+      `Teaching slice\nx-axis: ${dataset.columns[axes.xIndex]}\ny-axis: ${dataset.columns[axes.yIndex]}\n\n` +
+      `Root split\n${tree.type === "split" ? `${tree.featureName} <= ${formatNumber(tree.threshold, 2)}` : "no useful root split"}\n\n` +
+      `Second splits\nLeft child: ${leftSplit}\nRight child: ${rightSplit}`;
+    elements.week6TreeCaption.textContent =
+      "Plain-English caption: the scatter uses the tree's main early split directions. Solid lines show the first split and dashed lines show the next splits when they are visible in this 2D slice.";
+  }
+
+  function renderWeek6Comparison(evaluation, dataset) {
+    const rows = ["tree", "forest"].map((modelId) => {
+      const metrics = evaluation.metrics[modelId];
+      return [
+        evaluation.labels[modelId],
+        formatPct(metrics.accuracy),
+        formatPct(metrics.macroF1),
+        formatPct(metrics.balancedAccuracy)
+      ];
+    });
+    renderTable(elements.week6MetricsTable, ["Model", "Accuracy", "Macro F1", "Balanced Acc"], rows);
+    const treeMetrics = evaluation.metrics.tree;
+    const forestMetrics = evaluation.metrics.forest;
+    const gain = forestMetrics.balancedAccuracy - treeMetrics.balancedAccuracy;
+    elements.week6ComparisonSummary.textContent =
+      `Current focus: ${evaluation.labels[state.focusModel]}\n` +
+      `Forest minus tree balanced accuracy: ${formatPct(gain)}\n` +
+      `${gain >= 0 ? "The forest is stabilising the tree on this dataset." : "The single tree is currently matching or beating the forest on this split."}`;
+    elements.week6MetricsCaption.textContent =
+      `${state.validationMode === "holdout" ? "These scores come from one reproducible train/test split." : `These scores come from ${state.kFolds}-fold cross-validation.`} Balanced accuracy gives each class equal weight, so it is useful when one species is easier or harder than the others.`;
+  }
+
+  function renderWeek6FocusedModel(evaluation, dataset) {
+    const modelId = state.focusModel === "tree" || state.focusModel === "forest" ? state.focusModel : "forest";
+    state.focusModel = modelId;
+    elements.focusModel.value = modelId;
+    const modelEval = evaluation.details[modelId];
+    const confusion = confusionMatrix(modelEval.actual, modelEval.predicted, dataset.targetNames.length);
+    const header = ["Actual \\ Predicted"].concat(dataset.targetNames);
+    const rows = dataset.targetNames.map((label, rowIndex) => [label].concat(confusion[rowIndex].map((value) => String(value))));
+    renderTable(elements.week6ConfusionTable, header, rows);
+    elements.week6ModelSummary.textContent = evaluation.summaries[modelId];
+    elements.week6ConfusionCaption.textContent =
+      `Plain-English caption: use the confusion matrix to see whether the ${evaluation.labels[modelId].toLowerCase()} is making one repeated mistake or spreading errors across several classes.`;
+  }
+
+  function renderWeek6HardCases(dataset, evaluation) {
+    const modelId = state.focusModel === "tree" || state.focusModel === "forest" ? state.focusModel : "forest";
+    const fit = evaluation.fits[modelId];
+    const scored = dataset.data.map((row, index) => {
+      const validatedPrediction = evaluation.details[modelId].byRow[index];
+      if (validatedPrediction == null) {
+        return null;
+      }
+      const detail = modelId === "tree" ? treePredictionDetail(fit.tree, row) : forestPredictionDetail(fit, row, dataset.targetNames.length);
+      return {
+        row: index + 1,
+        actual: dataset.targetNames[dataset.target[index]],
+        predicted: dataset.targetNames[validatedPrediction],
+        confidence: detail.confidence,
+        correct: validatedPrediction === dataset.target[index]
+      };
+    }).filter(Boolean);
+    scored.sort((a, b) => {
+      if (a.correct !== b.correct) {
+        return a.correct ? 1 : -1;
+      }
+      return a.confidence - b.confidence;
+    });
+    const rows = scored.slice(0, 8).map((item) => [
+      `Row ${item.row}`,
+      item.actual,
+      item.predicted,
+      formatPct(item.confidence),
+      item.correct ? "Correct" : "Misclassified"
+    ]);
+    renderTable(elements.week6HardCasesTable, ["Row", "Actual", "Predicted", "Confidence", "Status"], rows);
+    elements.week6HardCasesCaption.textContent =
+      `Plain-English caption: these are the rows the ${evaluation.labels[modelId].toLowerCase()} finds hardest. Misclassified rows are shown first, then the lowest-confidence correct rows. Confidence comes from the current full fitted model, while correctness comes from the chosen validation setup.`;
+  }
+
+  function renderWeek6Importance(dataset, forestFit) {
+    const global = buildGlobalExplanation("forest", forestFit, dataset);
+    renderTable(elements.week6ImportanceTable, ["Feature", "Signal"], global.rows);
+    elements.week6ImportanceCaption.textContent =
+      "Plain-English caption: this keeps the forest-specific importance view inside Week 6, where it helps explain why the ensemble keeps revisiting certain variables across many trees.";
   }
 
   function renderClusteringPanels() {
@@ -1553,8 +1807,9 @@
 
       const accuracy = computeAccuracy(filteredActual, filteredPred);
       const macroF1 = computeMacroF1(filteredActual, filteredPred, dataset.targetNames.length);
-      metrics[modelId] = { accuracy, macroF1 };
-      details[modelId] = { actual: filteredActual, predicted: filteredPred };
+      const balancedAccuracy = computeBalancedAccuracy(filteredActual, filteredPred, dataset.targetNames.length);
+      metrics[modelId] = { accuracy, macroF1, balancedAccuracy };
+      details[modelId] = { actual: filteredActual, predicted: filteredPred, byRow: predicted.slice() };
 
       const fullFit = fitModel(modelId, dataset.data, dataset.target, dataset.columns);
       summaries[modelId] = buildModelSummary(modelId, fullFit, dataset);
@@ -2076,6 +2331,31 @@
       return predictTreeWithPath(node.left, row, path.concat(`${rule} -> left`));
     }
     return predictTreeWithPath(node.right, row, path.concat(`${rule} -> right`));
+  }
+
+  function treePredictionDetail(tree, row) {
+    const explanation = predictTreeWithPath(tree, row);
+    const total = explanation.counts.reduce((sum, value) => sum + value, 0) || 1;
+    const confidence = Math.max(...explanation.counts, 0) / total;
+    return {
+      prediction: explanation.prediction,
+      confidence,
+      path: explanation.path,
+      counts: explanation.counts
+    };
+  }
+
+  function forestPredictionDetail(fit, row, classCount) {
+    const votes = new Array(classCount).fill(0);
+    fit.trees.forEach((tree) => {
+      votes[predictTree(tree, row)] += 1;
+    });
+    const prediction = argMax(votes);
+    return {
+      prediction,
+      confidence: votes[prediction] / Math.max(1, fit.trees.length),
+      votes
+    };
   }
 
   function trainLinearSvmOneVsRest(features, y, classes, cValue, seed) {
@@ -2899,6 +3179,107 @@
     return (sumComb - expected) / Math.max(1e-12, maxIndex - expected);
   }
 
+  function chooseWeek6Axes(tree, dataset) {
+    if (tree.type !== "split") {
+      return { xIndex: 0, yIndex: Math.min(1, dataset.p - 1) };
+    }
+    const childFeatures = [tree.left, tree.right]
+      .filter((node) => node?.type === "split")
+      .map((node) => node.feature)
+      .find((feature) => feature !== tree.feature);
+    const xIndex = tree.feature;
+    const yIndex = childFeatures != null ? childFeatures : firstDifferentFeature(dataset.p, xIndex);
+    return { xIndex, yIndex };
+  }
+
+  function firstDifferentFeature(total, excluded) {
+    for (let index = 0; index < total; index += 1) {
+      if (index !== excluded) {
+        return index;
+      }
+    }
+    return excluded;
+  }
+
+  function summarizeCounts(counts, labels) {
+    return counts
+      .map((count, index) => `${labels[index]} ${count}`)
+      .join(" | ");
+  }
+
+  function renderWeek6SplitSvg(svg, split) {
+    const width = 540;
+    const height = 420;
+    const margin = { top: 20, right: 20, bottom: 48, left: 56 };
+    const points = split.candidates.length ? split.candidates : [{ threshold: 0, weightedImpurity: split.parentImpurity }];
+    const xScale = linearScale(extent(points.map((point) => point.threshold)), [margin.left, width - margin.right]);
+    const yValues = points.map((point) => point.weightedImpurity).concat(split.parentImpurity);
+    const yScale = linearScale([Math.max(0, Math.min(...yValues) - 0.02), Math.min(1, Math.max(...yValues) + 0.02)], [height - margin.bottom, margin.top]);
+    const path = points
+      .map((point, index) => `${index === 0 ? "M" : "L"} ${xScale(point.threshold)} ${yScale(point.weightedImpurity)}`)
+      .join(" ");
+    const markers = points
+      .map((point) => {
+        const isBest = split.best && point.threshold === split.best.threshold;
+        return `<circle cx="${xScale(point.threshold)}" cy="${yScale(point.weightedImpurity)}" r="${isBest ? 4.5 : 2.6}" fill="${isBest ? "#b85c38" : "#0f4d66"}"></circle>`;
+      })
+      .join("");
+    const parentY = yScale(split.parentImpurity);
+    const bestLine = split.best
+      ? `<line x1="${xScale(split.best.threshold)}" y1="${margin.top}" x2="${xScale(split.best.threshold)}" y2="${height - margin.bottom}" stroke="#b85c38" stroke-dasharray="6 5" stroke-width="1.4"></line>`
+      : "";
+    svg.innerHTML =
+      `${axisFrame(width, height, margin, split.featureName, "weighted Gini after split")}` +
+      `<line x1="${margin.left}" y1="${parentY}" x2="${width - margin.right}" y2="${parentY}" stroke="#8f99aa" stroke-dasharray="4 4"></line>` +
+      bestLine +
+      `<path d="${path}" fill="none" stroke="#0f4d66" stroke-width="2"></path>` +
+      markers;
+  }
+
+  function renderWeek6TreeSvg(svg, points, axes, tree) {
+    const width = 540;
+    const height = 420;
+    const margin = { top: 20, right: 20, bottom: 48, left: 56 };
+    const xRange = padExtent(extent(points.map((point) => point.x)), 0.08);
+    const yRange = padExtent(extent(points.map((point) => point.y)), 0.08);
+    const xScale = linearScale(xRange, [margin.left, width - margin.right]);
+    const yScale = linearScale(yRange, [height - margin.bottom, margin.top]);
+    const circles = points
+      .map((point) => `<circle cx="${xScale(point.x)}" cy="${yScale(point.y)}" r="4.2" fill="${PALETTE[point.classId % PALETTE.length]}" fill-opacity="0.8" stroke="#ffffff" stroke-width="0.8"></circle>`)
+      .join("");
+    const lines = [];
+    drawWeek6TreeLines(tree, axes, xRange, yRange, xScale, yScale, lines, 0);
+    svg.innerHTML =
+      `${axisFrame(width, height, margin, cache.dataset.columns[axes.xIndex], cache.dataset.columns[axes.yIndex])}` +
+      lines.join("") +
+      circles;
+  }
+
+  function drawWeek6TreeLines(node, axes, xRange, yRange, xScale, yScale, lines, depth) {
+    if (!node || node.type !== "split" || depth > 1) {
+      return;
+    }
+    let leftXRange = xRange.slice();
+    let rightXRange = xRange.slice();
+    let leftYRange = yRange.slice();
+    let rightYRange = yRange.slice();
+    if (node.feature === axes.xIndex) {
+      const x = xScale(node.threshold);
+      lines.push(`<line x1="${x}" y1="${yScale(yRange[0])}" x2="${x}" y2="${yScale(yRange[1])}" stroke="${depth === 0 ? "#b85c38" : "#0f4d66"}" stroke-width="${depth === 0 ? 2.2 : 1.6}" stroke-dasharray="${depth === 0 ? "" : "6 5"}"></line>`);
+      leftXRange = [xRange[0], Math.min(xRange[1], node.threshold)];
+      rightXRange = [Math.max(xRange[0], node.threshold), xRange[1]];
+    } else if (node.feature === axes.yIndex) {
+      const y = yScale(node.threshold);
+      lines.push(`<line x1="${xScale(xRange[0])}" y1="${y}" x2="${xScale(xRange[1])}" y2="${y}" stroke="${depth === 0 ? "#b85c38" : "#0f4d66"}" stroke-width="${depth === 0 ? 2.2 : 1.6}" stroke-dasharray="${depth === 0 ? "" : "6 5"}"></line>`);
+      leftYRange = [yRange[0], Math.min(yRange[1], node.threshold)];
+      rightYRange = [Math.max(yRange[0], node.threshold), yRange[1]];
+    } else if (depth === 0) {
+      return;
+    }
+    drawWeek6TreeLines(node.left, axes, leftXRange, leftYRange, xScale, yScale, lines, depth + 1);
+    drawWeek6TreeLines(node.right, axes, rightXRange, rightYRange, xScale, yScale, lines, depth + 1);
+  }
+
   function renderScatterSvg(svg, points, xLabel, yLabel) {
     const width = 540;
     const height = 420;
@@ -3047,6 +3428,16 @@
       return (2 * precision * recall) / Math.max(1e-12, precision + recall);
     });
     return average(f1s);
+  }
+
+  function computeBalancedAccuracy(actual, predicted, classCount) {
+    const matrix = confusionMatrix(actual, predicted, classCount);
+    const recalls = range(classCount).map((classIndex) => {
+      const tp = matrix[classIndex][classIndex];
+      const total = matrix[classIndex].reduce((sum, value) => sum + value, 0);
+      return tp / Math.max(1, total);
+    });
+    return average(recalls);
   }
 
   function confusionMatrix(actual, predicted, classCount) {
