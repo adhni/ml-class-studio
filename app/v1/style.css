@@ -379,6 +379,23 @@ body.settings-open .settings-drawer {
   scroll-margin-top: 20px;
 }
 
+.week-shell {
+  display: grid;
+  gap: 6px;
+  padding: 0 2px 4px;
+}
+
+.week-shell-top {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.week-shell-title {
+  margin-bottom: 0;
+}
+
 .section-title {
   display: flex;
   align-items: baseline;
@@ -401,6 +418,11 @@ body.settings-open .settings-drawer {
   color: var(--muted);
 }
 
+.view-summary {
+  font-size: 15px;
+  margin-top: -2px;
+}
+
 .small-note {
   font-size: 13px;
 }
@@ -408,6 +430,10 @@ body.settings-open .settings-drawer {
 .caption {
   margin-top: 8px;
   font-size: 13px;
+}
+
+.week-shell .caption {
+  display: none;
 }
 
 .panel-grid {
@@ -532,6 +558,10 @@ svg {
   color: var(--muted);
 }
 
+.tutorial-path {
+  white-space: nowrap;
+}
+
 .primary-btn,
 .secondary-btn,
 .card-btn {
@@ -574,6 +604,12 @@ svg {
   color: var(--text);
 }
 
+.compact-action-btn {
+  min-height: 34px;
+  padding: 6px 10px;
+  border-radius: 9px;
+}
+
 .secondary-btn:hover,
 .card-btn:hover {
   background: #f0f3f6;
@@ -600,6 +636,11 @@ svg {
   .panel-grid.two,
   .panel-grid.three {
     grid-template-columns: 1fr;
+  }
+
+  .week-shell-top {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .app-controls-head {

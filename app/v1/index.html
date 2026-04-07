@@ -370,16 +370,18 @@
         </div>
       </aside>
 
-      <section id="weekShell" class="card section">
-        <div class="section-title">
-          <span class="kicker" id="viewKicker"></span>
-          <h2 id="viewTitle"></h2>
+      <section id="weekShell" class="section week-shell">
+        <div class="week-shell-top">
+          <div class="section-title week-shell-title">
+            <span class="kicker" id="viewKicker"></span>
+            <h2 id="viewTitle"></h2>
+          </div>
+          <div class="view-actions">
+            <button id="viewPresetBtn" class="card-btn compact-action-btn" type="button">Use recommended setup</button>
+            <p id="viewTutorialPath" class="small-note tutorial-path"></p>
+          </div>
         </div>
         <p id="viewSummary" class="view-summary"></p>
-        <div class="view-actions">
-          <button id="viewPresetBtn" class="card-btn" type="button">Use recommended setup</button>
-          <p id="viewTutorialPath" class="small-note tutorial-path"></p>
-        </div>
         <p id="viewPrompt" class="caption"></p>
       </section>
 
