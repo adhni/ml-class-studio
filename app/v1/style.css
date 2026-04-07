@@ -336,11 +336,29 @@ body.settings-open .settings-drawer {
 .home-hero {
   display: grid;
   gap: 8px;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 .home-hero p {
   color: var(--muted);
+}
+
+.home-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.meta-pill {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #d8e1e8;
+  border-radius: 999px;
+  padding: 5px 10px;
+  background: #f8fafb;
+  color: var(--muted);
+  font-size: 12px;
 }
 
 .week-card-grid {
@@ -365,6 +383,18 @@ body.settings-open .settings-drawer {
 
 .week-card p {
   color: var(--muted);
+}
+
+.quiet-ref {
+  opacity: 0.9;
+}
+
+.home-footnote {
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid #e1e7ee;
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .week-card-actions,
@@ -636,6 +666,10 @@ svg {
   .panel-grid.two,
   .panel-grid.three {
     grid-template-columns: 1fr;
+  }
+
+  .home-meta {
+    gap: 6px;
   }
 
   .week-shell-top {
