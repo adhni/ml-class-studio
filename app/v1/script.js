@@ -764,8 +764,8 @@
     elements.viewTitle.textContent = view.title;
     elements.viewSummary.textContent = view.summary;
     elements.viewPrompt.textContent = view.prompt || "";
-    elements.tutorialPath.textContent = view.tutorialPath ? `Tutorial file: ${view.tutorialPath}` : "";
-    elements.viewTutorialPath.textContent = view.tutorialPath ? `Tutorial file: ${view.tutorialPath}` : "";
+    elements.tutorialPath.textContent = view.tutorialPath ? `Related worksheet: ${view.tutorialPath}` : "";
+    elements.viewTutorialPath.textContent = view.tutorialPath ? `Related worksheet: ${view.tutorialPath}` : "";
     setVisible(elements.tutorialPath, !isHome && Boolean(view.tutorialPath));
     setVisible(elements.viewTutorialPath, !isHome && Boolean(view.tutorialPath));
     setVisible(elements.viewPresetBtn, !isHome);
