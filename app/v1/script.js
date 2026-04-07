@@ -35,9 +35,12 @@
     knnK: 7,
     treeDepth: 4,
     forestTrees: 21,
+    nnHidden: 8,
+    nnEpochs: 180,
     svmC: 1.2,
     svmGamma: 1,
     clusterK: 3,
+    gmmComponents: 3,
     framingMode: "classification",
     focusModel: "knn",
     xaiIndex: 0,
@@ -53,6 +56,7 @@
     split: null,
     folds: null,
     classification: null,
+    neural: null,
     clustering: null
   };
 
@@ -173,6 +177,28 @@
           "This week is about the trade-off between a single interpretable tree and a more stable ensemble. Compare tree and forest first."
       }
     },
+    week7: {
+      label: "Week 7",
+      title: "Neural Networks",
+      summary: "Train a small multilayer perceptron and compare it with simpler baselines.",
+      prompt: "Start with Toy nonlinear. Increase hidden units or epochs and watch whether the neural boundary becomes more useful than the linear baselines.",
+      tutorialPath: "reference/tutorial/tut7.html",
+      controls: ["dataset", "validation", "neural"],
+      preset: {
+        datasetId: "toy_nonlinear",
+        validationMode: "holdout",
+        stratify: true,
+        framingMode: "classification",
+        nnHidden: 8,
+        nnEpochs: 180,
+        scatterX: 0,
+        scatterY: 1
+      },
+      copy: {
+        neural:
+          "Keep the interface light here: compare the neural net against a few strong baselines, then check whether the hidden layer is actually buying you a better fit."
+      }
+    },
     week8: {
       label: "Week 8",
       title: "Explainability / XAI",
@@ -265,6 +291,28 @@
         clustering:
           "This week is about judging the result. Read silhouette, WCSS, adjusted Rand, and the merge summary together instead of trusting one number."
       }
+    },
+    week11b: {
+      label: "Week 11B",
+      title: "Model-based Clustering",
+      summary: "Compare Gaussian-mixture clustering with the geometric clustering methods.",
+      prompt: "Start with Wine, keep k and the mixture component count aligned, then see where a probabilistic model groups points differently from k-means or hierarchical clustering.",
+      tutorialPath: "reference/tutorial/tut11.html",
+      controls: ["dataset", "clustering", "model-clustering"],
+      preset: {
+        datasetId: "wine",
+        validationMode: "holdout",
+        stratify: true,
+        framingMode: "clustering",
+        clusterK: 3,
+        gmmComponents: 3,
+        scatterX: 0,
+        scatterY: 5
+      },
+      copy: {
+        clustering:
+          "This week adds a probabilistic clustering model. Compare its PCA-space grouping with the geometric methods, but remember the fit still happens in the full standardized feature space."
+      }
     }
   };
 
@@ -322,12 +370,18 @@
       "treeDepth_num",
       "forestTrees",
       "forestTrees_num",
+      "nnHidden",
+      "nnHidden_num",
+      "nnEpochs",
+      "nnEpochs_num",
       "svmC",
       "svmC_num",
       "svmGamma",
       "svmGamma_num",
       "clusterK",
       "clusterK_num",
+      "gmmComponents",
+      "gmmComponents_num",
       "xaiIndex",
       "xaiIndex_num",
       "xaiIndexNote",
@@ -343,6 +397,14 @@
       "clusteringKicker",
       "clusterEvaluationPanel",
       "xaiIntro",
+      "neuralIntro",
+      "nnMetricsTable",
+      "nnMetricsCaption",
+      "nnSummaryPanel",
+      "nnSummary",
+      "nnBoundaryPanel",
+      "nnBoundaryPlot",
+      "nnBoundaryCaption",
       "xaiGlobalTable",
       "xaiGlobalCaption",
       "xaiLocalSummary",
@@ -382,6 +444,9 @@
       "kmeansCaption",
       "hierPlot",
       "hierCaption",
+      "modelClusteringPanel",
+      "modelClusterPlot",
+      "modelClusterCaption",
       "hierSummary",
       "hierSummaryCaption",
       "rerunBtn"
@@ -425,6 +490,14 @@
       setPairValue("forestTrees", "forestTrees_num", state.forestTrees);
       runAnalysis();
     });
+    bindPair("nnHidden", "nnHidden_num", (value) => {
+      state.nnHidden = clamp(Math.round(value), 3, 24);
+      runAnalysis();
+    });
+    bindPair("nnEpochs", "nnEpochs_num", (value) => {
+      state.nnEpochs = clamp(Math.round(value), 60, 320);
+      runAnalysis();
+    });
     bindPair("svmC", "svmC_num", (value) => {
       state.svmC = clamp(Number(value), 0.2, 3);
       runAnalysis();
@@ -435,6 +508,10 @@
     });
     bindPair("clusterK", "clusterK_num", (value) => {
       state.clusterK = clamp(Math.round(value), 2, 8);
+      runAnalysis();
+    });
+    bindPair("gmmComponents", "gmmComponents_num", (value) => {
+      state.gmmComponents = clamp(Math.round(value), 2, 8);
       runAnalysis();
     });
     bindPair("xaiIndex", "xaiIndex_num", (value) => {
@@ -596,9 +673,12 @@
     setPairValue("knnK", "knnK_num", state.knnK);
     setPairValue("treeDepth", "treeDepth_num", state.treeDepth);
     setPairValue("forestTrees", "forestTrees_num", state.forestTrees);
+    setPairValue("nnHidden", "nnHidden_num", state.nnHidden);
+    setPairValue("nnEpochs", "nnEpochs_num", state.nnEpochs);
     setPairValue("svmC", "svmC_num", state.svmC);
     setPairValue("svmGamma", "svmGamma_num", state.svmGamma);
     setPairValue("clusterK", "clusterK_num", state.clusterK);
+    setPairValue("gmmComponents", "gmmComponents_num", state.gmmComponents);
     setPairValue("xaiIndex", "xaiIndex_num", state.xaiIndex + 1);
   }
 
@@ -610,6 +690,7 @@
     cache.split = createTrainTestSplit(dataset.target, state.testFraction, state.stratify, state.seed + 11);
     cache.folds = createKFolds(dataset.target, state.kFolds, state.stratify, state.seed + 23);
     cache.classification = classificationViews().has(state.viewId) ? evaluateClassificationModels(dataset) : null;
+    cache.neural = state.viewId === "week7" ? evaluateNeuralNetwork(dataset) : null;
     cache.clustering = evaluateClustering(dataset, cache.pca);
 
     renderAppChrome();
@@ -619,6 +700,7 @@
     renderResamplingPanels();
     renderClassificationPanels();
     renderClusteringPanels();
+    renderNeuralLab();
     renderXaiLab();
   }
 
@@ -653,16 +735,18 @@
     setVisible(elements.tutorialPath, !isHome && Boolean(view.tutorialPath));
     setVisible(elements.viewTutorialPath, !isHome && Boolean(view.tutorialPath));
     setVisible(elements.viewPresetBtn, !isHome);
-    setVisible(elements.clusterEvaluationPanel, state.viewId === "week11");
+    setVisible(elements.clusterEvaluationPanel, state.viewId === "week11" || state.viewId === "week11b");
+    setVisible(elements.modelClusteringPanel, state.viewId === "week11b");
 
     elements.problemIntro.textContent = view.copy?.problem || "";
     elements.visualIntro.textContent = view.copy?.visual || "";
     elements.resamplingIntro.textContent = view.copy?.resampling || "";
     elements.classificationIntro.textContent = view.copy?.classification || "";
     elements.clusteringIntro.textContent = view.copy?.clustering || "";
+    elements.neuralIntro.textContent = view.copy?.neural || "";
     elements.xaiIntro.textContent = view.copy?.xai || "";
     elements.classificationKicker.textContent = view.label;
-    elements.clusteringKicker.textContent = state.viewId === "week11" ? "Week 11/12" : "Week 9";
+    elements.clusteringKicker.textContent = view.label;
   }
 
   function getViewFromHash() {
@@ -671,7 +755,7 @@
   }
 
   function classificationViews() {
-    return new Set(["week4", "week5", "week6", "week8", "week10"]);
+    return new Set(["week4", "week5", "week6", "week7", "week8", "week10"]);
   }
 
   function getActiveDataset() {
@@ -895,6 +979,50 @@
     renderModelInspection();
   }
 
+  function renderNeuralLab() {
+    if (state.viewId !== "week7") {
+      return;
+    }
+    const neural = cache.neural;
+    const baselines = cache.classification;
+    if (!neural || !baselines) {
+      return;
+    }
+
+    const baselineIds = ["logistic", "forest", "svm_rbf"];
+    const rows = baselineIds
+      .filter((modelId) => baselines.metrics[modelId])
+      .map((modelId) => [
+        baselines.labels[modelId],
+        formatPct(baselines.metrics[modelId].accuracy),
+        formatPct(baselines.metrics[modelId].macroF1)
+      ]);
+    rows.push(["Neural network", formatPct(neural.metrics.accuracy), formatPct(neural.metrics.macroF1)]);
+    renderTable(elements.nnMetricsTable, ["Model", "Accuracy", "Macro F1"], rows);
+    elements.nnMetricsCaption.textContent =
+      `The neural net uses ${state.nnHidden} hidden units and ${state.nnEpochs} epochs on standardized features. Compare it with the baselines to check whether the added flexibility is actually helping on this dataset.`;
+
+    elements.nnSummary.textContent = neural.summary;
+
+    const dataset = cache.dataset;
+    if (!dataset.id.startsWith("toy_") || dataset.p !== 2) {
+      setVisible(elements.nnBoundaryPanel, false);
+      elements.nnSummaryPanel.style.gridColumn = "1 / -1";
+      return;
+    }
+
+    setVisible(elements.nnBoundaryPanel, true);
+    elements.nnSummaryPanel.style.gridColumn = "";
+    const points = dataset.data.map((row, index) => ({
+      x: row[0],
+      y: row[1],
+      classId: dataset.target[index]
+    }));
+    renderDecisionBoundarySvg(elements.nnBoundaryPlot, neural.fit.predict, points, dataset.targetNames.length);
+    elements.nnBoundaryCaption.textContent =
+      "Plain-English caption: the hidden layer lets the neural net bend the boundary instead of staying strictly linear. Use the toy datasets to see when that extra flexibility is helpful and when it just adds complexity.";
+  }
+
   function renderModelInspection() {
     const evaluation = cache.classification;
     if (!evaluation) {
@@ -953,6 +1081,14 @@
         result.ari == null ? "N/A" : formatNumber(result.ari, 3)
       ];
     });
+    if (clustering.modelBased) {
+      rows.push([
+        "Model-based",
+        formatNumber(clustering.modelBased.silhouette, 3),
+        formatNumber(clustering.modelBased.wcss, 1),
+        clustering.modelBased.ari == null ? "N/A" : formatNumber(clustering.modelBased.ari, 3)
+      ]);
+    }
     renderTable(elements.clusteringTable, ["Algorithm", "Silhouette", "WCSS", "Adjusted Rand"], rows);
     elements.clusteringCaption.textContent =
       `Silhouette closer to 1 means tighter, cleaner separation. Lower within-cluster sum of squares means clusters are more compact. Adjusted Rand compares the unsupervised clusters to the known labels without using those labels during fitting.`;
@@ -962,6 +1098,16 @@
 
     elements.kmeansCaption.textContent = buildClusterCaption("k-means", clustering.kmeans, clustering);
     elements.hierCaption.textContent = buildClusterCaption("hierarchical clustering", clustering.hierarchical, clustering);
+    if (clustering.modelBased) {
+      renderClusterPlot(
+        elements.modelClusterPlot,
+        clustering.displayPoints,
+        clustering.modelBased.assignments,
+        "PC1",
+        "PC2"
+      );
+      elements.modelClusterCaption.textContent = buildModelClusterCaption(clustering.modelBased, clustering);
+    }
     renderHierarchicalSummary(clustering.hierarchical);
   }
 
@@ -973,6 +1119,19 @@
     const ariPart =
       result.ari == null ? "" : ` Its adjusted Rand index is ${formatNumber(result.ari, 3)}, so the discovered groups ${describeAri(result.ari)}.`;
     return `Plain-English caption: ${capitalize(name)} forms ${state.clusterK} groups in standardized feature space and then displays them in PCA coordinates. Its silhouette is ${formatNumber(
+      result.silhouette,
+      3
+    )}, so the clusters ${describeSilhouette(result.silhouette)}.${ariPart}${subsetNote}`;
+  }
+
+  function buildModelClusterCaption(result, clustering) {
+    const subsetNote =
+      clustering.usedSubset
+        ? ` For responsiveness, this panel uses a seeded subset of ${clustering.displayPoints.length} rows from the full dataset.`
+        : "";
+    const ariPart =
+      result.ari == null ? "" : ` Its adjusted Rand index is ${formatNumber(result.ari, 3)}, so the discovered groups ${describeAri(result.ari)}.`;
+    return `Plain-English caption: the Gaussian mixture fits ${state.gmmComponents} soft components with diagonal covariance in standardized feature space, then shows hard assignments in PCA coordinates. Its silhouette is ${formatNumber(
       result.silhouette,
       3
     )}, so the clusters ${describeSilhouette(result.silhouette)}.${ariPart}${subsetNote}`;
@@ -1100,6 +1259,49 @@
     };
   }
 
+  function evaluateNeuralNetwork(dataset) {
+    const evaluationSplits =
+      state.validationMode === "holdout"
+        ? [{ train: cache.split.trainIndices, test: cache.split.testIndices }]
+        : cache.folds.foldIndices.map((testIndices) => ({
+            train: complementIndices(dataset.n, testIndices),
+            test: testIndices
+          }));
+
+    const predicted = new Array(dataset.n).fill(null);
+    evaluationSplits.forEach((split, splitIndex) => {
+      const trainX = selectRows(dataset.data, split.train);
+      const trainY = selectEntries(dataset.target, split.train);
+      const testX = selectRows(dataset.data, split.test);
+      const fit = fitNeuralNetwork(trainX, trainY, dataset.columns, state.nnHidden, state.nnEpochs, state.seed + 307 + splitIndex * 29);
+      const preds = fit.predict(testX);
+      split.test.forEach((rowIndex, localIndex) => {
+        predicted[rowIndex] = preds[localIndex];
+      });
+    });
+
+    const filteredActual = [];
+    const filteredPredicted = [];
+    predicted.forEach((value, index) => {
+      if (value != null) {
+        filteredActual.push(dataset.target[index]);
+        filteredPredicted.push(value);
+      }
+    });
+
+    const fullFit = fitNeuralNetwork(dataset.data, dataset.target, dataset.columns, state.nnHidden, state.nnEpochs, state.seed + 389);
+    return {
+      metrics: {
+        accuracy: computeAccuracy(filteredActual, filteredPredicted),
+        macroF1: computeMacroF1(filteredActual, filteredPredicted, dataset.targetNames.length)
+      },
+      actual: filteredActual,
+      predicted: filteredPredicted,
+      fit: fullFit,
+      summary: buildNeuralSummary(fullFit, dataset)
+    };
+  }
+
   function evaluateClustering(dataset, pca) {
     const subsetIndices =
       dataset.n > MAX_HIERARCHICAL_ROWS
@@ -1121,13 +1323,22 @@
     kmeans.ari = dataset.hasLabels ? adjustedRandIndex(subsetY, kmeans.assignments) : null;
     hierarchical.ari = dataset.hasLabels ? adjustedRandIndex(subsetY, hierarchical.assignments) : null;
 
+    let modelBased = null;
+    if (state.viewId === "week11b") {
+      modelBased = runGaussianMixture(subsetX, state.gmmComponents, state.seed + 67);
+      modelBased.silhouette = silhouetteScore(distances, modelBased.assignments, state.gmmComponents);
+      modelBased.wcss = withinClusterSumSquares(subsetX, modelBased.assignments, state.gmmComponents);
+      modelBased.ari = dataset.hasLabels ? adjustedRandIndex(subsetY, modelBased.assignments) : null;
+    }
+
     const displayPoints = subsetScores.map((row) => ({ x: row[0], y: row[1] }));
 
     return {
       usedSubset,
       displayPoints,
       kmeans,
-      hierarchical
+      hierarchical,
+      modelBased
     };
   }
 
@@ -1150,6 +1361,90 @@
       default:
         throw new Error(`Unknown model ${modelId}`);
     }
+  }
+
+  function fitNeuralNetwork(X, y, columns, hiddenUnits, epochs, seed) {
+    const standard = standardizeMatrix(X);
+    const features = standard.X;
+    const classes = uniqueSorted(y);
+    const inputDim = features[0].length;
+    const outputDim = classes.length;
+    const rng = mulberry32(seed);
+    const lambda = 0.0008;
+    const W1 = range(hiddenUnits).map(() => range(inputDim).map(() => (rng() - 0.5) * 0.6));
+    const b1 = new Array(hiddenUnits).fill(0);
+    const W2 = range(outputDim).map(() => range(hiddenUnits).map(() => (rng() - 0.5) * 0.45));
+    const b2 = new Array(outputDim).fill(0);
+    const classToIndex = new Map(classes.map((cls, index) => [cls, index]));
+    const order = range(features.length);
+    const lossHistory = [];
+
+    for (let epoch = 0; epoch < epochs; epoch += 1) {
+      shuffle(order, mulberry32(seed + epoch * 19));
+      const eta = 0.08 / (1 + epoch / 70);
+
+      order.forEach((rowIndex) => {
+        const x = features[rowIndex];
+        const targetIndex = classToIndex.get(y[rowIndex]);
+        const hiddenPre = W1.map((weights, hiddenIndex) => dot(weights, x) + b1[hiddenIndex]);
+        const hiddenAct = hiddenPre.map((value) => Math.tanh(value));
+        const logits = W2.map((weights, outputIndex) => dot(weights, hiddenAct) + b2[outputIndex]);
+        const probs = softmax(logits);
+        const delta2 = probs.map((value, outputIndex) => value - (outputIndex === targetIndex ? 1 : 0));
+        const delta1 = hiddenAct.map((hiddenValue, hiddenIndex) => {
+          let total = 0;
+          for (let outputIndex = 0; outputIndex < outputDim; outputIndex += 1) {
+            total += W2[outputIndex][hiddenIndex] * delta2[outputIndex];
+          }
+          return total * (1 - hiddenValue * hiddenValue);
+        });
+
+        for (let outputIndex = 0; outputIndex < outputDim; outputIndex += 1) {
+          for (let hiddenIndex = 0; hiddenIndex < hiddenUnits; hiddenIndex += 1) {
+            W2[outputIndex][hiddenIndex] -=
+              eta * (delta2[outputIndex] * hiddenAct[hiddenIndex] + lambda * W2[outputIndex][hiddenIndex]);
+          }
+          b2[outputIndex] -= eta * delta2[outputIndex];
+        }
+
+        for (let hiddenIndex = 0; hiddenIndex < hiddenUnits; hiddenIndex += 1) {
+          for (let featureIndex = 0; featureIndex < inputDim; featureIndex += 1) {
+            W1[hiddenIndex][featureIndex] -=
+              eta * (delta1[hiddenIndex] * x[featureIndex] + lambda * W1[hiddenIndex][featureIndex]);
+          }
+          b1[hiddenIndex] -= eta * delta1[hiddenIndex];
+        }
+      });
+
+      if (epoch % 20 === 0 || epoch === epochs - 1) {
+        lossHistory.push({
+          epoch: epoch + 1,
+          loss: neuralNetworkLoss(features, y, classes, W1, b1, W2, b2)
+        });
+      }
+    }
+
+    return {
+      modelType: "neural",
+      columns: columns.slice(),
+      standard,
+      classes,
+      hiddenUnits,
+      epochs,
+      W1,
+      b1,
+      W2,
+      b2,
+      lossHistory,
+      predict(rows) {
+        const scaled = applyStandardization(rows, standard.mean, standard.std);
+        return scaled.map((row) => {
+          const hiddenAct = W1.map((weights, hiddenIndex) => Math.tanh(dot(weights, row) + b1[hiddenIndex]));
+          const logits = W2.map((weights, outputIndex) => dot(weights, hiddenAct) + b2[outputIndex]);
+          return classes[argMax(logits)];
+        });
+      }
+    };
   }
 
   function fitKNN(X, y, k) {
@@ -1659,6 +1954,21 @@
     return `Decision tree summary\n- Maximum depth is ${state.treeDepth}; realised depth is ${stats.depth} with ${stats.leaves} leaves.\n- First split: ${stats.firstSplit || "no split was useful on the full dataset"}.\n- Trees are easy to explain, but deep trees can fit local quirks rather than broad patterns.`;
   }
 
+  function buildNeuralSummary(fit, dataset) {
+    const inputSignal = dataset.columns
+      .map((name, featureIndex) => {
+        const value =
+          fit.W1.reduce((sum, row) => sum + Math.abs(row[featureIndex]), 0) / Math.max(1, fit.W1.length);
+        return { name, value };
+      })
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 3)
+      .map((item) => `${item.name} (${formatNumber(item.value, 2)})`);
+    const firstLoss = fit.lossHistory[0]?.loss ?? NaN;
+    const lastLoss = fit.lossHistory[fit.lossHistory.length - 1]?.loss ?? NaN;
+    return `Neural network summary\n- One hidden layer with ${fit.hiddenUnits} tanh units and ${fit.classes.length} output classes.\n- Trained for ${fit.epochs} epochs on standardized features.\n- Training loss moved from ${formatNumber(firstLoss, 3)} to ${formatNumber(lastLoss, 3)}.\n- Strongest input signal appears in ${inputSignal.join(", ")}.`;
+  }
+
   function buildGlobalExplanation(modelId, fit, dataset) {
     let importance = [];
     let caption = "";
@@ -2094,6 +2404,108 @@
     });
 
     return { assignments, clusters, mergeHistory };
+  }
+
+  function runGaussianMixture(X, k, seed) {
+    const rng = mulberry32(seed);
+    const n = X.length;
+    const p = X[0].length;
+    const initial = runKMeans(X, k, seed + 13);
+    const globalMean = columnMeans(X);
+    const globalVar = new Array(p).fill(0);
+    X.forEach((row) => {
+      row.forEach((value, index) => {
+        const diff = value - globalMean[index];
+        globalVar[index] += diff * diff;
+      });
+    });
+    for (let index = 0; index < p; index += 1) {
+      globalVar[index] = globalVar[index] / Math.max(1, n - 1) + 0.05;
+    }
+
+    let means = initial.centers.map((center) => center.slice());
+    let variances = range(k).map(() => globalVar.slice());
+    let weights = new Array(k).fill(1 / k);
+    let responsibilities = zeros(n, k);
+    let logLikelihood = -Infinity;
+
+    for (let iter = 0; iter < 24; iter += 1) {
+      logLikelihood = 0;
+      for (let i = 0; i < n; i += 1) {
+        const logScores = range(k).map((component) => {
+          return Math.log(Math.max(weights[component], 1e-9)) + gaussianLogDensityDiag(X[i], means[component], variances[component]);
+        });
+        const maxScore = Math.max(...logScores);
+        const scores = logScores.map((value) => Math.exp(value - maxScore));
+        const total = scores.reduce((sum, value) => sum + value, 0) || 1;
+        for (let component = 0; component < k; component += 1) {
+          responsibilities[i][component] = scores[component] / total;
+        }
+        logLikelihood += maxScore + Math.log(total);
+      }
+
+      for (let component = 0; component < k; component += 1) {
+        const Nk = responsibilities.reduce((sum, row) => sum + row[component], 0);
+        if (Nk < 1e-6) {
+          means[component] = X[Math.floor(rng() * n)].slice();
+          variances[component] = globalVar.slice();
+          weights[component] = 1 / k;
+          continue;
+        }
+        weights[component] = Nk / n;
+        const mean = new Array(p).fill(0);
+        for (let i = 0; i < n; i += 1) {
+          for (let dim = 0; dim < p; dim += 1) {
+            mean[dim] += responsibilities[i][component] * X[i][dim];
+          }
+        }
+        for (let dim = 0; dim < p; dim += 1) {
+          mean[dim] /= Nk;
+        }
+        const variance = new Array(p).fill(0);
+        for (let i = 0; i < n; i += 1) {
+          for (let dim = 0; dim < p; dim += 1) {
+            const diff = X[i][dim] - mean[dim];
+            variance[dim] += responsibilities[i][component] * diff * diff;
+          }
+        }
+        for (let dim = 0; dim < p; dim += 1) {
+          variance[dim] = variance[dim] / Nk + 1e-4;
+        }
+        means[component] = mean;
+        variances[component] = variance;
+      }
+    }
+
+    logLikelihood = 0;
+    for (let i = 0; i < n; i += 1) {
+      const logScores = range(k).map((component) => {
+        return Math.log(Math.max(weights[component], 1e-9)) + gaussianLogDensityDiag(X[i], means[component], variances[component]);
+      });
+      const maxScore = Math.max(...logScores);
+      const scores = logScores.map((value) => Math.exp(value - maxScore));
+      const total = scores.reduce((sum, value) => sum + value, 0) || 1;
+      for (let component = 0; component < k; component += 1) {
+        responsibilities[i][component] = scores[component] / total;
+      }
+      logLikelihood += maxScore + Math.log(total);
+    }
+
+    const assignments = responsibilities.map((row) => argMax(row));
+    const counts = new Array(k).fill(0);
+    assignments.forEach((clusterId) => {
+      counts[clusterId] += 1;
+    });
+
+    return {
+      assignments,
+      means,
+      variances,
+      weights,
+      responsibilities,
+      counts,
+      logLikelihood
+    };
   }
 
   function silhouetteScore(distances, assignments, k) {
@@ -2542,6 +2954,35 @@
 
   function sigmoid(value) {
     return 1 / (1 + Math.exp(-Math.max(-20, Math.min(20, value))));
+  }
+
+  function softmax(values) {
+    const maxValue = Math.max(...values);
+    const exps = values.map((value) => Math.exp(value - maxValue));
+    const total = exps.reduce((sum, value) => sum + value, 0) || 1;
+    return exps.map((value) => value / total);
+  }
+
+  function neuralNetworkLoss(features, y, classes, W1, b1, W2, b2) {
+    const classToIndex = new Map(classes.map((cls, index) => [cls, index]));
+    let total = 0;
+    for (let rowIndex = 0; rowIndex < features.length; rowIndex += 1) {
+      const hiddenAct = W1.map((weights, hiddenIndex) => Math.tanh(dot(weights, features[rowIndex]) + b1[hiddenIndex]));
+      const logits = W2.map((weights, outputIndex) => dot(weights, hiddenAct) + b2[outputIndex]);
+      const probs = softmax(logits);
+      total -= Math.log(Math.max(probs[classToIndex.get(y[rowIndex])], 1e-9));
+    }
+    return total / Math.max(1, features.length);
+  }
+
+  function gaussianLogDensityDiag(row, mean, variance) {
+    let total = 0;
+    for (let dim = 0; dim < row.length; dim += 1) {
+      const varValue = Math.max(variance[dim], 1e-6);
+      const diff = row[dim] - mean[dim];
+      total += -0.5 * (Math.log(2 * Math.PI * varValue) + (diff * diff) / varValue);
+    }
+    return total;
   }
 
   function argMax(values) {
