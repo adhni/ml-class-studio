@@ -26,6 +26,7 @@
 
   const state = {
     datasetId: "iris",
+    viewId: "home",
     seed: 123,
     validationMode: "holdout",
     testFraction: 0.25,
@@ -51,6 +52,166 @@
     clustering: null
   };
 
+  const VIEWS = {
+    home: {
+      label: "Home",
+      title: "Choose a week",
+      summary: "Open one focused studio at a time.",
+      prompt: "Each week card below loads the matching dataset and control setup."
+    },
+    week2: {
+      label: "Week 2",
+      title: "Visualisation",
+      summary: "See structure before fitting models.",
+      prompt: "Start with Wine, then compare what the raw scatter, PCA, and MDS views reveal.",
+      tutorialPath: "reference/tutorial/tut3.html",
+      controls: ["dataset", "visual"],
+      preset: {
+        datasetId: "wine",
+        validationMode: "holdout",
+        stratify: true,
+        framingMode: "classification",
+        scatterX: 0,
+        scatterY: 5
+      },
+      copy: {
+        visual:
+          "Use the sidebar to change the two raw features, then compare that pair with the lower-dimensional PCA and MDS views."
+      }
+    },
+    week3: {
+      label: "Week 3",
+      title: "Validation",
+      summary: "See how the split changes the story.",
+      prompt: "Start with Penguins. Toggle stratification and compare holdout with k-fold cross-validation.",
+      tutorialPath: "reference/tutorial/tut4.html",
+      controls: ["dataset", "validation"],
+      preset: {
+        datasetId: "penguins",
+        validationMode: "cv",
+        stratify: true,
+        framingMode: "classification",
+        kFolds: 5,
+        focusModel: "logistic",
+        scatterX: 0,
+        scatterY: 2
+      },
+      copy: {
+        resampling:
+          "This week is about generalisation. Read the balance tables first, then decide whether the model scores are stable enough to trust."
+      }
+    },
+    week4: {
+      label: "Week 4",
+      title: "Basics + KNN",
+      summary: "Start with x and y, then compare classifiers with KNN in focus.",
+      prompt: "Use Iris first, then switch to Toy nonlinear to see why KNN behaves like a local rule.",
+      tutorialPath: "reference/tutorial/tut2.html",
+      controls: ["dataset", "problem", "validation", "classification"],
+      preset: {
+        datasetId: "iris",
+        validationMode: "holdout",
+        stratify: true,
+        framingMode: "classification",
+        focusModel: "knn",
+        knnK: 7,
+        scatterX: 2,
+        scatterY: 3
+      },
+      copy: {
+        problem:
+          "Keep this short: make sure you know what x and y mean, then move into the classifier comparison below.",
+        classification:
+          "Use KNN as the starting point this week. Compare it with the other models, but treat KNN as the main reference."
+      }
+    },
+    week5: {
+      label: "Week 5",
+      title: "Logistic Regression + LDA",
+      summary: "Use smoother linear classifiers on overlapping classes.",
+      prompt: "Start with Penguins, inspect logistic regression first, then compare it with LDA on the same split.",
+      tutorialPath: "reference/tutorial/tut5.html",
+      controls: ["dataset", "validation", "classification"],
+      preset: {
+        datasetId: "penguins",
+        validationMode: "holdout",
+        stratify: true,
+        framingMode: "classification",
+        focusModel: "logistic",
+        scatterX: 0,
+        scatterY: 2
+      },
+      copy: {
+        classification:
+          "This week is about model-based linear boundaries. Read the confusion matrix together with the logistic or LDA summary rather than looking at accuracy alone."
+      }
+    },
+    week6: {
+      label: "Week 6",
+      title: "Trees",
+      summary: "Use threshold-style rules and tree depth deliberately.",
+      prompt: "Start with Penguins, inspect the first tree split, then switch to Toy nonlinear to see how tree boundaries bend.",
+      tutorialPath: "reference/tutorial/tut6.html",
+      controls: ["dataset", "validation", "classification"],
+      preset: {
+        datasetId: "penguins",
+        validationMode: "holdout",
+        stratify: true,
+        framingMode: "classification",
+        focusModel: "tree",
+        treeDepth: 4,
+        scatterX: 0,
+        scatterY: 2
+      },
+      copy: {
+        classification:
+          "This week is about interpretability and splitting rules. Keep the focus model on the decision tree and watch how depth changes the summary."
+      }
+    },
+    week9: {
+      label: "Week 9",
+      title: "Clustering Methods",
+      summary: "Compare k-means and hierarchical clustering directly.",
+      prompt: "Start with Wine, then check whether the two methods tell a similar grouping story in PCA space.",
+      tutorialPath: "reference/tutorial/tut10.html",
+      controls: ["dataset", "clustering"],
+      preset: {
+        datasetId: "wine",
+        validationMode: "holdout",
+        stratify: true,
+        framingMode: "clustering",
+        clusterK: 3,
+        scatterX: 0,
+        scatterY: 5
+      },
+      copy: {
+        clustering:
+          "Treat the PCA plots as a comparison space for the two clustering methods. The aim this week is method contrast, not metric theory."
+      }
+    },
+    week11: {
+      label: "Week 11/12",
+      title: "Cluster Evaluation",
+      summary: "Judge whether the discovered groups are actually useful.",
+      prompt: "Start with Toy clusters, then compare the metrics with what your eye says in PCA space.",
+      tutorialPath: "reference/tutorial/tut12.html",
+      controls: ["dataset", "clustering"],
+      preset: {
+        datasetId: "toy_clusters",
+        validationMode: "holdout",
+        stratify: true,
+        framingMode: "clustering",
+        clusterK: 3,
+        scatterX: 0,
+        scatterY: 1
+      },
+      copy: {
+        clustering:
+          "This week is about judging the result. Read silhouette, WCSS, adjusted Rand, and the merge summary together instead of trusting one number."
+      }
+    }
+  };
+
   document.addEventListener("DOMContentLoaded", init);
 
   function init() {
@@ -58,12 +219,37 @@
     bindControls();
     buildToyDatasets(state.seed);
     populateDatasetSelector();
+    const initialView = getViewFromHash();
+    if (initialView) {
+      state.viewId = initialView;
+    }
     syncScatterOptions();
+    if (state.viewId !== "home") {
+      applyViewPreset(state.viewId, false);
+    } else {
+      syncControlsFromState();
+    }
     runAnalysis();
   }
 
   function collectElements() {
     const ids = [
+      "viewSelect",
+      "currentWeekBlock",
+      "currentWeekLabel",
+      "currentWeekTitle",
+      "currentWeekSummary",
+      "backHomeBtn",
+      "applyPresetBtn",
+      "tutorialPath",
+      "homeView",
+      "weekShell",
+      "viewKicker",
+      "viewTitle",
+      "viewSummary",
+      "viewPrompt",
+      "viewTutorialPath",
+      "viewPresetBtn",
       "datasetSelect",
       "analysisSeed",
       "analysisSeed_num",
@@ -82,6 +268,14 @@
       "framingMode",
       "framingSummary",
       "xyDefinition",
+      "problemIntro",
+      "visualIntro",
+      "resamplingIntro",
+      "classificationIntro",
+      "classificationKicker",
+      "clusteringIntro",
+      "clusteringKicker",
+      "clusterEvaluationPanel",
       "datasetMeta",
       "datasetTeachingNote",
       "standardisationSummary",
@@ -121,6 +315,9 @@
     ids.forEach((id) => {
       elements[id] = document.getElementById(id);
     });
+    elements.weekSections = Array.from(document.querySelectorAll(".week-section"));
+    elements.controlGroups = Array.from(document.querySelectorAll("[data-control-group]"));
+    elements.viewButtons = Array.from(document.querySelectorAll("[data-view-target]"));
   }
 
   function bindControls() {
@@ -157,6 +354,9 @@
       syncScatterOptions();
       runAnalysis();
     });
+    elements.viewSelect.addEventListener("change", (event) => {
+      navigateToView(event.target.value);
+    });
     elements.validationMode.addEventListener("change", (event) => {
       state.validationMode = event.target.value;
       runAnalysis();
@@ -181,7 +381,27 @@
       state.scatterY = Number(event.target.value);
       renderVisualisationPanels();
     });
+    elements.backHomeBtn.addEventListener("click", () => {
+      navigateToView("home");
+    });
+    elements.applyPresetBtn.addEventListener("click", () => {
+      applyViewPreset(state.viewId);
+    });
+    elements.viewPresetBtn.addEventListener("click", () => {
+      applyViewPreset(state.viewId);
+    });
+    elements.viewButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        navigateToView(button.dataset.viewTarget);
+      });
+    });
     elements.rerunBtn.addEventListener("click", runAnalysis);
+    window.addEventListener("hashchange", () => {
+      const nextView = getViewFromHash();
+      if (nextView && nextView !== state.viewId) {
+        navigateToView(nextView);
+      }
+    });
   }
 
   function bindPair(rangeId, numberId, onChange) {
@@ -222,6 +442,65 @@
     registry.toy_clusters = createClusterToy(seed + 31);
   }
 
+  function navigateToView(viewId) {
+    if (!VIEWS[viewId]) {
+      return;
+    }
+    state.viewId = viewId;
+    if (viewId !== "home") {
+      applyViewPreset(viewId, false);
+    } else {
+      syncControlsFromState();
+    }
+    if (window.location.hash.slice(1) !== viewId) {
+      history.replaceState(null, "", `#${viewId}`);
+    }
+    runAnalysis();
+  }
+
+  function applyViewPreset(viewId, rerun = true) {
+    const view = VIEWS[viewId];
+    if (!view || !view.preset) {
+      if (rerun) {
+        runAnalysis();
+      }
+      return;
+    }
+    Object.entries(view.preset).forEach(([key, value]) => {
+      if (key !== "scatterX" && key !== "scatterY") {
+        state[key] = value;
+      }
+    });
+    if (view.preset.scatterX != null) {
+      state.scatterX = view.preset.scatterX;
+    }
+    if (view.preset.scatterY != null) {
+      state.scatterY = view.preset.scatterY;
+    }
+    syncControlsFromState();
+    syncScatterOptions();
+    elements.scatterX.value = state.scatterX;
+    elements.scatterY.value = state.scatterY;
+    if (rerun) {
+      runAnalysis();
+    }
+  }
+
+  function syncControlsFromState() {
+    elements.viewSelect.value = state.viewId;
+    elements.datasetSelect.value = state.datasetId;
+    elements.validationMode.value = state.validationMode;
+    elements.stratifyToggle.checked = state.stratify;
+    elements.framingMode.value = state.framingMode;
+    elements.focusModel.value = state.focusModel;
+    setPairValue("analysisSeed", "analysisSeed_num", state.seed);
+    setPairValue("testFraction", "testFraction_num", state.testFraction);
+    setPairValue("kFolds", "kFolds_num", state.kFolds);
+    setPairValue("knnK", "knnK_num", state.knnK);
+    setPairValue("treeDepth", "treeDepth_num", state.treeDepth);
+    setPairValue("clusterK", "clusterK_num", state.clusterK);
+  }
+
   function runAnalysis() {
     const dataset = getActiveDataset();
     cache.dataset = dataset;
@@ -232,12 +511,60 @@
     cache.classification = evaluateClassificationModels(dataset);
     cache.clustering = evaluateClustering(dataset, cache.pca);
 
+    renderAppChrome();
     renderProblemFraming();
     renderDatasetMeta();
     renderVisualisationPanels();
     renderResamplingPanels();
     renderClassificationPanels();
     renderClusteringPanels();
+  }
+
+  function renderAppChrome() {
+    const view = VIEWS[state.viewId] || VIEWS.home;
+    const isHome = state.viewId === "home";
+    const visibleControls = new Set(view.controls || []);
+
+    document.body.dataset.view = state.viewId;
+    setVisible(elements.homeView, isHome);
+    setVisible(elements.weekShell, !isHome);
+    setVisible(elements.currentWeekBlock, !isHome);
+    setVisible(elements.rerunBtn, !isHome);
+
+    elements.controlGroups.forEach((group) => {
+      setVisible(group, !isHome && visibleControls.has(group.dataset.controlGroup));
+    });
+    elements.weekSections.forEach((section) => {
+      const allowed = (section.dataset.views || "").split(/\s+/).includes(state.viewId);
+      setVisible(section, !isHome && allowed);
+    });
+
+    elements.currentWeekLabel.textContent = view.label;
+    elements.currentWeekTitle.textContent = view.title;
+    elements.currentWeekSummary.textContent = view.summary;
+    elements.viewKicker.textContent = view.label;
+    elements.viewTitle.textContent = view.title;
+    elements.viewSummary.textContent = view.summary;
+    elements.viewPrompt.textContent = view.prompt || "";
+    elements.tutorialPath.textContent = view.tutorialPath ? `Tutorial file: ${view.tutorialPath}` : "";
+    elements.viewTutorialPath.textContent = view.tutorialPath ? `Tutorial file: ${view.tutorialPath}` : "";
+    setVisible(elements.tutorialPath, !isHome && Boolean(view.tutorialPath));
+    setVisible(elements.viewTutorialPath, !isHome && Boolean(view.tutorialPath));
+    setVisible(elements.viewPresetBtn, !isHome);
+    setVisible(elements.clusterEvaluationPanel, state.viewId === "week11");
+
+    elements.problemIntro.textContent = view.copy?.problem || "";
+    elements.visualIntro.textContent = view.copy?.visual || "";
+    elements.resamplingIntro.textContent = view.copy?.resampling || "";
+    elements.classificationIntro.textContent = view.copy?.classification || "";
+    elements.clusteringIntro.textContent = view.copy?.clustering || "";
+    elements.classificationKicker.textContent = view.label;
+    elements.clusteringKicker.textContent = state.viewId === "week11" ? "Week 11/12" : "Week 9";
+  }
+
+  function getViewFromHash() {
+    const hash = window.location.hash.replace("#", "");
+    return VIEWS[hash] ? hash : null;
   }
 
   function getActiveDataset() {
@@ -1377,6 +1704,13 @@
       <rect x="1" y="1" width="538" height="418" fill="#fbfcfd" stroke="#e3e7ed"></rect>
       <text x="270" y="205" text-anchor="middle" font-size="15" fill="#5a6475">${escapeHtml(message)}</text>
     `;
+  }
+
+  function setVisible(element, visible) {
+    if (!element) {
+      return;
+    }
+    element.hidden = !visible;
   }
 
   function axisFrame(width, height, margin, xLabel, yLabel) {
