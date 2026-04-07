@@ -348,6 +348,10 @@
       "applyPresetBtn",
       "tutorialPath",
       "homeView",
+      "quickControlsBar",
+      "quickControlsTitle",
+      "quickControlsNote",
+      "quickControlsGrid",
       "weekShell",
       "viewKicker",
       "viewTitle",
@@ -696,6 +700,7 @@
     renderAppChrome();
     renderProblemFraming();
     renderDatasetMeta();
+    renderQuickControls();
     renderVisualisationPanels();
     renderResamplingPanels();
     renderClassificationPanels();
@@ -711,6 +716,7 @@
 
     document.body.dataset.view = state.viewId;
     setVisible(elements.homeView, isHome);
+    setVisible(elements.quickControlsBar, !isHome);
     setVisible(elements.weekShell, !isHome);
     setVisible(elements.currentWeekBlock, !isHome);
     setVisible(elements.rerunBtn, !isHome);
@@ -756,6 +762,315 @@
 
   function classificationViews() {
     return new Set(["week4", "week5", "week6", "week7", "week8", "week10"]);
+  }
+
+  function renderQuickControls() {
+    if (state.viewId === "home") {
+      return;
+    }
+
+    const view = VIEWS[state.viewId];
+    const config = quickControlConfig(state.viewId);
+    elements.quickControlsTitle.textContent = `${view.label}: live controls`;
+    elements.quickControlsNote.textContent =
+      "These controls stay beside the output so you can see changes without jumping back to the sidebar.";
+    elements.quickControlsGrid.innerHTML = config.map(renderQuickControlCard).join("");
+
+    elements.quickControlsGrid.querySelectorAll("[data-quick-key]").forEach((input) => {
+      const key = input.dataset.quickKey;
+      const type = input.dataset.quickType;
+      const handler = () => {
+        applyQuickControlChange(key, type, input);
+      };
+      input.addEventListener(type === "checkbox" ? "change" : "input", handler);
+      if (input.tagName === "SELECT" || input.type === "number") {
+        input.addEventListener("change", handler);
+      }
+    });
+  }
+
+  function quickControlConfig(viewId) {
+    const byView = {
+      week2: [
+        { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
+        { key: "scatterX", label: "X feature", type: "select", options: featureOptions() },
+        { key: "scatterY", label: "Y feature", type: "select", options: featureOptions() }
+      ],
+      week3: [
+        { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
+        { key: "validationMode", label: "Validation", type: "select", options: validationOptions() },
+        { key: "stratify", label: "Stratify", type: "checkbox" },
+        state.validationMode === "cv"
+          ? { key: "kFolds", label: "CV folds", type: "range", min: 3, max: 10, step: 1 }
+          : { key: "testFraction", label: "Test fraction", type: "range", min: 0.15, max: 0.45, step: 0.05 }
+      ],
+      week4: [
+        { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
+        { key: "focusModel", label: "Focus model", type: "select", options: classificationModelOptions() },
+        { key: "knnK", label: "KNN k", type: "range", min: 1, max: 25, step: 2 }
+      ],
+      week5: [
+        { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
+        { key: "focusModel", label: "Focus model", type: "select", options: classificationModelOptions(["logistic", "lda"]) },
+        { key: "validationMode", label: "Validation", type: "select", options: validationOptions() }
+      ],
+      week6: [
+        { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
+        { key: "focusModel", label: "Focus model", type: "select", options: classificationModelOptions(["tree", "forest"]) },
+        { key: "treeDepth", label: "Tree depth", type: "range", min: 1, max: 8, step: 1 },
+        { key: "forestTrees", label: "Forest trees", type: "range", min: 5, max: 51, step: 2 }
+      ],
+      week7: [
+        { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
+        { key: "nnHidden", label: "Hidden units", type: "range", min: 3, max: 24, step: 1 },
+        { key: "nnEpochs", label: "Epochs", type: "range", min: 60, max: 320, step: 20 }
+      ],
+      week8: [
+        { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
+        { key: "focusModel", label: "Focus model", type: "select", options: classificationModelOptions() },
+        { key: "xaiIndex", label: "Selected row", type: "range", min: 1, max: cache.dataset?.n || 1, step: 1, displayValue: state.xaiIndex + 1 }
+      ],
+      week9: [
+        { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
+        { key: "clusterK", label: "Clusters", type: "range", min: 2, max: 8, step: 1 }
+      ],
+      week10: [
+        { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
+        { key: "focusModel", label: "Focus model", type: "select", options: classificationModelOptions(["svm_linear", "svm_rbf"]) },
+        { key: "svmC", label: "SVM C", type: "range", min: 0.2, max: 3, step: 0.2 },
+        { key: "svmGamma", label: "RBF gamma", type: "range", min: 0.2, max: 3, step: 0.2 }
+      ],
+      week11: [
+        { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
+        { key: "clusterK", label: "Clusters", type: "range", min: 2, max: 8, step: 1 }
+      ],
+      week11b: [
+        { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
+        { key: "clusterK", label: "Clusters", type: "range", min: 2, max: 8, step: 1 },
+        { key: "gmmComponents", label: "Mixture parts", type: "range", min: 2, max: 8, step: 1 }
+      ]
+    };
+    return byView[viewId] || [];
+  }
+
+  function renderQuickControlCard(item) {
+    if (item.type === "select") {
+      const options = item.options
+        .map((option) => {
+          const selected = String(option.value) === String(state[item.key]) ? " selected" : "";
+          return `<option value="${escapeHtml(option.value)}"${selected}>${escapeHtml(option.label)}</option>`;
+        })
+        .join("");
+      return `
+        <div class="quick-control">
+          <label for="quick_${item.key}">${escapeHtml(item.label)}</label>
+          <select id="quick_${item.key}" data-quick-key="${item.key}" data-quick-type="select">${options}</select>
+        </div>
+      `;
+    }
+
+    if (item.type === "checkbox") {
+      return `
+        <div class="quick-control compact-check">
+          <label>${escapeHtml(item.label)}</label>
+          <div class="quick-check-row">
+            <input id="quick_${item.key}" type="checkbox" data-quick-key="${item.key}" data-quick-type="checkbox"${state[item.key] ? " checked" : ""} />
+            <span>${state[item.key] ? "On" : "Off"}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    const displayValue = item.displayValue != null ? item.displayValue : state[item.key];
+    return `
+      <div class="quick-control">
+        <label for="quick_${item.key}">${escapeHtml(item.label)}</label>
+        <div class="quick-range-row">
+          <input
+            id="quick_${item.key}"
+            type="range"
+            min="${item.min}"
+            max="${item.max}"
+            step="${item.step}"
+            value="${displayValue}"
+            data-quick-key="${item.key}"
+            data-quick-type="range"
+          />
+          <input
+            id="quick_${item.key}_num"
+            type="number"
+            min="${item.min}"
+            max="${item.max}"
+            step="${item.step}"
+            value="${displayValue}"
+            data-quick-key="${item.key}"
+            data-quick-type="range"
+          />
+        </div>
+      </div>
+    `;
+  }
+
+  function applyQuickControlChange(key, type, input) {
+    if (type === "select") {
+      updateStateValue(key, input.value);
+      return;
+    }
+
+    if (type === "checkbox") {
+      updateStateValue(key, input.checked);
+      renderQuickControls();
+      return;
+    }
+
+    const value = Number(input.value);
+    const pairId = input.id.endsWith("_num") ? input.id.slice(0, -4) : `${input.id}_num`;
+    const pair = document.getElementById(pairId);
+    if (pair) {
+      pair.value = value;
+    }
+    updateStateValue(key, value);
+  }
+
+  function updateStateValue(key, rawValue) {
+    switch (key) {
+      case "datasetId":
+        state.datasetId = rawValue;
+        syncScatterOptions();
+        syncXaiOptions();
+        runAnalysis();
+        return;
+      case "validationMode":
+        state.validationMode = rawValue;
+        runAnalysis();
+        return;
+      case "stratify":
+        state.stratify = Boolean(rawValue);
+        runAnalysis();
+        return;
+      case "scatterX":
+      case "scatterY":
+        state[key] = Number(rawValue);
+        if (state.scatterX === state.scatterY) {
+          state.scatterY = state.scatterX === 0 ? 1 : 0;
+        }
+        renderQuickControls();
+        renderVisualisationPanels();
+        syncControlsFromState();
+        return;
+      case "focusModel":
+        state.focusModel = rawValue;
+        syncControlsFromState();
+        renderQuickControls();
+        renderModelInspection();
+        renderXaiLab();
+        return;
+      case "xaiIndex":
+        state.xaiIndex = clamp(Math.round(rawValue) - 1, 0, Math.max(0, (cache.dataset?.n || 1) - 1));
+        syncControlsFromState();
+        renderQuickControls();
+        renderXaiLab();
+        return;
+      case "knnK": {
+        const odd = Math.max(1, Math.round(rawValue));
+        state.knnK = odd % 2 === 0 ? odd + 1 : odd;
+        syncControlsFromState();
+        runAnalysis();
+        return;
+      }
+      case "forestTrees": {
+        const odd = Math.max(5, Math.round(rawValue));
+        state.forestTrees = odd % 2 === 0 ? odd + 1 : odd;
+        syncControlsFromState();
+        runAnalysis();
+        return;
+      }
+      case "treeDepth":
+        state.treeDepth = clamp(Math.round(rawValue), 1, 8);
+        syncControlsFromState();
+        runAnalysis();
+        return;
+      case "nnHidden":
+        state.nnHidden = clamp(Math.round(rawValue), 3, 24);
+        syncControlsFromState();
+        runAnalysis();
+        return;
+      case "nnEpochs":
+        state.nnEpochs = clamp(Math.round(rawValue), 60, 320);
+        syncControlsFromState();
+        runAnalysis();
+        return;
+      case "svmC":
+        state.svmC = clamp(Number(rawValue), 0.2, 3);
+        syncControlsFromState();
+        runAnalysis();
+        return;
+      case "svmGamma":
+        state.svmGamma = clamp(Number(rawValue), 0.2, 3);
+        syncControlsFromState();
+        runAnalysis();
+        return;
+      case "clusterK":
+        state.clusterK = clamp(Math.round(rawValue), 2, 8);
+        syncControlsFromState();
+        runAnalysis();
+        return;
+      case "gmmComponents":
+        state.gmmComponents = clamp(Math.round(rawValue), 2, 8);
+        syncControlsFromState();
+        runAnalysis();
+        return;
+      case "testFraction":
+        state.testFraction = clamp(Number(rawValue), 0.15, 0.45);
+        syncControlsFromState();
+        renderQuickControls();
+        runAnalysis();
+        return;
+      case "kFolds":
+        state.kFolds = clamp(Math.round(rawValue), 3, 10);
+        syncControlsFromState();
+        runAnalysis();
+        return;
+      default:
+        return;
+    }
+  }
+
+  function datasetOptions() {
+    return Object.entries(datasetRegistry()).map(([value, dataset]) => ({
+      value,
+      label: dataset.name
+    }));
+  }
+
+  function featureOptions() {
+    const dataset = cache.dataset || getActiveDataset();
+    return dataset.columns.map((label, index) => ({
+      value: index,
+      label
+    }));
+  }
+
+  function validationOptions() {
+    return [
+      { value: "holdout", label: "Train/test split" },
+      { value: "cv", label: "k-fold cross-validation" }
+    ];
+  }
+
+  function classificationModelOptions(allowed = null) {
+    const labels = {
+      knn: "KNN",
+      logistic: "Logistic regression",
+      lda: "LDA",
+      tree: "Decision tree",
+      forest: "Random forest",
+      svm_linear: "Linear SVM",
+      svm_rbf: "RBF SVM"
+    };
+    return Object.entries(labels)
+      .filter(([value]) => !allowed || allowed.includes(value))
+      .map(([value, label]) => ({ value, label }));
   }
 
   function getActiveDataset() {
