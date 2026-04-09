@@ -39,8 +39,9 @@ This note is only about content improvements for the teaching app. It is not a U
 
 ### Week 6: Neural Networks
 - Current app has a small MLP and decision-boundary support.
-- Check whether the page teaches enough about hidden units, training epochs, and overfitting.
-- A loss-curve interpretation note may still need strengthening.
+- The page now treats hidden units and training epochs more explicitly as flexibility controls.
+- The page now states that lower training loss is not, by itself, evidence of better generalisation.
+- Keep the neural net page focused on interpretation of flexibility and overfitting, not on expanding the architecture menu.
 
 ### Week 7: Explainability / XAI
 - Current app has feature importance and local explanation.
@@ -50,8 +51,9 @@ This note is only about content improvements for the teaching app. It is not a U
 
 ### Week 8: SVM
 - Current app covers linear and RBF SVM.
-- Lecture framing also mentions nearest neighbours and regularisation.
-- Decide whether Week 8 should remain SVM-first or include a clearer cross-reference to KNN and shrinkage ideas.
+- The framing now makes the `C` control read more clearly as a regularisation tradeoff.
+- The page now cross-references nearest-neighbour style local behaviour without making Week 8 stop being SVM-first.
+- Keep the comparison as framing only; do not turn this week into a KNN recap.
 
 ### Week 9: Clustering Methods
 - Current app covers k-means and hierarchical clustering well.
@@ -65,7 +67,9 @@ This note is only about content improvements for the teaching app. It is not a U
 
 ### Week 11: Cluster Evaluation
 - Current app covers silhouette, WCSS, and adjusted Rand index.
-- Check whether the page needs a clearer distinction between internal and external evaluation.
+- The page now names silhouette and WCSS as internal metrics.
+- The page now names adjusted Rand as an external metric tied to known labels when they exist.
+- Keep reminding users that the PCA picture is supporting evidence rather than the full evaluation story.
 
 ## Cross-Cutting Content Work
 
@@ -76,8 +80,5 @@ This note is only about content improvements for the teaching app. It is not a U
 
 ## Suggested Build Order
 
-1. Week 8 framing cleanup around nearest neighbours and regularisation
-2. Week 11 clearer split between internal and external evaluation
-3. Week 6 stronger explanation of training loss and overfitting
-4. Week 3 bootstrap extension
-5. Week 2 decision on whether to stay intentionally narrow or add one nonlinear visualisation method
+1. Week 3 bootstrap extension
+2. Week 2 decision on whether to stay intentionally narrow or add one nonlinear visualisation method

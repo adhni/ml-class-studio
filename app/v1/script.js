@@ -187,8 +187,9 @@
     week6: {
       label: "Week 6",
       title: "Neural Networks",
-      summary: "Train a small multilayer perceptron and compare it with simpler baselines.",
-      prompt: "Start with Toy nonlinear. Increase hidden units or epochs and watch whether the neural boundary becomes more useful than the linear baselines.",
+      summary: "Use hidden units, epochs, and validation scores to judge neural-network flexibility.",
+      prompt:
+        "Start with Toy nonlinear. Increase hidden units or epochs, then compare the validation scores with the training-loss summary. A lower training loss alone is not enough if holdout or cross-validation performance does not improve.",
       tutorialPath: "reference/tutorial/tut7.html",
       controls: ["dataset", "validation", "neural"],
       preset: {
@@ -203,7 +204,7 @@
       },
       copy: {
         neural:
-          "Keep the interface light here: compare the neural net against a few strong baselines, then check whether the hidden layer is actually buying you a better fit."
+          "Keep the interface light here: use hidden units and epochs as the main flexibility controls, then compare the neural net with the baselines to judge whether the lower training loss is translating into better validation performance rather than just extra complexity."
       }
     },
     week7: {
@@ -237,8 +238,9 @@
     week8: {
       label: "Week 8",
       title: "Support Vector Machines",
-      summary: "Compare linear and nonlinear SVM boundaries.",
-      prompt: "Start with Toy nonlinear. Compare linear SVM with RBF SVM, then change C and gamma to see how the boundary responds. This studio centers on the SVM part of the lecture week.",
+      summary: "Compare margin-based SVM behaviour with more local decision rules.",
+      prompt:
+        "Start with Toy nonlinear. Compare linear SVM with RBF SVM, then change C and gamma to see how the margin width and boundary flexibility respond. Read C as a regularisation tradeoff, and keep in mind how this differs from nearest-neighbour style local decisions.",
       tutorialPath: "",
       controls: ["dataset", "validation", "classification", "svm"],
       preset: {
@@ -254,7 +256,7 @@
       },
       copy: {
         classification:
-          "This week is about margin-based classifiers. Compare the linear SVM with the RBF version before deciding whether extra flexibility helped."
+          "This week is about margin-based classifiers. Compare the linear SVM with the RBF version, treat C as the main regularisation dial, and contrast the resulting boundary with the more local behaviour you would expect from nearest-neighbour rules."
       }
     },
     week9: {
@@ -303,8 +305,9 @@
     week11: {
       label: "Week 11",
       title: "Cluster Evaluation",
-      summary: "Judge whether the discovered groups are actually useful.",
-      prompt: "Start with Toy clusters, then compare the metrics with what your eye says in PCA space.",
+      summary: "Separate internal cluster quality from external label agreement.",
+      prompt:
+        "Start with Toy clusters, then compare what the internal metrics say about compactness and separation with what adjusted Rand says about agreement with known labels. Use the PCA view as supporting evidence, not the whole argument.",
       tutorialPath: "reference/tutorial/tut12.html",
       controls: ["dataset", "clustering"],
       preset: {
@@ -318,7 +321,7 @@
       },
       copy: {
         clustering:
-          "This week is about judging the result. Read silhouette, WCSS, adjusted Rand, and the merge summary together instead of trusting one number."
+          "This week is about judging the result. Treat silhouette and WCSS as internal checks based on the fitted clusters alone, then use adjusted Rand as an external check against known labels when labels exist."
       }
     }
   };
@@ -1609,7 +1612,9 @@
     rows.push(["Neural network", formatPct(neural.metrics.accuracy), formatPct(neural.metrics.macroF1)]);
     renderTable(elements.nnMetricsTable, ["Model", "Accuracy", "Macro F1"], rows);
     elements.nnMetricsCaption.textContent =
-      `The neural net uses ${state.nnHidden} hidden units and ${state.nnEpochs} epochs on standardized features. Compare it with the baselines to check whether the added flexibility is actually helping on this dataset.`;
+      `The neural net uses ${state.nnHidden} hidden units and ${state.nnEpochs} epochs on standardized features. These scores come from the current ${
+        state.validationMode === "holdout" ? "holdout split" : `${state.kFolds}-fold cross-validation setup`
+      }, so use them to judge whether extra flexibility is improving generalisation rather than just lowering training loss.`;
 
     elements.nnSummary.textContent = neural.summary;
 
@@ -1629,7 +1634,7 @@
     }));
     renderDecisionBoundarySvg(elements.nnBoundaryPlot, neural.fit.predict, points, dataset.targetNames.length);
     elements.nnBoundaryCaption.textContent =
-      "Plain-English caption: the hidden layer lets the neural net bend the boundary instead of staying strictly linear. Use the toy datasets to see when that extra flexibility is helpful and when it just adds complexity.";
+      "Plain-English caption: the hidden layer lets the neural net bend the boundary instead of staying strictly linear. More hidden units or epochs can fit the training pattern more closely, but the validation table is the check on whether that extra flexibility is helping or just overfitting.";
   }
 
   function renderModelInspection() {
@@ -1867,7 +1872,7 @@
     }
     renderTable(elements.clusteringTable, ["Algorithm", "Silhouette", "WCSS", "Adjusted Rand"], rows);
     elements.clusteringCaption.textContent =
-      `Silhouette closer to 1 means tighter, cleaner separation. Lower within-cluster sum of squares means clusters are more compact. Adjusted Rand compares the unsupervised clusters to the known labels without using those labels during fitting.`;
+      `Silhouette and WCSS are internal metrics: they judge separation and compactness from the fitted clusters alone. Adjusted Rand is an external metric: it compares the unsupervised clusters with known labels after fitting, when such labels exist.`;
 
     renderClusterPlot(elements.kmeansPlot, clustering.displayPoints, clustering.kmeans.assignments, "PC1", "PC2");
     renderClusterPlot(elements.hierPlot, clustering.displayPoints, clustering.hierarchical.assignments, "PC1", "PC2");
@@ -2780,7 +2785,7 @@
       .map((item) => `${item.name} (${formatNumber(item.value, 2)})`);
     const firstLoss = fit.lossHistory[0]?.loss ?? NaN;
     const lastLoss = fit.lossHistory[fit.lossHistory.length - 1]?.loss ?? NaN;
-    return `Neural network summary\n- One hidden layer with ${fit.hiddenUnits} tanh units and ${fit.classes.length} output classes.\n- Trained for ${fit.epochs} epochs on standardized features.\n- Training loss moved from ${formatNumber(firstLoss, 3)} to ${formatNumber(lastLoss, 3)}.\n- Strongest input signal appears in ${inputSignal.join(", ")}.`;
+    return `Neural network summary\n- One hidden layer with ${fit.hiddenUnits} tanh units and ${fit.classes.length} output classes.\n- Trained for ${fit.epochs} epochs on standardized features.\n- Training loss moved from ${formatNumber(firstLoss, 3)} to ${formatNumber(lastLoss, 3)}.\n- Read that loss change as an optimisation signal on the training fit, not as proof of better generalisation.\n- Strongest input signal appears in ${inputSignal.join(", ")}.`;
   }
 
   function buildGlobalExplanation(modelId, fit, dataset) {
