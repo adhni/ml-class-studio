@@ -3,6 +3,8 @@
 
   const TOY_POINTS = 180;
   const MAX_HIERARCHICAL_ROWS = 180;
+  const PERMUTATION_RUNS = 21;
+  const DEFAULT_LOGISTIC_PENALTY = 0.01;
   const PALETTE = [
     "#0f4d66",
     "#b85c38",
@@ -34,6 +36,7 @@
     kFolds: 5,
     stratify: true,
     knnK: 7,
+    logisticPenalty: DEFAULT_LOGISTIC_PENALTY,
     treeDepth: 4,
     forestTrees: 21,
     splitFeature: 0,
@@ -57,6 +60,8 @@
     mds: null,
     split: null,
     folds: null,
+    resamplingExperiment: null,
+    week4Regularisation: null,
     classification: null,
     neural: null,
     clustering: null
@@ -117,7 +122,7 @@
       label: "Week 3",
       title: "Validation",
       summary: "See how the split changes the story.",
-      prompt: "Start with Penguins. Toggle stratification and compare holdout with k-fold cross-validation.",
+      prompt: "Start with Penguins. Toggle stratification, compare holdout with k-fold cross-validation, then use the permutation panel to check whether the model signal is stronger than a shuffled-label baseline.",
       tutorialPath: "reference/tutorial/tut4.html",
       controls: ["dataset", "validation"],
       preset: {
@@ -132,14 +137,14 @@
       },
       copy: {
         resampling:
-          "This week is about generalisation. This studio focuses on train/test splitting and cross-validation, which are the parts of the lecture most directly tied to model checking in the app."
+          "This week is about generalisation. Read the split and fold balance first, then use the permutation null check to compare real-label performance with what the same workflow can achieve after the labels are shuffled."
       }
     },
     week4: {
       label: "Week 4",
       title: "Logistic Regression",
-      summary: "Use logistic regression as the main linear classifier, then compare it with LDA.",
-      prompt: "Start with Penguins, inspect logistic regression first, then compare it with LDA on the same split. The app emphasizes the classification part of the lecture rather than the regularisation details.",
+      summary: "Use logistic regression as the main linear classifier, then inspect how regularisation shrinks coefficients.",
+      prompt: "Start with Penguins, inspect logistic regression first, adjust the penalty to watch the coefficients shrink, then compare the result with LDA on the same split.",
       tutorialPath: "reference/tutorial/tut5.html",
       controls: ["dataset", "validation", "classification"],
       preset: {
@@ -148,19 +153,20 @@
         stratify: true,
         framingMode: "classification",
         focusModel: "logistic",
+        logisticPenalty: DEFAULT_LOGISTIC_PENALTY,
         scatterX: 0,
         scatterY: 2
       },
       copy: {
         classification:
-          "This week is about model-based linear boundaries. Read the confusion matrix together with the logistic or LDA summary rather than looking at accuracy alone."
+          "This week is about model-based linear boundaries plus shrinkage. Keep logistic regression as the main object, adjust the penalty to see which coefficients persist, then use LDA as the comparison baseline."
       }
     },
     week5: {
       label: "Week 5",
       title: "Decision Trees",
-      summary: "See how a tree chooses splits, then use a forest as a stability check.",
-      prompt: "Start with Penguins, inspect the split explorer first, then read the single-tree outputs before using the forest comparison as a second opinion.",
+      summary: "Make the single tree the main story, then use the forest as a stability check.",
+      prompt: "Start with Penguins, inspect the split explorer first, then read the early tree structure before using the forest comparison as a second opinion.",
       tutorialPath: "reference/tutorial/tut6.html",
       controls: ["dataset", "validation", "classification", "forest", "trees"],
       preset: {
@@ -174,8 +180,8 @@
         splitFeature: 3
       },
       copy: {
-        week6:
-          "This week is mainly about the tree itself: why a split is chosen, what the first rules look like, and where the tree struggles. Use the forest as a supporting comparison, not as the main object of study."
+        week5:
+          "Keep the tree in the foreground: why the root split is chosen, what the first branches look like, and where the tree starts to struggle. Use the forest only to check whether those patterns look unstable."
       }
     },
     week6: {
@@ -203,8 +209,8 @@
     week7: {
       label: "Week 7",
       title: "Explainability / XAI",
-      summary: "Explain what the model is using, globally and for one row.",
-      prompt: "Start with Penguins and the random forest, then switch focus models to compare what each explanation style can and cannot tell you. This studio focuses on the interpretable outputs rather than the full lecture spread of XAI methods.",
+      summary: "Separate one global explanation view from one local explanation view.",
+      prompt: "Start with Penguins and the random forest, then switch focus models to compare what the global view says about overall signal and what the local view says about one selected row. This studio is intentionally a narrow subset of XAI, not full topic coverage.",
       tutorialPath: "reference/tutorial/tut8.html",
       controls: ["dataset", "validation", "classification", "forest", "svm", "xai"],
       preset: {
@@ -223,9 +229,9 @@
       },
       copy: {
         classification:
-          "Use the classification outputs as context, then read the XAI section to see which features are driving the current model.",
+          "Use the classification outputs as context, then move to the XAI section to compare what the current model seems to use overall with why it predicts one selected row the way it does.",
         xai:
-          "This week is about interpretation, not just ranking models. Compare the global importance view with the local explanation for one selected row."
+          "This week is about interpretation, not just ranking models. Keep the two explanation levels separate: the global view summarizes broad model signal, while the local view explains one row at a time. Treat this as a focused subset of XAI rather than complete coverage."
       }
     },
     week8: {
@@ -275,8 +281,8 @@
     week10: {
       label: "Week 10",
       title: "Model-based Clustering",
-      summary: "Compare Gaussian-mixture clustering with the geometric clustering methods.",
-      prompt: "Start with Wine, keep k and the mixture component count aligned, then see where a probabilistic model groups points differently from k-means or hierarchical clustering. This studio covers the model-based clustering half of the lecture week, not SOMs.",
+      summary: "Compare Gaussian-mixture clustering with the geometric clustering methods, with SOMs left out explicitly.",
+      prompt: "Start with Wine, keep k and the mixture component count aligned, then see where a probabilistic model groups points differently from k-means or hierarchical clustering. This studio is intentionally limited to Gaussian mixtures and does not claim SOM coverage.",
       tutorialPath: "reference/tutorial/tut11.html",
       controls: ["dataset", "clustering", "model-clustering"],
       preset: {
@@ -291,7 +297,7 @@
       },
       copy: {
         clustering:
-          "This week adds a probabilistic clustering model. Compare its PCA-space grouping with the geometric methods, but remember the fit still happens in the full standardized feature space."
+          "This week adds a probabilistic clustering model. Compare its PCA-space grouping with the geometric methods, but remember the fit still happens in the full standardized feature space. Self-organising maps are an explicit out-of-scope topic for this prototype."
       }
     },
     week11: {
@@ -375,9 +381,12 @@
       "stratifyToggle",
       "knnK",
       "knnK_num",
+      "logisticPenalty",
+      "logisticPenalty_num",
       "treeDepth",
       "treeDepth_num",
       "classificationKnnControl",
+      "classificationLogisticControl",
       "classificationTreeControl",
       "forestTrees",
       "forestTrees_num",
@@ -405,23 +414,23 @@
       "resamplingIntro",
       "classificationIntro",
       "classificationKicker",
-      "week6Intro",
-      "week6SplitPlot",
-      "week6SplitSummary",
-      "week6SplitCaption",
-      "week6TreePlot",
-      "week6TreeSummary",
-      "week6TreeCaption",
-      "week6MetricsTable",
-      "week6ComparisonSummary",
-      "week6MetricsCaption",
-      "week6ConfusionTable",
-      "week6ModelSummary",
-      "week6ConfusionCaption",
-      "week6HardCasesTable",
-      "week6HardCasesCaption",
-      "week6ImportanceTable",
-      "week6ImportanceCaption",
+      "week5Intro",
+      "week5SplitPlot",
+      "week5SplitSummary",
+      "week5SplitCaption",
+      "week5TreePlot",
+      "week5TreeSummary",
+      "week5TreeCaption",
+      "week5MetricsTable",
+      "week5ComparisonSummary",
+      "week5MetricsCaption",
+      "week5ConfusionTable",
+      "week5ModelSummary",
+      "week5ConfusionCaption",
+      "week5HardCasesTable",
+      "week5HardCasesCaption",
+      "week5ImportanceTable",
+      "week5ImportanceCaption",
       "clusteringIntro",
       "clusteringKicker",
       "clusterEvaluationPanel",
@@ -456,10 +465,17 @@
       "splitCaption",
       "foldBalanceTable",
       "foldCaption",
+      "permutationPlot",
+      "permutationSummary",
+      "permutationCaption",
       "classificationMetricsTable",
       "classificationModeCaption",
       "classificationDetailGrid",
       "classificationSummaryPanel",
+      "week4RegularisationPanel",
+      "week4RegularisationTable",
+      "week4RegularisationSummary",
+      "week4RegularisationCaption",
       "focusModel",
       "confusionTable",
       "modelSummary",
@@ -469,6 +485,7 @@
       "boundaryCaption",
       "clusteringTable",
       "clusteringCaption",
+      "week10ScopePanel",
       "kmeansPlot",
       "kmeansCaption",
       "hierPlot",
@@ -508,6 +525,10 @@
       setPairValue("knnK", "knnK_num", state.knnK);
       runAnalysis();
     });
+    bindPair("logisticPenalty", "logisticPenalty_num", (value) => {
+      state.logisticPenalty = clamp(Number(value), 0.001, 0.2);
+      runAnalysis();
+    });
     bindPair("treeDepth", "treeDepth_num", (value) => {
       state.treeDepth = clamp(Math.round(value), 1, 8);
       runAnalysis();
@@ -521,7 +542,7 @@
     elements.splitFeature.addEventListener("change", (event) => {
       state.splitFeature = Number(event.target.value);
       renderQuickControls();
-      renderWeek6Lab();
+      renderWeek5Lab();
     });
     bindPair("nnHidden", "nnHidden_num", (value) => {
       state.nnHidden = clamp(Math.round(value), 3, 24);
@@ -578,7 +599,7 @@
     elements.focusModel.addEventListener("change", (event) => {
       state.focusModel = event.target.value;
       renderModelInspection();
-      renderWeek6Lab();
+      renderWeek5Lab();
       renderXaiLab();
     });
     elements.scatterX.addEventListener("change", (event) => {
@@ -724,6 +745,7 @@
     setPairValue("testFraction", "testFraction_num", state.testFraction);
     setPairValue("kFolds", "kFolds_num", state.kFolds);
     setPairValue("knnK", "knnK_num", state.knnK);
+    setPairValue("logisticPenalty", "logisticPenalty_num", state.logisticPenalty);
     setPairValue("treeDepth", "treeDepth_num", state.treeDepth);
     setPairValue("forestTrees", "forestTrees_num", state.forestTrees);
     elements.splitFeature.value = state.splitFeature;
@@ -743,6 +765,8 @@
     cache.mds = computeClassicalMDS(cache.pca.standardized, 2, state.seed + 5);
     cache.split = createTrainTestSplit(dataset.target, state.testFraction, state.stratify, state.seed + 11);
     cache.folds = createKFolds(dataset.target, state.kFolds, state.stratify, state.seed + 23);
+    cache.resamplingExperiment = state.viewId === "week3" ? evaluatePermutationExperiment(dataset) : null;
+    cache.week4Regularisation = state.viewId === "week4" ? evaluateWeek4Regularisation(dataset) : null;
     cache.classification = classificationViews().has(state.viewId) ? evaluateClassificationModels(dataset) : null;
     cache.neural = state.viewId === "week6" ? evaluateNeuralNetwork(dataset) : null;
     cache.clustering = evaluateClustering(dataset, cache.pca);
@@ -754,7 +778,8 @@
     renderVisualisationPanels();
     renderResamplingPanels();
     renderClassificationPanels();
-    renderWeek6Lab();
+    renderWeek4Regularisation();
+    renderWeek5Lab();
     renderClusteringPanels();
     renderNeuralLab();
     renderXaiLab();
@@ -802,14 +827,17 @@
     setVisible(elements.viewPresetBtn, !isHome);
     setVisible(elements.clusterEvaluationPanel, state.viewId === "week11");
     setVisible(elements.modelClusteringPanel, state.viewId === "week10");
+    setVisible(elements.week10ScopePanel, state.viewId === "week10");
     setVisible(elements.classificationKnnControl, state.viewId === "foundations");
+    setVisible(elements.classificationLogisticControl, state.viewId === "week4");
     setVisible(elements.classificationTreeControl, state.viewId === "week5");
+    setVisible(elements.week4RegularisationPanel, state.viewId === "week4");
 
     elements.problemIntro.textContent = view.copy?.problem || "";
     elements.visualIntro.textContent = view.copy?.visual || "";
     elements.resamplingIntro.textContent = view.copy?.resampling || "";
     elements.classificationIntro.textContent = view.copy?.classification || "";
-    elements.week6Intro.textContent = view.copy?.week6 || "";
+    elements.week5Intro.textContent = view.copy?.week5 || "";
     elements.clusteringIntro.textContent = view.copy?.clustering || "";
     elements.neuralIntro.textContent = view.copy?.neural || "";
     elements.xaiIntro.textContent = view.copy?.xai || "";
@@ -873,7 +901,8 @@
       ],
       week4: [
         { key: "datasetId", label: "Dataset", type: "select", options: datasetOptions() },
-        { key: "focusModel", label: "Focus model", type: "select", options: classificationModelOptions(["logistic", "lda"]) }
+        { key: "focusModel", label: "Focus model", type: "select", options: classificationModelOptions(["logistic", "lda"]) },
+        { key: "logisticPenalty", label: "Penalty", type: "range", min: 0.001, max: 0.2, step: 0.001 }
       ],
       week5: [
         { key: "splitFeature", label: "Split feature", type: "select", options: featureOptions() },
@@ -1023,14 +1052,15 @@
         syncControlsFromState();
         renderQuickControls();
         renderModelInspection();
-        renderWeek6Lab();
+        renderWeek4Regularisation();
+        renderWeek5Lab();
         renderXaiLab();
         return;
       case "splitFeature":
         state.splitFeature = clamp(Math.round(rawValue), 0, Math.max(0, (cache.dataset?.p || 1) - 1));
         syncControlsFromState();
         renderQuickControls();
-        renderWeek6Lab();
+        renderWeek5Lab();
         return;
       case "xaiIndex":
         state.xaiIndex = clamp(Math.round(rawValue) - 1, 0, Math.max(0, (cache.dataset?.n || 1) - 1));
@@ -1045,6 +1075,11 @@
         runAnalysis();
         return;
       }
+      case "logisticPenalty":
+        state.logisticPenalty = clamp(Number(rawValue), 0.001, 0.2);
+        syncControlsFromState();
+        runAnalysis();
+        return;
       case "forestTrees": {
         const odd = Math.max(5, Math.round(rawValue));
         state.forestTrees = odd % 2 === 0 ? odd + 1 : odd;
@@ -1336,9 +1371,13 @@
   }
 
   function renderResamplingPanels() {
+    if (state.viewId !== "week3") {
+      return;
+    }
     const dataset = cache.dataset;
     const split = cache.split;
     const folds = cache.folds;
+    const experiment = cache.resamplingExperiment;
     const classNames = dataset.targetNames;
 
     const splitRows = classNames.map((label, index) => {
@@ -1373,6 +1412,114 @@
           ? "With stratification on, every fold stays close to the global class mix."
           : "With stratification off, some folds can over-represent one class and under-represent another."
       }`;
+
+    if (!experiment) {
+      return;
+    }
+
+    renderPermutationHistogramSvg(elements.permutationPlot, experiment);
+    elements.permutationSummary.textContent =
+      `Probe model\nLogistic regression\n\n` +
+      `Observed balanced accuracy: ${formatPct(experiment.observedScore)}\n` +
+      `Shuffled-label median: ${formatPct(experiment.nullMedian)}\n` +
+      `Middle 80% of shuffled-label scores: ${formatPct(experiment.nullLow)} to ${formatPct(experiment.nullHigh)}\n` +
+      `Tail probability estimate: ${formatNumber(experiment.tailProbability, 3)}\n` +
+      `Class-count chance guide: ${formatPct(experiment.chanceLevel)}`;
+    elements.permutationCaption.textContent =
+      `${state.validationMode === "holdout" ? "This uses the current holdout split." : `This uses the current ${state.kFolds}-fold cross-validation setup.`} The labels are shuffled ${experiment.runs} times while the features stay fixed. If the observed score sits well to the right of the shuffled-label distribution, the workflow is finding real signal rather than just exploiting chance structure.`;
+  }
+
+  function evaluatePermutationExperiment(dataset) {
+    const evaluationSplits =
+      state.validationMode === "holdout"
+        ? [{ train: cache.split.trainIndices, test: cache.split.testIndices }]
+        : cache.folds.foldIndices.map((testIndices) => ({
+            train: complementIndices(dataset.n, testIndices),
+            test: testIndices
+          }));
+
+    const observedScore = evaluateLogisticBalancedAccuracy(dataset.data, dataset.target, dataset.columns, evaluationSplits, dataset.targetNames.length);
+    const nullScores = [];
+    for (let runIndex = 0; runIndex < PERMUTATION_RUNS; runIndex += 1) {
+      const shuffledTarget = shuffle(dataset.target.slice(), mulberry32(state.seed + 601 + runIndex * 17));
+      nullScores.push(
+        evaluateLogisticBalancedAccuracy(dataset.data, shuffledTarget, dataset.columns, evaluationSplits, dataset.targetNames.length)
+      );
+    }
+    const sortedNull = nullScores.slice().sort((a, b) => a - b);
+    const tailCount = nullScores.filter((score) => score >= observedScore - 1e-12).length;
+
+    return {
+      runs: PERMUTATION_RUNS,
+      observedScore,
+      nullScores,
+      nullMedian: quantile(sortedNull, 0.5),
+      nullLow: quantile(sortedNull, 0.1),
+      nullHigh: quantile(sortedNull, 0.9),
+      tailProbability: (tailCount + 1) / (PERMUTATION_RUNS + 1),
+      chanceLevel: 1 / Math.max(1, dataset.targetNames.length)
+    };
+  }
+
+  function evaluateWeek4Regularisation(dataset) {
+    const currentPenalty = state.logisticPenalty;
+    const weakPenalty = Math.max(0.001, currentPenalty / 4);
+    const strongPenalty = Math.min(0.2, Math.max(currentPenalty * 4, currentPenalty + 0.02));
+    const weakFit = fitLogisticOvr(dataset.data, dataset.target, dataset.columns, weakPenalty);
+    const currentFit = fitLogisticOvr(dataset.data, dataset.target, dataset.columns, currentPenalty);
+    const strongFit = fitLogisticOvr(dataset.data, dataset.target, dataset.columns, strongPenalty);
+    const weakValues = averageAbsWeightsArray(weakFit.weights, dataset.columns.length);
+    const currentValues = averageAbsWeightsArray(currentFit.weights, dataset.columns.length);
+    const strongValues = averageAbsWeightsArray(strongFit.weights, dataset.columns.length);
+    const orderedFeatures = range(dataset.columns.length)
+      .sort((a, b) => currentValues[b] - currentValues[a])
+      .slice(0, 5);
+
+    return {
+      headers: [
+        "Feature",
+        `Weak (${formatNumber(weakPenalty, 3)})`,
+        `Current (${formatNumber(currentPenalty, 3)})`,
+        `Strong (${formatNumber(strongPenalty, 3)})`
+      ],
+      rows: orderedFeatures.map((featureIndex) => [
+        dataset.columns[featureIndex],
+        formatNumber(weakValues[featureIndex], 3),
+        formatNumber(currentValues[featureIndex], 3),
+        formatNumber(strongValues[featureIndex], 3)
+      ]),
+      weakPenalty,
+      currentPenalty,
+      strongPenalty,
+      weakMean: average(weakValues),
+      currentMean: average(currentValues),
+      strongMean: average(strongValues),
+      strongLeader: dataset.columns[argMax(strongValues)]
+    };
+  }
+
+  function evaluateLogisticBalancedAccuracy(X, y, columns, evaluationSplits, classCount) {
+    const predicted = new Array(y.length).fill(null);
+    evaluationSplits.forEach((split) => {
+      const trainX = selectRows(X, split.train);
+      const trainY = selectEntries(y, split.train);
+      const testX = selectRows(X, split.test);
+      const fit = fitLogisticOvr(trainX, trainY, columns, DEFAULT_LOGISTIC_PENALTY);
+      const preds = fit.predict(testX);
+      split.test.forEach((rowIndex, localIndex) => {
+        predicted[rowIndex] = preds[localIndex];
+      });
+    });
+
+    const actual = [];
+    const filteredPredicted = [];
+    predicted.forEach((value, index) => {
+      if (value != null) {
+        actual.push(y[index]);
+        filteredPredicted.push(value);
+      }
+    });
+    return computeBalancedAccuracy(actual, filteredPredicted, classCount);
   }
 
   function renderClassificationPanels() {
@@ -1397,7 +1544,30 @@
     renderModelInspection();
   }
 
-  function renderWeek6Lab() {
+  function renderWeek4Regularisation() {
+    if (state.viewId !== "week4") {
+      return;
+    }
+    const comparison = cache.week4Regularisation;
+    if (!comparison) {
+      return;
+    }
+    renderTable(elements.week4RegularisationTable, comparison.headers, comparison.rows);
+    elements.week4RegularisationSummary.textContent =
+      `Penalty settings\n` +
+      `Weak: ${formatNumber(comparison.weakPenalty, 3)}\n` +
+      `Current: ${formatNumber(comparison.currentPenalty, 3)}\n` +
+      `Strong: ${formatNumber(comparison.strongPenalty, 3)}\n\n` +
+      `Mean |coefficient|\n` +
+      `Weak: ${formatNumber(comparison.weakMean, 3)}\n` +
+      `Current: ${formatNumber(comparison.currentMean, 3)}\n` +
+      `Strong: ${formatNumber(comparison.strongMean, 3)}\n\n` +
+      `Most persistent feature under strong penalty: ${comparison.strongLeader}`;
+    elements.week4RegularisationCaption.textContent =
+      "Plain-English caption: stronger regularisation pulls the logistic coefficients closer to zero. Features that stay relatively large even under the strong setting are the ones carrying the most stable linear signal.";
+  }
+
+  function renderWeek5Lab() {
     if (state.viewId !== "week5") {
       return;
     }
@@ -1410,12 +1580,12 @@
     const treeFit = evaluation.fits.tree;
     const forestFit = evaluation.fits.forest;
     const split = computeSplitExplorer(dataset, state.splitFeature);
-    renderWeek6SplitExplorer(split, dataset);
-    renderWeek6TreeView(dataset, treeFit.tree);
-    renderWeek6Comparison(evaluation, dataset);
-    renderWeek6FocusedModel(evaluation, dataset);
-    renderWeek6HardCases(dataset, evaluation);
-    renderWeek6Importance(dataset, forestFit);
+    renderWeek5SplitExplorer(split, dataset);
+    renderWeek5TreeView(dataset, treeFit.tree);
+    renderWeek5Comparison(evaluation, dataset);
+    renderWeek5FocusedModel(evaluation, dataset);
+    renderWeek5HardCases(dataset, evaluation);
+    renderWeek5Importance(dataset, forestFit);
   }
 
   function renderNeuralLab() {
@@ -1557,28 +1727,28 @@
     };
   }
 
-  function renderWeek6SplitExplorer(split, dataset) {
-    renderWeek6SplitSvg(elements.week6SplitPlot, split);
+  function renderWeek5SplitExplorer(split, dataset) {
+    renderWeek6SplitSvg(elements.week5SplitPlot, split);
     if (!split.best) {
-      elements.week6SplitSummary.textContent = "No useful split candidates were found for this feature.";
-      elements.week6SplitCaption.textContent =
+      elements.week5SplitSummary.textContent = "No useful split candidates were found for this feature.";
+      elements.week5SplitCaption.textContent =
         "Plain-English caption: if every candidate threshold leaves almost the same class mix on both sides, the tree has little reason to split here first.";
       return;
     }
     const leftCounts = countByLabel(split.best.leftY, dataset.targetNames.length);
     const rightCounts = countByLabel(split.best.rightY, dataset.targetNames.length);
-    elements.week6SplitSummary.textContent =
+    elements.week5SplitSummary.textContent =
       `Parent Gini: ${formatNumber(split.parentImpurity, 3)}\n` +
       `Best threshold on ${split.featureName}: ${formatNumber(split.best.threshold, 2)}\n` +
       `Weighted Gini after split: ${formatNumber(split.best.weightedImpurity, 3)}\n` +
       `Impurity reduction: ${formatNumber(split.best.gain, 3)}\n` +
       `Left side: ${summarizeCounts(leftCounts, dataset.targetNames)}\n` +
       `Right side: ${summarizeCounts(rightCounts, dataset.targetNames)}`;
-    elements.week6SplitCaption.textContent =
+    elements.week5SplitCaption.textContent =
       "Plain-English caption: lower weighted Gini means the split leaves purer child nodes. This is the core rule a classification tree is optimizing when it searches for the next split.";
   }
 
-  function renderWeek6TreeView(dataset, tree) {
+  function renderWeek5TreeView(dataset, tree) {
     const axes = chooseWeek6Axes(tree, dataset);
     const points = dataset.data.map((row, index) => ({
       x: row[axes.xIndex],
@@ -1586,18 +1756,18 @@
       classId: dataset.target[index],
       label: dataset.targetNames[dataset.target[index]]
     }));
-    renderWeek6TreeSvg(elements.week6TreePlot, points, axes, tree);
+    renderWeek6TreeSvg(elements.week5TreePlot, points, axes, tree);
     const leftSplit = tree.type === "split" && tree.left?.type === "split" ? `${tree.left.featureName} <= ${formatNumber(tree.left.threshold, 2)}` : "no second left split";
     const rightSplit = tree.type === "split" && tree.right?.type === "split" ? `${tree.right.featureName} <= ${formatNumber(tree.right.threshold, 2)}` : "no second right split";
-    elements.week6TreeSummary.textContent =
+    elements.week5TreeSummary.textContent =
       `Teaching slice\nx-axis: ${dataset.columns[axes.xIndex]}\ny-axis: ${dataset.columns[axes.yIndex]}\n\n` +
       `Root split\n${tree.type === "split" ? `${tree.featureName} <= ${formatNumber(tree.threshold, 2)}` : "no useful root split"}\n\n` +
       `Second splits\nLeft child: ${leftSplit}\nRight child: ${rightSplit}`;
-    elements.week6TreeCaption.textContent =
+    elements.week5TreeCaption.textContent =
       "Plain-English caption: the scatter uses the tree's main early split directions. Solid lines show the first split and dashed lines show the next splits when they are visible in this 2D slice.";
   }
 
-  function renderWeek6Comparison(evaluation, dataset) {
+  function renderWeek5Comparison(evaluation, dataset) {
     const rows = ["tree", "forest"].map((modelId) => {
       const metrics = evaluation.metrics[modelId];
       return [
@@ -1607,20 +1777,20 @@
         formatPct(metrics.balancedAccuracy)
       ];
     });
-    renderTable(elements.week6MetricsTable, ["Model", "Accuracy", "Macro F1", "Balanced Acc"], rows);
+    renderTable(elements.week5MetricsTable, ["Model", "Accuracy", "Macro F1", "Balanced Acc"], rows);
     const treeMetrics = evaluation.metrics.tree;
     const forestMetrics = evaluation.metrics.forest;
     const gain = forestMetrics.balancedAccuracy - treeMetrics.balancedAccuracy;
-    elements.week6ComparisonSummary.textContent =
-      `Current focus: ${evaluation.labels[state.focusModel]}\n` +
+    elements.week5ComparisonSummary.textContent =
+      `Tree-first reading: start with the decision tree row.\n` +
       `Forest minus tree balanced accuracy: ${formatPct(gain)}\n` +
       `${gain >= 0 ? "The forest is stabilising the tree on this dataset." : "The single tree is currently matching or beating the forest on this split."}\n` +
       `Read this as a stability check, not as the main tree lesson.`;
-    elements.week6MetricsCaption.textContent =
+    elements.week5MetricsCaption.textContent =
       `${state.validationMode === "holdout" ? "These scores come from one reproducible train/test split." : `These scores come from ${state.kFolds}-fold cross-validation.`} Start by reading the tree row, then use the forest row to see whether bagging improves stability. Balanced accuracy gives each class equal weight, so it is useful when one species is easier or harder than the others.`;
   }
 
-  function renderWeek6FocusedModel(evaluation, dataset) {
+  function renderWeek5FocusedModel(evaluation, dataset) {
     const modelId = state.focusModel === "tree" || state.focusModel === "forest" ? state.focusModel : "tree";
     state.focusModel = modelId;
     elements.focusModel.value = modelId;
@@ -1628,13 +1798,13 @@
     const confusion = confusionMatrix(modelEval.actual, modelEval.predicted, dataset.targetNames.length);
     const header = ["Actual \\ Predicted"].concat(dataset.targetNames);
     const rows = dataset.targetNames.map((label, rowIndex) => [label].concat(confusion[rowIndex].map((value) => String(value))));
-    renderTable(elements.week6ConfusionTable, header, rows);
-    elements.week6ModelSummary.textContent = evaluation.summaries[modelId];
-    elements.week6ConfusionCaption.textContent =
+    renderTable(elements.week5ConfusionTable, header, rows);
+    elements.week5ModelSummary.textContent = evaluation.summaries[modelId];
+    elements.week5ConfusionCaption.textContent =
       `Plain-English caption: use the confusion matrix to see whether the ${evaluation.labels[modelId].toLowerCase()} is making one repeated mistake or spreading errors across several classes.`;
   }
 
-  function renderWeek6HardCases(dataset, evaluation) {
+  function renderWeek5HardCases(dataset, evaluation) {
     const modelId = state.focusModel === "tree" || state.focusModel === "forest" ? state.focusModel : "tree";
     const fit = evaluation.fits[modelId];
     const scored = dataset.data.map((row, index) => {
@@ -1664,15 +1834,15 @@
       formatPct(item.confidence),
       item.correct ? "Correct" : "Misclassified"
     ]);
-    renderTable(elements.week6HardCasesTable, ["Row", "Actual", "Predicted", "Confidence", "Status"], rows);
-    elements.week6HardCasesCaption.textContent =
+    renderTable(elements.week5HardCasesTable, ["Row", "Actual", "Predicted", "Confidence", "Status"], rows);
+    elements.week5HardCasesCaption.textContent =
       `Plain-English caption: these are the rows the ${evaluation.labels[modelId].toLowerCase()} finds hardest. Misclassified rows are shown first, then the lowest-confidence correct rows. Start with the tree, then switch to the forest if you want to see whether the same difficult rows remain difficult after bagging.`;
   }
 
-  function renderWeek6Importance(dataset, forestFit) {
+  function renderWeek5Importance(dataset, forestFit) {
     const global = buildGlobalExplanation("forest", forestFit, dataset);
-    renderTable(elements.week6ImportanceTable, ["Feature", "Signal"], global.rows);
-    elements.week6ImportanceCaption.textContent =
+    renderTable(elements.week5ImportanceTable, ["Feature", "Signal"], global.rows);
+    elements.week5ImportanceCaption.textContent =
       "Plain-English caption: this uses the forest as a supporting diagnostic. It shows which variables repeatedly reduce impurity across many trees, which complements the single-tree split view above.";
   }
 
@@ -1740,7 +1910,7 @@
     return `Plain-English caption: the Gaussian mixture fits ${state.gmmComponents} soft components with diagonal covariance in standardized feature space, then shows hard assignments in PCA coordinates. Its silhouette is ${formatNumber(
       result.silhouette,
       3
-    )}, so the clusters ${describeSilhouette(result.silhouette)}.${ariPart}${subsetNote}`;
+    )}, so the clusters ${describeSilhouette(result.silhouette)}.${ariPart}${subsetNote} This panel is intentionally about Gaussian mixtures only, not self-organising maps.`;
   }
 
   function renderHierarchicalSummary(result) {
@@ -1954,7 +2124,7 @@
       case "knn":
         return fitKNN(X, y, state.knnK);
       case "logistic":
-        return fitLogisticOvr(X, y, columns);
+        return fitLogisticOvr(X, y, columns, state.viewId === "week4" ? state.logisticPenalty : DEFAULT_LOGISTIC_PENALTY);
       case "lda":
         return fitLDA(X, y, columns);
       case "tree":
@@ -2076,11 +2246,10 @@
     };
   }
 
-  function fitLogisticOvr(X, y, columns) {
+  function fitLogisticOvr(X, y, columns, lambda = DEFAULT_LOGISTIC_PENALTY) {
     const standard = standardizeMatrix(X);
     const classes = uniqueSorted(y);
     const Xb = addIntercept(standard.X);
-    const lambda = 0.01;
     const epochs = 350;
     const lr = 0.25;
     const weights = classes.map((cls) => {
@@ -2109,11 +2278,15 @@
       standard,
       classes,
       columns,
-      weights,
+      lambda,
+      weights: weights.map((w) => ({
+        b: w[0],
+        w: w.slice(1)
+      })),
       predict(rows) {
-        const scaled = addIntercept(applyStandardization(rows, standard.mean, standard.std));
+        const scaled = applyStandardization(rows, standard.mean, standard.std);
         return scaled.map((row) => {
-          const scores = weights.map((w) => dot(row, w));
+          const scores = weights.map((w) => w[0] + dot(row, w.slice(1)));
           return classes[argMax(scores)];
         });
       }
@@ -2497,6 +2670,16 @@
       .sort((a, b) => b.value - a.value);
   }
 
+  function averageAbsWeightsArray(weights, featureCount) {
+    const sums = new Array(featureCount).fill(0);
+    weights.forEach((item) => {
+      item.w.forEach((value, index) => {
+        sums[index] += Math.abs(value);
+      });
+    });
+    return sums.map((value) => value / Math.max(1, weights.length));
+  }
+
   function permutationFeatureImportance(fit, dataset, seed) {
     const baseline = computeAccuracy(dataset.target, fit.predict(dataset.data));
     return dataset.columns
@@ -2522,9 +2705,8 @@
     }
 
     if (modelId === "logistic") {
-      const blocks = fit.weights.map((weights, classIndex) => {
-        const pairs = weights
-          .slice(1)
+      const blocks = fit.weights.map((weightBlock, classIndex) => {
+        const pairs = weightBlock.w
           .map((value, featureIndex) => ({
             name: dataset.columns[featureIndex],
             value
@@ -2534,7 +2716,7 @@
           .map((item) => `${item.name} (${item.value >= 0 ? "+" : ""}${formatNumber(item.value, 2)})`);
         return `${dataset.targetNames[classIndex]}: strongest coefficients ${pairs.join(", ")}`;
       });
-      return `Logistic regression summary\n- Fits one linear log-odds boundary per class in a one-vs-rest setup.\n- Features are standardised before fitting.\n- ${blocks.join("\n- ")}`;
+      return `Logistic regression summary\n- Fits one linear log-odds boundary per class in a one-vs-rest setup.\n- Features are standardised before fitting.\n- Current penalty lambda is ${formatNumber(fit.lambda, 3)}, so larger values shrink coefficients harder.\n- ${blocks.join("\n- ")}`;
     }
 
     if (modelId === "lda") {
@@ -3414,6 +3596,39 @@
     `;
   }
 
+  function renderPermutationHistogramSvg(svg, experiment) {
+    const width = 540;
+    const height = 320;
+    const margin = { top: 20, right: 20, bottom: 48, left: 56 };
+    const bins = 10;
+    const counts = new Array(bins).fill(0);
+    experiment.nullScores.forEach((score) => {
+      const binIndex = Math.min(bins - 1, Math.floor(score * bins));
+      counts[binIndex] += 1;
+    });
+    const xScale = linearScale([0, 1], [margin.left, width - margin.right]);
+    const yScale = linearScale([0, Math.max(1, Math.max(...counts))], [height - margin.bottom, margin.top]);
+    const barWidth = (width - margin.left - margin.right) / bins;
+    const bars = counts
+      .map((count, index) => {
+        const x0 = margin.left + index * barWidth + 3;
+        const x1 = x0 + barWidth - 6;
+        const y = yScale(count);
+        return `<rect x="${x0}" y="${y}" width="${Math.max(1, x1 - x0)}" height="${height - margin.bottom - y}" fill="#d8e4ea" stroke="#9bb3bf"></rect>`;
+      })
+      .join("");
+    const observedX = xScale(experiment.observedScore);
+    const chanceX = xScale(experiment.chanceLevel);
+
+    svg.innerHTML =
+      `${axisFrame(width, height, margin, "balanced accuracy", "shuffled-label runs")}` +
+      bars +
+      `<line x1="${chanceX}" y1="${margin.top}" x2="${chanceX}" y2="${height - margin.bottom}" stroke="#8f99aa" stroke-dasharray="5 4" stroke-width="1.4"></line>` +
+      `<line x1="${observedX}" y1="${margin.top}" x2="${observedX}" y2="${height - margin.bottom}" stroke="#b85c38" stroke-width="2.2"></line>` +
+      `<text x="${Math.min(width - margin.right, observedX + 6)}" y="${margin.top + 14}" font-size="12" fill="#b85c38">observed</text>` +
+      `<text x="${Math.min(width - margin.right, chanceX + 6)}" y="${margin.top + 30}" font-size="12" fill="#5a6475">chance</text>`;
+  }
+
   function setVisible(element, visible) {
     if (!element) {
       return;
@@ -3620,6 +3835,20 @@
 
   function average(values) {
     return values.reduce((sum, value) => sum + value, 0) / Math.max(1, values.length);
+  }
+
+  function quantile(sortedValues, q) {
+    if (!sortedValues.length) {
+      return NaN;
+    }
+    const index = (sortedValues.length - 1) * q;
+    const lower = Math.floor(index);
+    const upper = Math.ceil(index);
+    if (lower === upper) {
+      return sortedValues[lower];
+    }
+    const weight = index - lower;
+    return sortedValues[lower] * (1 - weight) + sortedValues[upper] * weight;
   }
 
   function euclidean(a, b) {

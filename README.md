@@ -64,7 +64,9 @@ Then open `http://localhost:8000`.
 
 ## Remaining gaps
 
-- Week 3 lecture topics like bootstrap, permutation, and simulation are not fully represented yet.
-- Week 4 and Week 8 include some regularisation material in lecture that the app only touches lightly.
-- Week 10 does not yet cover self-organising maps.
-- The Week 5 decision-tree studio still includes forest diagnostics as support, and may need one more tree-first refinement pass.
+- Week 3 now includes a permutation-based null check, but bootstrap and broader simulation-based resampling are still missing.
+- Week 4 now includes a simple regularisation control and shrinkage view, but the lecture treatment of regularisation is still represented only lightly.
+- Week 6 could still explain training dynamics more clearly, especially loss interpretation and overfitting.
+- Week 8 still only touches the lecture links to nearest neighbours and regularisation.
+- Week 10 is intentionally limited to Gaussian-mixture clustering and does not cover self-organising maps.
+- Week 11 could still separate internal versus external cluster evaluation more explicitly.

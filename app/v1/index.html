@@ -178,7 +178,7 @@
               <span class="week-chip">Week 5</span>
               <span class="topic-tag">tree methods</span>
               <h3>Decision Trees</h3>
-              <p>Inspect split mechanics, first branches, and why forests stabilise a single tree.</p>
+              <p>Inspect how a single tree chooses splits, then use the forest only as a stability check.</p>
               <div class="week-card-actions">
                 <button class="card-btn" type="button" data-view-target="week5">Open studio</button>
                 <span class="tutorial-ref quiet-ref">Related worksheet: <code>reference/tutorial/tut6.html</code></span>
@@ -200,7 +200,7 @@
               <span class="week-chip">Week 7</span>
               <span class="topic-tag">diagnosis</span>
               <h3>Explainability / XAI</h3>
-              <p>Inspect feature importance and local explanations for the model in focus.</p>
+              <p>Compare one global explanation view with one local explanation view, without treating this as full XAI coverage.</p>
               <div class="week-card-actions">
                 <button class="card-btn" type="button" data-view-target="week7">Open studio</button>
                 <span class="tutorial-ref quiet-ref">Related worksheet: <code>reference/tutorial/tut8.html</code></span>
@@ -241,7 +241,7 @@
               <span class="week-chip">Week 10</span>
               <span class="topic-tag">probabilistic clustering</span>
               <h3>Model-based Clustering</h3>
-              <p>Compare Gaussian-mixture clustering with geometric clustering methods on the same data.</p>
+              <p>Compare Gaussian-mixture clustering with geometric clustering methods, with SOMs left as an explicit gap in this prototype.</p>
               <div class="week-card-actions">
                 <button class="card-btn" type="button" data-view-target="week10">Open studio</button>
                 <span class="tutorial-ref quiet-ref">Related worksheet: <code>reference/tutorial/tut11.html</code></span>
@@ -371,6 +371,14 @@
                   <input id="treeDepth_num" type="number" min="1" max="8" step="1" value="4" />
                 </div>
               </div>
+
+              <div id="classificationLogisticControl" class="sub-control">
+                <label for="logisticPenalty">Logistic penalty (lambda)</label>
+                <div class="range-row">
+                  <input id="logisticPenalty" type="range" min="0.001" max="0.2" step="0.001" value="0.01" />
+                  <input id="logisticPenalty_num" type="number" min="0.001" max="0.2" step="0.001" value="0.01" />
+                </div>
+              </div>
             </div>
 
             <div class="control-group" data-control-group="clustering">
@@ -384,7 +392,7 @@
             </div>
 
             <div class="control-group" data-control-group="forest">
-              <h2>Forest Controls</h2>
+              <h2>Forest Comparison</h2>
 
               <label for="forestTrees">Random forest trees</label>
               <div class="range-row">
@@ -568,6 +576,13 @@
             <p class="caption" id="foldCaption"></p>
           </article>
         </div>
+
+        <article class="panel">
+          <h4>Permutation null check</h4>
+          <svg id="permutationPlot" viewBox="0 0 540 320"></svg>
+          <div id="permutationSummary" class="mono-block"></div>
+          <p class="caption" id="permutationCaption"></p>
+        </article>
       </section>
 
       <section id="classification-lab" class="card section week-section" data-views="foundations week4 week7 week8">
@@ -597,58 +612,65 @@
             <p class="caption" id="boundaryCaption"></p>
           </article>
         </div>
+
+        <article id="week4RegularisationPanel" class="panel">
+          <h4>Logistic coefficient shrinkage</h4>
+          <table id="week4RegularisationTable" class="data-table"></table>
+          <div id="week4RegularisationSummary" class="mono-block"></div>
+          <p class="caption" id="week4RegularisationCaption"></p>
+        </article>
       </section>
 
-      <section id="week6-lab" class="card section week-section" data-views="week5">
+      <section id="week5-lab" class="card section week-section" data-views="week5">
         <div class="section-title">
           <span class="kicker">Week 5</span>
           <h3>Decision Tree Studio</h3>
         </div>
-        <p id="week6Intro" class="section-note"></p>
+        <p id="week5Intro" class="section-note"></p>
 
         <div class="panel-grid two">
           <article class="panel">
             <h4>Split explorer</h4>
-            <svg id="week6SplitPlot" viewBox="0 0 540 420"></svg>
-            <div id="week6SplitSummary" class="mono-block"></div>
-            <p id="week6SplitCaption" class="caption"></p>
+            <svg id="week5SplitPlot" viewBox="0 0 540 420"></svg>
+            <div id="week5SplitSummary" class="mono-block"></div>
+            <p id="week5SplitCaption" class="caption"></p>
           </article>
 
           <article class="panel">
-            <h4>First tree splits</h4>
-            <svg id="week6TreePlot" viewBox="0 0 540 420"></svg>
-            <div id="week6TreeSummary" class="mono-block"></div>
-            <p id="week6TreeCaption" class="caption"></p>
+            <h4>Early tree structure</h4>
+            <svg id="week5TreePlot" viewBox="0 0 540 420"></svg>
+            <div id="week5TreeSummary" class="mono-block"></div>
+            <p id="week5TreeCaption" class="caption"></p>
           </article>
         </div>
 
         <div class="panel-grid two">
           <article class="panel">
-            <h4>Tree first, forest second</h4>
-            <table id="week6MetricsTable" class="data-table"></table>
-            <div id="week6ComparisonSummary" class="mono-block"></div>
-            <p id="week6MetricsCaption" class="caption"></p>
+            <h4>Tree vs forest stability check</h4>
+            <table id="week5MetricsTable" class="data-table"></table>
+            <div id="week5ComparisonSummary" class="mono-block"></div>
+            <p id="week5MetricsCaption" class="caption"></p>
           </article>
 
           <article class="panel">
-            <h4>Current tree diagnosis</h4>
-            <table id="week6ConfusionTable" class="data-table"></table>
-            <div id="week6ModelSummary" class="mono-block"></div>
-            <p id="week6ConfusionCaption" class="caption"></p>
+            <h4>Current model diagnosis</h4>
+            <table id="week5ConfusionTable" class="data-table"></table>
+            <div id="week5ModelSummary" class="mono-block"></div>
+            <p id="week5ConfusionCaption" class="caption"></p>
           </article>
         </div>
 
         <div class="panel-grid two">
           <article class="panel">
             <h4>Hard cases</h4>
-            <table id="week6HardCasesTable" class="data-table"></table>
-            <p id="week6HardCasesCaption" class="caption"></p>
+            <table id="week5HardCasesTable" class="data-table"></table>
+            <p id="week5HardCasesCaption" class="caption"></p>
           </article>
 
           <article class="panel">
-            <h4>Variable importance</h4>
-            <table id="week6ImportanceTable" class="data-table"></table>
-            <p id="week6ImportanceCaption" class="caption"></p>
+            <h4>Forest support signal</h4>
+            <table id="week5ImportanceTable" class="data-table"></table>
+            <p id="week5ImportanceCaption" class="caption"></p>
           </article>
         </div>
       </section>
@@ -660,15 +682,25 @@
         </div>
         <p id="xaiIntro" class="section-note"></p>
 
+        <article class="panel">
+          <h4>Week 7 Scope Note</h4>
+          <div class="mono-block">
+This studio separates one global explanation view from one local explanation view.
+
+It does not try to cover the full XAI lecture topic, so read it as a focused subset rather than complete coverage.
+          </div>
+          <p class="caption">Plain-English caption: use this page to contrast what a model seems to use overall with why one selected row is predicted the way it is.</p>
+        </article>
+
         <div class="panel-grid two">
           <article class="panel">
-            <h4>Global feature importance</h4>
+            <h4>Global explanation view</h4>
             <table id="xaiGlobalTable" class="data-table"></table>
             <p class="caption" id="xaiGlobalCaption"></p>
           </article>
 
           <article class="panel">
-            <h4>Local explanation for selected row</h4>
+            <h4>Local explanation view</h4>
             <div id="xaiLocalSummary" class="mono-block"></div>
             <table id="xaiLocalTable" class="data-table"></table>
             <p class="caption" id="xaiLocalCaption"></p>
@@ -714,6 +746,16 @@
           <h4>Clustering quality comparison</h4>
           <table id="clusteringTable" class="data-table"></table>
           <p class="caption" id="clusteringCaption"></p>
+        </article>
+
+        <article id="week10ScopePanel" class="panel">
+          <h4>Week 10 Scope Note</h4>
+          <div class="mono-block">
+This studio covers Gaussian-mixture clustering as the model-based method.
+
+It does not implement self-organising maps, so treat SOMs as an explicit known gap rather than implied coverage.
+          </div>
+          <p class="caption">Plain-English caption: use this page to compare probabilistic clustering with k-means and hierarchical clustering, not as a full summary of every Week 10 lecture topic.</p>
         </article>
 
         <div class="panel-grid three">
