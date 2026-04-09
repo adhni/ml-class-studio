@@ -4,6 +4,7 @@
   const TOY_POINTS = 180;
   const MAX_HIERARCHICAL_ROWS = 180;
   const PERMUTATION_RUNS = 21;
+  const BOOTSTRAP_RUNS = 31;
   const DEFAULT_LOGISTIC_PENALTY = 0.01;
   const PALETTE = [
     "#0f4d66",
@@ -61,6 +62,7 @@
     split: null,
     folds: null,
     resamplingExperiment: null,
+    bootstrapExperiment: null,
     week4Regularisation: null,
     classification: null,
     neural: null,
@@ -122,7 +124,8 @@
       label: "Week 3",
       title: "Validation",
       summary: "See how the split changes the story.",
-      prompt: "Start with Penguins. Toggle stratification, compare holdout with k-fold cross-validation, then use the permutation panel to check whether the model signal is stronger than a shuffled-label baseline.",
+      prompt:
+        "Start with Penguins. Toggle stratification, compare holdout with k-fold cross-validation, then use the permutation panel to check whether the model signal is stronger than a shuffled-label baseline. Finish with the bootstrap panel to see how the score moves across resampled training sets.",
       tutorialPath: "reference/tutorial/tut4.html",
       controls: ["dataset", "validation"],
       preset: {
@@ -137,7 +140,7 @@
       },
       copy: {
         resampling:
-          "This week is about generalisation. Read the split and fold balance first, then use the permutation null check to compare real-label performance with what the same workflow can achieve after the labels are shuffled."
+          "This week is about generalisation. Read the split and fold balance first, then use the permutation null check to compare real-label performance with what the same workflow can achieve after the labels are shuffled. The bootstrap panel adds a separate stability view based on repeated with-replacement resamples."
       }
     },
     week4: {
@@ -471,6 +474,9 @@
       "permutationPlot",
       "permutationSummary",
       "permutationCaption",
+      "bootstrapPlot",
+      "bootstrapSummary",
+      "bootstrapCaption",
       "classificationMetricsTable",
       "classificationModeCaption",
       "classificationDetailGrid",
@@ -769,6 +775,7 @@
     cache.split = createTrainTestSplit(dataset.target, state.testFraction, state.stratify, state.seed + 11);
     cache.folds = createKFolds(dataset.target, state.kFolds, state.stratify, state.seed + 23);
     cache.resamplingExperiment = state.viewId === "week3" ? evaluatePermutationExperiment(dataset) : null;
+    cache.bootstrapExperiment = state.viewId === "week3" ? evaluateBootstrapExperiment(dataset) : null;
     cache.week4Regularisation = state.viewId === "week4" ? evaluateWeek4Regularisation(dataset) : null;
     cache.classification = classificationViews().has(state.viewId) ? evaluateClassificationModels(dataset) : null;
     cache.neural = state.viewId === "week6" ? evaluateNeuralNetwork(dataset) : null;
@@ -1381,6 +1388,7 @@
     const split = cache.split;
     const folds = cache.folds;
     const experiment = cache.resamplingExperiment;
+    const bootstrap = cache.bootstrapExperiment;
     const classNames = dataset.targetNames;
 
     const splitRows = classNames.map((label, index) => {
@@ -1430,6 +1438,31 @@
       `Class-count chance guide: ${formatPct(experiment.chanceLevel)}`;
     elements.permutationCaption.textContent =
       `${state.validationMode === "holdout" ? "This uses the current holdout split." : `This uses the current ${state.kFolds}-fold cross-validation setup.`} The labels are shuffled ${experiment.runs} times while the features stay fixed. If the observed score sits well to the right of the shuffled-label distribution, the workflow is finding real signal rather than just exploiting chance structure.`;
+
+    if (!bootstrap) {
+      return;
+    }
+
+    if (!bootstrap.validRuns) {
+      renderMessageSvg(elements.bootstrapPlot, "Bootstrap runs did not produce a usable out-of-bag score.");
+      elements.bootstrapSummary.textContent =
+        `Probe model\nLogistic regression\n\n` +
+        `Bootstrap runs attempted: ${bootstrap.runs}\n` +
+        `Usable runs: 0`;
+      elements.bootstrapCaption.textContent =
+        `This bootstrap view skips runs whose out-of-bag rows do not contain every class, so some datasets can be too small or too imbalanced for a stable summary here.`;
+      return;
+    }
+
+    renderBootstrapHistogramSvg(elements.bootstrapPlot, bootstrap);
+    elements.bootstrapSummary.textContent =
+      `Probe model\nLogistic regression\n\n` +
+      `Bootstrap median balanced accuracy: ${formatPct(bootstrap.medianScore)}\n` +
+      `Middle 80% of bootstrap scores: ${formatPct(bootstrap.lowScore)} to ${formatPct(bootstrap.highScore)}\n` +
+      `Mean out-of-bag rows per run: ${formatNumber(bootstrap.meanOobSize, 1)}\n` +
+      `Runs with all classes represented out of bag: ${bootstrap.validRuns} of ${bootstrap.runs}`;
+    elements.bootstrapCaption.textContent =
+      `Bootstrap resampling draws ${dataset.n} training rows with replacement, then evaluates the fitted model on the out-of-bag rows left out of that draw. Use this panel to judge score stability across repeated resampled training sets; unlike the permutation panel, it is about variability under resampling rather than a no-signal null baseline.`;
   }
 
   function evaluatePermutationExperiment(dataset) {
@@ -1461,6 +1494,45 @@
       nullHigh: quantile(sortedNull, 0.9),
       tailProbability: (tailCount + 1) / (PERMUTATION_RUNS + 1),
       chanceLevel: 1 / Math.max(1, dataset.targetNames.length)
+    };
+  }
+
+  function evaluateBootstrapExperiment(dataset) {
+    const scores = [];
+    const oobSizes = [];
+
+    for (let runIndex = 0; runIndex < BOOTSTRAP_RUNS; runIndex += 1) {
+      const draw = bootstrapSampleIndices(dataset.n, state.seed + 801 + runIndex * 23);
+      const used = new Set(draw);
+      const oob = range(dataset.n).filter((index) => !used.has(index));
+      if (!oob.length) {
+        continue;
+      }
+
+      const oobClasses = uniqueSorted(oob.map((index) => dataset.target[index]));
+      if (oobClasses.length < dataset.targetNames.length) {
+        continue;
+      }
+
+      const trainX = selectRows(dataset.data, draw);
+      const trainY = selectEntries(dataset.target, draw);
+      const testX = selectRows(dataset.data, oob);
+      const testY = selectEntries(dataset.target, oob);
+      const fit = fitLogisticOvr(trainX, trainY, dataset.columns, DEFAULT_LOGISTIC_PENALTY);
+      const preds = fit.predict(testX);
+      scores.push(computeBalancedAccuracy(testY, preds, dataset.targetNames.length));
+      oobSizes.push(oob.length);
+    }
+
+    const sortedScores = scores.slice().sort((a, b) => a - b);
+    return {
+      runs: BOOTSTRAP_RUNS,
+      validRuns: scores.length,
+      scores,
+      medianScore: quantile(sortedScores, 0.5),
+      lowScore: quantile(sortedScores, 0.1),
+      highScore: quantile(sortedScores, 0.9),
+      meanOobSize: average(oobSizes)
     };
   }
 
@@ -3634,6 +3706,42 @@
       `<text x="${Math.min(width - margin.right, chanceX + 6)}" y="${margin.top + 30}" font-size="12" fill="#5a6475">chance</text>`;
   }
 
+  function renderBootstrapHistogramSvg(svg, experiment) {
+    const width = 540;
+    const height = 320;
+    const margin = { top: 20, right: 20, bottom: 48, left: 56 };
+    const bins = 10;
+    const counts = new Array(bins).fill(0);
+    experiment.scores.forEach((score) => {
+      const clipped = Math.max(0, Math.min(0.999999, score));
+      const binIndex = Math.min(bins - 1, Math.floor(clipped * bins));
+      counts[binIndex] += 1;
+    });
+    const xScale = linearScale([0, 1], [margin.left, width - margin.right]);
+    const yScale = linearScale([0, Math.max(1, Math.max(...counts))], [height - margin.bottom, margin.top]);
+    const barWidth = (width - margin.left - margin.right) / bins;
+    const bars = counts
+      .map((count, index) => {
+        const x0 = margin.left + index * barWidth + 3;
+        const x1 = x0 + barWidth - 6;
+        const y = yScale(count);
+        return `<rect x="${x0}" y="${y}" width="${Math.max(1, x1 - x0)}" height="${height - margin.bottom - y}" fill="#efe2cf" stroke="#c8a97e"></rect>`;
+      })
+      .join("");
+    const medianX = xScale(experiment.medianScore);
+    const lowX = xScale(experiment.lowScore);
+    const highX = xScale(experiment.highScore);
+
+    svg.innerHTML =
+      `${axisFrame(width, height, margin, "balanced accuracy", "bootstrap runs")}` +
+      bars +
+      `<line x1="${lowX}" y1="${margin.top}" x2="${lowX}" y2="${height - margin.bottom}" stroke="#7a6a52" stroke-dasharray="4 4" stroke-width="1.2"></line>` +
+      `<line x1="${highX}" y1="${margin.top}" x2="${highX}" y2="${height - margin.bottom}" stroke="#7a6a52" stroke-dasharray="4 4" stroke-width="1.2"></line>` +
+      `<line x1="${medianX}" y1="${margin.top}" x2="${medianX}" y2="${height - margin.bottom}" stroke="#9a5a24" stroke-width="2.2"></line>` +
+      `<text x="${Math.min(width - margin.right, medianX + 6)}" y="${margin.top + 14}" font-size="12" fill="#9a5a24">median</text>` +
+      `<text x="${Math.min(width - margin.right, highX + 6)}" y="${margin.top + 30}" font-size="12" fill="#7a6a52">80% band</text>`;
+  }
+
   function setVisible(element, visible) {
     if (!element) {
       return;
@@ -3997,6 +4105,11 @@
 
   function sampleWithoutReplacement(length, sampleSize, seed) {
     return shuffle(range(length), mulberry32(seed)).slice(0, sampleSize).sort((a, b) => a - b);
+  }
+
+  function bootstrapSampleIndices(length, seed) {
+    const rng = mulberry32(seed);
+    return range(length).map(() => Math.floor(rng() * length));
   }
 
   function shuffle(values, rng) {

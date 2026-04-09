@@ -64,7 +64,7 @@ Then open `http://localhost:8000`.
 
 ## Remaining gaps
 
-- Week 3 now includes a permutation-based null check, but bootstrap and broader simulation-based resampling are still missing.
+- Week 3 now includes a permutation-based null check and a small bootstrap stability panel, but broader simulation-based resampling ideas are still outside the current prototype.
 - Week 4 now includes a simple regularisation control and shrinkage view, but the lecture treatment of regularisation is still represented only lightly.
 - Week 6 now treats hidden units and epochs as flexibility controls, and it states more clearly that training loss is not the same thing as validation performance.
 - Week 8 now frames C as a regularisation tradeoff and makes the link to nearest-neighbour style local decisions clearer, while staying SVM-first.

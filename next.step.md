@@ -1,84 +1,53 @@
 # Next Content Steps
 
-This note is only about content improvements for the teaching app. It is not a UX, deployment, or documentation checklist.
+This note is only about content decisions for the teaching app. It is not a UX, deployment, or documentation checklist.
 
-## Highest Priority
+## Current Position
 
-1. Check each numbered studio against the lecture slides again and trim anything that overclaims coverage.
-2. Fill the remaining lecture-topic gaps before adding any new polish.
-3. Keep the repo notes aligned with the actual app whenever scope changes.
+- The main copy cleanups for Weeks 6, 8, and 11 are done.
+- Week 3 now includes a small bootstrap stability panel alongside the permutation null check.
+- Most remaining items are no longer clear build tasks; they are scope notes or teaching guardrails.
+- Do not add more panels by default just because a lecture mentioned more material.
 
-## Week-by-Week Content Gaps
+## Real Queue
 
 ### Foundations
 - Decide whether this stays as a permanent starter studio.
-- Keep it focused on `x`, `y`, and KNN only.
-- Avoid letting it become a hidden replacement for a real lecture week.
+- If it stays, keep it limited to `x`, `y`, and KNN.
+- Do not let it drift into a hidden replacement for a numbered lecture week.
+
+## Probably Not Needed
 
 ### Week 2: Visualisation
-- Current app covers scatterplots, PCA, and classical MDS well.
-- Still missing broader lecture material such as t-SNE, UMAP, and data-tour style ideas.
-- Decide whether to add one more nonlinear visualisation method or leave Week 2 intentionally narrow.
-
-### Week 3: Validation
-- Current app is strong on train/test split, stratification, and k-fold CV.
-- Now includes a permutation-based null check.
-- Still missing bootstrap and broader simulation-based resampling ideas from the lecture.
-- If this week gets another addition, it should be a small bootstrap panel rather than more generic text.
+- Current app already covers scatterplots, PCA, and classical MDS well enough for the prototype.
+- Do not add t-SNE, UMAP, or similar methods unless the lecture alignment looks materially misleading without them.
 
 ### Week 4: Logistic Regression
-- Current app covers logistic regression and compares it with LDA.
-- Now includes a simple penalty-strength control and a coefficient-shrinkage view.
-- Regularisation is still represented lightly compared with the lecture framing.
-- Keep logistic regression as the main object and avoid letting the comparison with LDA take over the page.
+- Regularisation is still lighter than the lecture framing, but this is not currently a strong enough gap to force more work.
 
 ### Week 5: Decision Trees
-- The tree-first refinement is now in place.
-- Forests should stay as a short comparison or stability check, not the headline.
-- If possible later, add a clearer stopping-rule view beyond depth alone.
-
-### Week 6: Neural Networks
-- Current app has a small MLP and decision-boundary support.
-- The page now treats hidden units and training epochs more explicitly as flexibility controls.
-- The page now states that lower training loss is not, by itself, evidence of better generalisation.
-- Keep the neural net page focused on interpretation of flexibility and overfitting, not on expanding the architecture menu.
+- A stopping-rule view beyond depth alone would be optional polish, not a required next step.
 
 ### Week 7: Explainability / XAI
-- Current app has feature importance and local explanation.
-- The page now separates global and local explanation more clearly.
-- The page now states explicitly that it is a subset of the full XAI topic.
-- If this week gets another pass, it should deepen one explanation path rather than broaden into generic XAI coverage.
-
-### Week 8: SVM
-- Current app covers linear and RBF SVM.
-- The framing now makes the `C` control read more clearly as a regularisation tradeoff.
-- The page now cross-references nearest-neighbour style local behaviour without making Week 8 stop being SVM-first.
-- Keep the comparison as framing only; do not turn this week into a KNN recap.
+- Only revisit this if there is a strong reason to deepen one explanation path.
+- Do not broaden it into generic XAI coverage.
 
 ### Week 9: Clustering Methods
-- Current app covers k-means and hierarchical clustering well.
-- Keep checking that this page stays method-focused and does not duplicate too much evaluation content.
+- No new build item here.
+- Just keep the page method-focused and avoid duplicating Week 11 evaluation framing.
 
 ### Week 10: Model-based Clustering
-- Current app covers Gaussian-mixture clustering.
-- The lecture also includes self-organising maps.
-- This is now an explicit known gap rather than an implied target for the current prototype.
-- Keep the Gaussian-mixture scope note visible and avoid wording that suggests broader Week 10 coverage.
+- Self-organising maps remain an explicit out-of-scope gap for this prototype.
+- No further action is needed if that scope note stays visible.
 
-### Week 11: Cluster Evaluation
-- Current app covers silhouette, WCSS, and adjusted Rand index.
-- The page now names silhouette and WCSS as internal metrics.
-- The page now names adjusted Rand as an external metric tied to known labels when they exist.
-- Keep reminding users that the PCA picture is supporting evidence rather than the full evaluation story.
+## Editing Rules
 
-## Cross-Cutting Content Work
+- Keep every numbered studio aligned with the lecture slides.
+- Keep `Related worksheet` links, but do not let tutorial structure drive the app.
+- Prefer one strong teaching panel over extra generic explanation text.
+- Add scope notes when coverage is partial; do not imply full lecture coverage where it does not exist.
 
-- Make every week description match the lecture slides closely.
-- Keep `Related worksheet` links, but do not let tutorial structure drive the studio content.
-- Add short scope notes only where the app covers part of a lecture topic.
-- Prefer one strong new teaching panel per week over more general explanation text.
+## Suggested Next Move
 
-## Suggested Build Order
-
-1. Week 3 bootstrap extension
-2. Week 2 decision on whether to stay intentionally narrow or add one nonlinear visualisation method
+1. Decide whether `Foundations` should stay as a permanent starter studio.
+2. Otherwise treat the prototype as content-complete and stop expanding scope.
