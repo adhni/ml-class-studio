@@ -74,14 +74,14 @@
       label: "Home",
       title: "Choose a studio",
       summary: "Open one focused studio at a time.",
-      prompt: "Start with Foundations for week-1 style basics, or open the lecture week you need. Related worksheets are linked separately when this repo has them."
+      prompt: "Start with Foundations for week-1 style basics, or open the lecture week you need. Related worksheets are referenced by tutorial number."
     },
     foundations: {
       label: "Foundations",
       title: "Basics + KNN",
       summary: "An unnumbered companion studio for x, y, and KNN before the lecture-week sequence begins.",
       prompt: "Use Iris first, then switch to Toy nonlinear to see why KNN behaves like a local rule. This studio supports the early course setup work rather than a numbered lecture slide deck.",
-      tutorialPath: "reference/tutorial/tut2.html",
+      tutorialPath: "Tut 2",
       controls: ["dataset", "problem", "validation", "classification"],
       preset: {
         datasetId: "iris",
@@ -105,7 +105,7 @@
       title: "Visualisation",
       summary: "See structure before fitting models.",
       prompt: "Start with Wine, then compare what the raw scatter, PCA, and MDS views reveal.",
-      tutorialPath: "reference/tutorial/tut3.html",
+      tutorialPath: "Tut 3",
       controls: ["dataset", "visual"],
       preset: {
         datasetId: "wine",
@@ -126,7 +126,7 @@
       summary: "See how the split changes the story.",
       prompt:
         "Start with Penguins. Toggle stratification, compare holdout with k-fold cross-validation, then use the permutation panel to check whether the model signal is stronger than a shuffled-label baseline. Finish with the bootstrap panel to see how the score moves across resampled training sets.",
-      tutorialPath: "reference/tutorial/tut4.html",
+      tutorialPath: "Tut 4",
       controls: ["dataset", "validation"],
       preset: {
         datasetId: "penguins",
@@ -148,7 +148,7 @@
       title: "Logistic Regression",
       summary: "Use logistic regression as the main linear classifier, then inspect how regularisation shrinks coefficients.",
       prompt: "Start with Penguins, inspect logistic regression first, adjust the penalty to watch the coefficients shrink, then compare the result with LDA on the same split.",
-      tutorialPath: "reference/tutorial/tut5.html",
+      tutorialPath: "Tut 5",
       controls: ["dataset", "validation", "classification"],
       preset: {
         datasetId: "penguins",
@@ -170,7 +170,7 @@
       title: "Decision Trees",
       summary: "Make the single tree the main story, then use the forest as a stability check.",
       prompt: "Start with Penguins, inspect the split explorer first, then read the early tree structure before using the forest comparison as a second opinion.",
-      tutorialPath: "reference/tutorial/tut6.html",
+      tutorialPath: "Tut 6",
       controls: ["dataset", "validation", "classification", "forest", "trees"],
       preset: {
         datasetId: "penguins",
@@ -193,7 +193,7 @@
       summary: "Use hidden units, epochs, and validation scores to judge neural-network flexibility.",
       prompt:
         "Start with Toy nonlinear. Increase hidden units or epochs, then compare the validation scores with the training-loss summary. A lower training loss alone is not enough if holdout or cross-validation performance does not improve.",
-      tutorialPath: "reference/tutorial/tut7.html",
+      tutorialPath: "Tut 7",
       controls: ["dataset", "validation", "neural"],
       preset: {
         datasetId: "toy_nonlinear",
@@ -215,7 +215,7 @@
       title: "Explainability / XAI",
       summary: "Separate one global explanation view from one local explanation view.",
       prompt: "Start with Penguins and the random forest, then switch focus models to compare what the global view says about overall signal and what the local view says about one selected row. This studio is intentionally a narrow subset of XAI, not full topic coverage.",
-      tutorialPath: "reference/tutorial/tut8.html",
+      tutorialPath: "Tut 8",
       controls: ["dataset", "validation", "classification", "forest", "svm", "xai"],
       preset: {
         datasetId: "penguins",
@@ -244,7 +244,7 @@
       summary: "Compare margin-based SVM behaviour with more local decision rules.",
       prompt:
         "Start with Toy nonlinear. Compare linear SVM with RBF SVM, then change C and gamma to see how the margin width and boundary flexibility respond. Read C as a regularisation tradeoff, and keep in mind how this differs from nearest-neighbour style local decisions.",
-      tutorialPath: "",
+      tutorialPath: "Tut 9",
       controls: ["dataset", "validation", "classification", "svm"],
       preset: {
         datasetId: "toy_nonlinear",
@@ -267,7 +267,7 @@
       title: "Clustering Methods",
       summary: "Compare k-means and hierarchical clustering directly.",
       prompt: "Start with Wine, then check whether the two methods tell a similar grouping story in PCA space.",
-      tutorialPath: "reference/tutorial/tut10.html",
+      tutorialPath: "Tut 10",
       controls: ["dataset", "clustering"],
       preset: {
         datasetId: "wine",
@@ -288,7 +288,7 @@
       title: "Model-based Clustering",
       summary: "Compare Gaussian-mixture clustering with the geometric clustering methods, with SOMs left out explicitly.",
       prompt: "Start with Wine, keep k and the mixture component count aligned, then see where a probabilistic model groups points differently from k-means or hierarchical clustering. This studio is intentionally limited to Gaussian mixtures and does not claim SOM coverage.",
-      tutorialPath: "reference/tutorial/tut11.html",
+      tutorialPath: "Tut 11",
       controls: ["dataset", "clustering", "model-clustering"],
       preset: {
         datasetId: "wine",
@@ -311,7 +311,7 @@
       summary: "Separate internal cluster quality from external label agreement.",
       prompt:
         "Start with Toy clusters, then compare what the internal metrics say about compactness and separation with what adjusted Rand says about agreement with known labels. Use the PCA view as supporting evidence, not the whole argument.",
-      tutorialPath: "reference/tutorial/tut12.html",
+      tutorialPath: "Tut 12",
       controls: ["dataset", "clustering"],
       preset: {
         datasetId: "toy_clusters",

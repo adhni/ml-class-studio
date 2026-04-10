@@ -12,8 +12,8 @@ This note is only about content decisions for the teaching app. It is not a UX, 
 ## Real Queue
 
 ### Foundations
-- Decide whether this stays as a permanent starter studio.
-- If it stays, keep it limited to `x`, `y`, and KNN.
+- Keep this as a permanent starter studio.
+- Keep it limited to `x`, `y`, and KNN.
 - Do not let it drift into a hidden replacement for a numbered lecture week.
 
 ## Probably Not Needed
@@ -49,5 +49,6 @@ This note is only about content decisions for the teaching app. It is not a UX, 
 
 ## Suggested Next Move
 
-1. Decide whether `Foundations` should stay as a permanent starter studio.
-2. Otherwise treat the prototype as content-complete and stop expanding scope.
+1. Treat `Foundations` as a permanent starter studio with a narrow scope.
+2. Treat the prototype as content-complete and stop expanding scope.
+3. Only make maintenance edits that keep the sharing story coherent, such as accurate worksheet references and clear scope notes.
