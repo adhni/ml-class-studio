@@ -58,6 +58,7 @@
   const elements = {};
   const cache = {
     dataset: null,
+    projectionKey: null,
     pca: null,
     mds: null,
     split: null,
@@ -332,7 +333,11 @@
     }
   };
 
-  document.addEventListener("DOMContentLoaded", init);
+  document.addEventListener("DOMContentLoaded", () => {
+    if (!window.ML_STUDIO_SKIP_INIT) {
+      init();
+    }
+  });
 
   function init() {
     collectElements();
@@ -781,8 +786,7 @@
     }
     const dataset = getActiveDataset();
     cache.dataset = dataset;
-    cache.pca = computePCA(dataset.data, 2);
-    cache.mds = computeClassicalMDS(cache.pca.standardized, 2, state.seed + 5);
+    syncProjectionCache(dataset);
     cache.split = createTrainTestSplit(dataset.target, state.testFraction, state.stratify, state.seed + 11);
     cache.folds = createKFolds(dataset.target, state.kFolds, state.stratify, state.seed + 23);
     cache.resamplingExperiment = state.viewId === "week3" ? evaluatePermutationExperiment(dataset) : null;
@@ -879,6 +883,16 @@
 
   function clusteringViews() {
     return new Set(["week9", "week10", "week11"]);
+  }
+
+  function syncProjectionCache(dataset) {
+    const projectionKey = `${dataset.id}:${state.seed}`;
+    if (cache.projectionKey === projectionKey && cache.pca && cache.mds) {
+      return;
+    }
+    cache.projectionKey = projectionKey;
+    cache.pca = computePCA(dataset.data, 2);
+    cache.mds = computeClassicalMDS(cache.pca.standardized, 2, state.seed + 5);
   }
 
   function requestAnalysis() {
@@ -4356,5 +4370,14 @@
       .replaceAll("<", "&lt;")
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;");
+  }
+
+  if (typeof window !== "undefined") {
+    window.ML_STUDIO_TEST_API = {
+      adjustedRandIndex,
+      createKFolds,
+      createTrainTestSplit,
+      silhouetteScore
+    };
   }
 })();

@@ -311,6 +311,17 @@ body.settings-open .settings-drawer {
   pointer-events: auto;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .settings-backdrop,
+  .settings-drawer {
+    transition: none;
+  }
+}
+
 .settings-drawer-head {
   display: flex;
   align-items: center;
