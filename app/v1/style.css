@@ -71,12 +71,16 @@ input[type="range"] {
   margin-bottom: 0;
 }
 
-.control-group h2,
+.control-group h3,
 .app-controls-nav label {
   font-size: 15px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--muted);
+}
+
+.control-group h3 {
+  margin: 0 0 8px;
 }
 
 .course-tag,
@@ -305,6 +309,17 @@ body.settings-open .settings-backdrop {
 body.settings-open .settings-drawer {
   transform: translateX(0);
   pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .settings-backdrop,
+  .settings-drawer {
+    transition: none;
+  }
 }
 
 .settings-drawer-head {

@@ -46,6 +46,8 @@ python3 -m http.server 8000
 
 Then open `http://localhost:8000`.
 
+To run the lightweight browser checks, open `http://localhost:8000/tests.html`.
+
 ## Current scope
 
 - Static HTML, CSS, and JavaScript only.
@@ -60,6 +62,7 @@ Then open `http://localhost:8000`.
 - Not a replacement for lecture slides
 - Not a replacement for tutorial worksheets
 - Not a full implementation of every topic covered in every lecture week
+- Not statistical reference software; the browser algorithms are teaching implementations for interactive comparison
 - Not a framework app or build-based frontend project
 
 ## Remaining gaps

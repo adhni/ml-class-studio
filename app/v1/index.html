@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Interactive ETC3250/5250 machine learning studio for reproducible browser-based teaching demos." />
   <title>ETC3250/5250 Machine Learning Studio</title>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -262,7 +263,7 @@
         </section>
 
         <p class="home-footnote">
-          Companion app for ETC3250/5250 lecture topics. Built for reproducible exploration and model diagnosis, not as a replacement for lectures, workshops, or tutorials.
+          Companion app for ETC3250/5250 lecture topics. Built for reproducible exploration and model diagnosis, not as a replacement for lectures, workshops, tutorials, or statistical reference software.
         </p>
       </section>
 
@@ -277,7 +278,7 @@
       </section>
 
       <div id="settingsBackdrop" class="settings-backdrop" hidden></div>
-      <aside id="moreSettingsPanel" class="settings-drawer" hidden>
+      <aside id="moreSettingsPanel" class="settings-drawer" role="dialog" aria-modal="true" aria-label="More settings" aria-hidden="true" hidden>
         <div class="settings-drawer-head">
           <h3>More settings</h3>
           <button id="settingsCloseBtn" class="secondary-btn compact-btn settings-close-btn" type="button">Close</button>
@@ -285,7 +286,7 @@
         <div class="settings-drawer-body">
           <div class="settings-grid">
             <div class="control-group" data-control-group="dataset">
-              <h2>Dataset</h2>
+              <h3>Dataset</h3>
 
               <label for="datasetSelect">Dataset</label>
               <select id="datasetSelect">
@@ -300,7 +301,7 @@
               <label for="analysisSeed">Analysis seed</label>
               <div class="range-row">
                 <input id="analysisSeed" type="range" min="1" max="999" step="1" value="123" />
-                <input id="analysisSeed_num" type="number" min="1" max="999" step="1" value="123" />
+                <input id="analysisSeed_num" type="number" min="1" max="999" step="1" value="123" aria-label="Analysis seed number" />
               </div>
 
               <p class="small-note" id="datasetMeta"></p>
@@ -308,7 +309,7 @@
             </div>
 
             <div class="control-group" data-control-group="visual">
-              <h2>View Controls</h2>
+              <h3>View Controls</h3>
               <label for="scatterX">X feature</label>
               <select id="scatterX"></select>
               <label for="scatterY">Y feature</label>
@@ -316,7 +317,7 @@
             </div>
 
             <div class="control-group" data-control-group="validation">
-              <h2>Validation</h2>
+              <h3>Validation</h3>
 
               <label for="validationMode">Evaluation mode</label>
               <select id="validationMode">
@@ -327,13 +328,13 @@
               <label for="testFraction">Test fraction</label>
               <div class="range-row">
                 <input id="testFraction" type="range" min="0.15" max="0.45" step="0.05" value="0.25" />
-                <input id="testFraction_num" type="number" min="0.15" max="0.45" step="0.05" value="0.25" />
+                <input id="testFraction_num" type="number" min="0.15" max="0.45" step="0.05" value="0.25" aria-label="Test fraction number" />
               </div>
 
               <label for="kFolds">CV folds</label>
               <div class="range-row">
                 <input id="kFolds" type="range" min="3" max="10" step="1" value="5" />
-                <input id="kFolds_num" type="number" min="3" max="10" step="1" value="5" />
+                <input id="kFolds_num" type="number" min="3" max="10" step="1" value="5" aria-label="CV folds number" />
               </div>
 
               <label class="inline-check">
@@ -343,7 +344,7 @@
             </div>
 
             <div class="control-group" data-control-group="classification">
-              <h2>Classification Controls</h2>
+              <h3>Classification Controls</h3>
 
               <label for="focusModel">Focus model</label>
               <select id="focusModel">
@@ -360,7 +361,7 @@
                 <label for="knnK">KNN neighbours (k)</label>
                 <div class="range-row">
                   <input id="knnK" type="range" min="1" max="25" step="2" value="7" />
-                  <input id="knnK_num" type="number" min="1" max="25" step="2" value="7" />
+                  <input id="knnK_num" type="number" min="1" max="25" step="2" value="7" aria-label="KNN neighbours number" />
                 </div>
               </div>
 
@@ -368,7 +369,7 @@
                 <label for="treeDepth">Decision tree depth</label>
                 <div class="range-row">
                   <input id="treeDepth" type="range" min="1" max="8" step="1" value="4" />
-                  <input id="treeDepth_num" type="number" min="1" max="8" step="1" value="4" />
+                  <input id="treeDepth_num" type="number" min="1" max="8" step="1" value="4" aria-label="Decision tree depth number" />
                 </div>
               </div>
 
@@ -376,93 +377,93 @@
                 <label for="logisticPenalty">Logistic penalty (lambda)</label>
                 <div class="range-row">
                   <input id="logisticPenalty" type="range" min="0.001" max="0.2" step="0.001" value="0.01" />
-                  <input id="logisticPenalty_num" type="number" min="0.001" max="0.2" step="0.001" value="0.01" />
+                  <input id="logisticPenalty_num" type="number" min="0.001" max="0.2" step="0.001" value="0.01" aria-label="Logistic penalty number" />
                 </div>
               </div>
             </div>
 
             <div class="control-group" data-control-group="clustering">
-              <h2>Clustering Controls</h2>
+              <h3>Clustering Controls</h3>
 
               <label for="clusterK">Clustering k</label>
               <div class="range-row">
                 <input id="clusterK" type="range" min="2" max="8" step="1" value="3" />
-                <input id="clusterK_num" type="number" min="2" max="8" step="1" value="3" />
+                <input id="clusterK_num" type="number" min="2" max="8" step="1" value="3" aria-label="Clustering k number" />
               </div>
             </div>
 
             <div class="control-group" data-control-group="forest">
-              <h2>Forest Comparison</h2>
+              <h3>Forest Comparison</h3>
 
               <label for="forestTrees">Random forest trees</label>
               <div class="range-row">
                 <input id="forestTrees" type="range" min="5" max="51" step="2" value="21" />
-                <input id="forestTrees_num" type="number" min="5" max="51" step="2" value="21" />
+                <input id="forestTrees_num" type="number" min="5" max="51" step="2" value="21" aria-label="Random forest trees number" />
               </div>
             </div>
 
             <div class="control-group" data-control-group="trees">
-              <h2>Tree Mechanics</h2>
+              <h3>Tree Mechanics</h3>
 
               <label for="splitFeature">Split explorer feature</label>
               <select id="splitFeature"></select>
             </div>
 
             <div class="control-group" data-control-group="neural">
-              <h2>Neural Net Controls</h2>
+              <h3>Neural Net Controls</h3>
 
               <label for="nnHidden">Hidden units</label>
               <div class="range-row">
                 <input id="nnHidden" type="range" min="3" max="24" step="1" value="8" />
-                <input id="nnHidden_num" type="number" min="3" max="24" step="1" value="8" />
+                <input id="nnHidden_num" type="number" min="3" max="24" step="1" value="8" aria-label="Hidden units number" />
               </div>
 
               <label for="nnEpochs">Training epochs</label>
               <div class="range-row">
                 <input id="nnEpochs" type="range" min="60" max="320" step="20" value="180" />
-                <input id="nnEpochs_num" type="number" min="60" max="320" step="20" value="180" />
+                <input id="nnEpochs_num" type="number" min="60" max="320" step="20" value="180" aria-label="Training epochs number" />
               </div>
             </div>
 
             <div class="control-group" data-control-group="svm">
-              <h2>SVM Controls</h2>
+              <h3>SVM Controls</h3>
 
               <label for="svmC">SVM C</label>
               <div class="range-row">
                 <input id="svmC" type="range" min="0.2" max="3" step="0.2" value="1.2" />
-                <input id="svmC_num" type="number" min="0.2" max="3" step="0.2" value="1.2" />
+                <input id="svmC_num" type="number" min="0.2" max="3" step="0.2" value="1.2" aria-label="SVM C number" />
               </div>
 
               <label for="svmGamma">RBF gamma</label>
               <div class="range-row">
                 <input id="svmGamma" type="range" min="0.2" max="3" step="0.2" value="1" />
-                <input id="svmGamma_num" type="number" min="0.2" max="3" step="0.2" value="1" />
+                <input id="svmGamma_num" type="number" min="0.2" max="3" step="0.2" value="1" aria-label="RBF gamma number" />
               </div>
             </div>
 
             <div class="control-group" data-control-group="xai">
-              <h2>XAI Controls</h2>
+              <h3>XAI Controls</h3>
 
               <label for="xaiIndex">Selected row</label>
               <div class="range-row">
-                <input id="xaiIndex" type="range" min="1" max="150" step="1" value="1" />
-                <input id="xaiIndex_num" type="number" min="1" max="150" step="1" value="1" />
+                <input id="xaiIndex" type="range" min="1" max="344" step="1" value="1" />
+                <input id="xaiIndex_num" type="number" min="1" max="344" step="1" value="1" aria-label="Selected row number" />
               </div>
               <p id="xaiIndexNote" class="small-note"></p>
             </div>
 
             <div class="control-group" data-control-group="model-clustering">
-              <h2>Model-based Controls</h2>
+              <h3>Model-based Controls</h3>
 
               <label for="gmmComponents">Mixture components</label>
               <div class="range-row">
                 <input id="gmmComponents" type="range" min="2" max="8" step="1" value="3" />
-                <input id="gmmComponents_num" type="number" min="2" max="8" step="1" value="3" />
+                <input id="gmmComponents_num" type="number" min="2" max="8" step="1" value="3" aria-label="Mixture components number" />
               </div>
             </div>
 
             <div class="control-group" data-control-group="problem">
-              <h2>Problem Framing</h2>
+              <h3>Problem Framing</h3>
               <label for="framingMode">Learning setup</label>
               <select id="framingMode">
                 <option value="classification">Classification</option>

@@ -5,6 +5,7 @@
   const MAX_HIERARCHICAL_ROWS = 180;
   const PERMUTATION_RUNS = 21;
   const BOOTSTRAP_RUNS = 31;
+  const ANALYSIS_DEBOUNCE_MS = 150;
   const DEFAULT_LOGISTIC_PENALTY = 0.01;
   const PALETTE = [
     "#0f4d66",
@@ -57,6 +58,7 @@
   const elements = {};
   const cache = {
     dataset: null,
+    projectionKey: null,
     pca: null,
     mds: null,
     split: null,
@@ -68,6 +70,8 @@
     neural: null,
     clustering: null
   };
+  let analysisTimer = null;
+  let settingsReturnFocus = null;
 
   const VIEWS = {
     home: {
@@ -329,7 +333,11 @@
     }
   };
 
-  document.addEventListener("DOMContentLoaded", init);
+  document.addEventListener("DOMContentLoaded", () => {
+    if (!window.ML_STUDIO_SKIP_INIT) {
+      init();
+    }
+  });
 
   function init() {
     collectElements();
@@ -518,35 +526,35 @@
     bindPair("analysisSeed", "analysisSeed_num", (value) => {
       state.seed = clamp(Math.round(value), 1, 999);
       buildToyDatasets(state.seed);
-      runAnalysis();
+      requestAnalysis();
     });
     bindPair("testFraction", "testFraction_num", (value) => {
       state.testFraction = clamp(Number(value), 0.15, 0.45);
-      runAnalysis();
+      requestAnalysis();
     });
     bindPair("kFolds", "kFolds_num", (value) => {
       state.kFolds = clamp(Math.round(value), 3, 10);
-      runAnalysis();
+      requestAnalysis();
     });
     bindPair("knnK", "knnK_num", (value) => {
       const oddK = Math.max(1, Math.round(value));
       state.knnK = oddK % 2 === 0 ? oddK + 1 : oddK;
       setPairValue("knnK", "knnK_num", state.knnK);
-      runAnalysis();
+      requestAnalysis();
     });
     bindPair("logisticPenalty", "logisticPenalty_num", (value) => {
       state.logisticPenalty = clamp(Number(value), 0.001, 0.2);
-      runAnalysis();
+      requestAnalysis();
     });
     bindPair("treeDepth", "treeDepth_num", (value) => {
       state.treeDepth = clamp(Math.round(value), 1, 8);
-      runAnalysis();
+      requestAnalysis();
     });
     bindPair("forestTrees", "forestTrees_num", (value) => {
       const oddTrees = Math.max(5, Math.round(value));
       state.forestTrees = oddTrees % 2 === 0 ? oddTrees + 1 : oddTrees;
       setPairValue("forestTrees", "forestTrees_num", state.forestTrees);
-      runAnalysis();
+      requestAnalysis();
     });
     elements.splitFeature.addEventListener("change", (event) => {
       state.splitFeature = Number(event.target.value);
@@ -555,27 +563,27 @@
     });
     bindPair("nnHidden", "nnHidden_num", (value) => {
       state.nnHidden = clamp(Math.round(value), 3, 24);
-      runAnalysis();
+      requestAnalysis();
     });
     bindPair("nnEpochs", "nnEpochs_num", (value) => {
       state.nnEpochs = clamp(Math.round(value), 60, 320);
-      runAnalysis();
+      requestAnalysis();
     });
     bindPair("svmC", "svmC_num", (value) => {
       state.svmC = clamp(Number(value), 0.2, 3);
-      runAnalysis();
+      requestAnalysis();
     });
     bindPair("svmGamma", "svmGamma_num", (value) => {
       state.svmGamma = clamp(Number(value), 0.2, 3);
-      runAnalysis();
+      requestAnalysis();
     });
     bindPair("clusterK", "clusterK_num", (value) => {
       state.clusterK = clamp(Math.round(value), 2, 8);
-      runAnalysis();
+      requestAnalysis();
     });
     bindPair("gmmComponents", "gmmComponents_num", (value) => {
       state.gmmComponents = clamp(Math.round(value), 2, 8);
-      runAnalysis();
+      requestAnalysis();
     });
     bindPair("xaiIndex", "xaiIndex_num", (value) => {
       state.xaiIndex = clamp(Math.round(value) - 1, 0, Math.max(0, (cache.dataset?.n || 1) - 1));
@@ -651,6 +659,10 @@
     window.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && state.settingsOpen) {
         setSettingsOpen(false);
+        return;
+      }
+      if (event.key === "Tab" && state.settingsOpen) {
+        trapSettingsFocus(event);
       }
     });
   }
@@ -768,10 +780,13 @@
   }
 
   function runAnalysis() {
+    if (analysisTimer) {
+      window.clearTimeout(analysisTimer);
+      analysisTimer = null;
+    }
     const dataset = getActiveDataset();
     cache.dataset = dataset;
-    cache.pca = computePCA(dataset.data, 2);
-    cache.mds = computeClassicalMDS(cache.pca.standardized, 2, state.seed + 5);
+    syncProjectionCache(dataset);
     cache.split = createTrainTestSplit(dataset.target, state.testFraction, state.stratify, state.seed + 11);
     cache.folds = createKFolds(dataset.target, state.kFolds, state.stratify, state.seed + 23);
     cache.resamplingExperiment = state.viewId === "week3" ? evaluatePermutationExperiment(dataset) : null;
@@ -779,7 +794,7 @@
     cache.week4Regularisation = state.viewId === "week4" ? evaluateWeek4Regularisation(dataset) : null;
     cache.classification = classificationViews().has(state.viewId) ? evaluateClassificationModels(dataset) : null;
     cache.neural = state.viewId === "week6" ? evaluateNeuralNetwork(dataset) : null;
-    cache.clustering = evaluateClustering(dataset, cache.pca);
+    cache.clustering = clusteringViews().has(state.viewId) ? evaluateClustering(dataset, cache.pca) : null;
 
     renderAppChrome();
     renderProblemFraming();
@@ -814,6 +829,8 @@
     setVisible(elements.weekShell, !isHome);
     setVisible(elements.currentWeekBlock, !isHome);
     elements.settingsToggleBtn.setAttribute("aria-expanded", String(showSettingsDrawer));
+    elements.moreSettingsPanel.inert = !showSettingsDrawer;
+    elements.moreSettingsPanel.setAttribute("aria-hidden", String(!showSettingsDrawer));
 
     elements.controlGroups.forEach((group) => {
       setVisible(group, !isHome && visibleControls.has(group.dataset.controlGroup));
@@ -864,6 +881,28 @@
     return new Set(["foundations", "week4", "week5", "week6", "week7", "week8"]);
   }
 
+  function clusteringViews() {
+    return new Set(["week9", "week10", "week11"]);
+  }
+
+  function syncProjectionCache(dataset) {
+    const projectionKey = `${dataset.id}:${state.seed}`;
+    if (cache.projectionKey === projectionKey && cache.pca && cache.mds) {
+      return;
+    }
+    cache.projectionKey = projectionKey;
+    cache.pca = computePCA(dataset.data, 2);
+    cache.mds = computeClassicalMDS(cache.pca.standardized, 2, state.seed + 5);
+  }
+
+  function requestAnalysis() {
+    window.clearTimeout(analysisTimer);
+    analysisTimer = window.setTimeout(() => {
+      analysisTimer = null;
+      runAnalysis();
+    }, ANALYSIS_DEBOUNCE_MS);
+  }
+
   function renderQuickControls() {
     if (state.viewId === "home") {
       return;
@@ -888,8 +927,42 @@
   }
 
   function setSettingsOpen(nextOpen) {
+    const wasOpen = state.settingsOpen;
     state.settingsOpen = Boolean(nextOpen) && state.viewId !== "home";
+    if (state.settingsOpen && !wasOpen) {
+      settingsReturnFocus = document.activeElement;
+    }
     renderAppChrome();
+    elements.moreSettingsPanel.inert = !state.settingsOpen;
+    if (state.settingsOpen) {
+      elements.settingsCloseBtn.focus();
+    } else if (wasOpen && settingsReturnFocus && typeof settingsReturnFocus.focus === "function") {
+      settingsReturnFocus.focus();
+      settingsReturnFocus = null;
+    }
+  }
+
+  function trapSettingsFocus(event) {
+    const focusable = Array.from(
+      elements.moreSettingsPanel.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      )
+    ).filter((item) => !item.disabled && item.offsetParent !== null);
+
+    if (!focusable.length) {
+      event.preventDefault();
+      return;
+    }
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   }
 
   function quickControlConfig(viewId) {
@@ -1001,6 +1074,7 @@
             max="${item.max}"
             step="${item.step}"
             value="${displayValue}"
+            aria-label="${escapeHtml(`${item.label} number`)}"
             data-quick-key="${item.key}"
             data-quick-type="range"
           />
@@ -1082,66 +1156,66 @@
         const odd = Math.max(1, Math.round(rawValue));
         state.knnK = odd % 2 === 0 ? odd + 1 : odd;
         syncControlsFromState();
-        runAnalysis();
+        requestAnalysis();
         return;
       }
       case "logisticPenalty":
         state.logisticPenalty = clamp(Number(rawValue), 0.001, 0.2);
         syncControlsFromState();
-        runAnalysis();
+        requestAnalysis();
         return;
       case "forestTrees": {
         const odd = Math.max(5, Math.round(rawValue));
         state.forestTrees = odd % 2 === 0 ? odd + 1 : odd;
         syncControlsFromState();
-        runAnalysis();
+        requestAnalysis();
         return;
       }
       case "treeDepth":
         state.treeDepth = clamp(Math.round(rawValue), 1, 8);
         syncControlsFromState();
-        runAnalysis();
+        requestAnalysis();
         return;
       case "nnHidden":
         state.nnHidden = clamp(Math.round(rawValue), 3, 24);
         syncControlsFromState();
-        runAnalysis();
+        requestAnalysis();
         return;
       case "nnEpochs":
         state.nnEpochs = clamp(Math.round(rawValue), 60, 320);
         syncControlsFromState();
-        runAnalysis();
+        requestAnalysis();
         return;
       case "svmC":
         state.svmC = clamp(Number(rawValue), 0.2, 3);
         syncControlsFromState();
-        runAnalysis();
+        requestAnalysis();
         return;
       case "svmGamma":
         state.svmGamma = clamp(Number(rawValue), 0.2, 3);
         syncControlsFromState();
-        runAnalysis();
+        requestAnalysis();
         return;
       case "clusterK":
         state.clusterK = clamp(Math.round(rawValue), 2, 8);
         syncControlsFromState();
-        runAnalysis();
+        requestAnalysis();
         return;
       case "gmmComponents":
         state.gmmComponents = clamp(Math.round(rawValue), 2, 8);
         syncControlsFromState();
-        runAnalysis();
+        requestAnalysis();
         return;
       case "testFraction":
         state.testFraction = clamp(Number(rawValue), 0.15, 0.45);
         syncControlsFromState();
         renderQuickControls();
-        runAnalysis();
+        requestAnalysis();
         return;
       case "kFolds":
         state.kFolds = clamp(Math.round(rawValue), 3, 10);
         syncControlsFromState();
-        runAnalysis();
+        requestAnalysis();
         return;
       default:
         return;
@@ -1745,7 +1819,7 @@
 
     setVisible(elements.boundaryPanel, true);
     elements.classificationSummaryPanel.style.gridColumn = "";
-    const model = fitModel(modelId, dataset.data, dataset.target, dataset.columns);
+    const model = cache.classification?.fits[modelId] || fitModel(modelId, dataset.data, dataset.target, dataset.columns);
     const points = dataset.data.map((row, index) => ({
       x: row[0],
       y: row[1],
@@ -1805,7 +1879,7 @@
   }
 
   function renderWeek5SplitExplorer(split, dataset) {
-    renderWeek6SplitSvg(elements.week5SplitPlot, split);
+    renderSplitCurveSvg(elements.week5SplitPlot, split);
     if (!split.best) {
       elements.week5SplitSummary.textContent = "No useful split candidates were found for this feature.";
       elements.week5SplitCaption.textContent =
@@ -1833,7 +1907,7 @@
       classId: dataset.target[index],
       label: dataset.targetNames[dataset.target[index]]
     }));
-    renderWeek6TreeSvg(elements.week5TreePlot, points, axes, tree);
+    renderTreeSliceSvg(elements.week5TreePlot, points, axes, tree);
     const leftSplit = tree.type === "split" && tree.left?.type === "split" ? `${tree.left.featureName} <= ${formatNumber(tree.left.threshold, 2)}` : "no second left split";
     const rightSplit = tree.type === "split" && tree.right?.type === "split" ? `${tree.right.featureName} <= ${formatNumber(tree.right.threshold, 2)}` : "no second right split";
     elements.week5TreeSummary.textContent =
@@ -1925,6 +1999,9 @@
 
   function renderClusteringPanels() {
     const clustering = cache.clustering;
+    if (!clustering) {
+      return;
+    }
     const rows = ["kmeans", "hierarchical"].map((key) => {
       const result = clustering[key];
       return [
@@ -2067,7 +2144,6 @@
         const trainX = selectRows(dataset.data, split.train);
         const trainY = selectEntries(dataset.target, split.train);
         const testX = selectRows(dataset.data, split.test);
-        const testY = selectEntries(dataset.target, split.test);
         const fit = fitModel(modelId, trainX, trainY, dataset.columns);
         if (splitIndex === 0) {
           firstFit = fit;
@@ -2077,7 +2153,6 @@
           predicted[rowIndex] = preds[localIndex];
           actual[rowIndex] = dataset.target[rowIndex];
         });
-        void testY;
       });
 
       const filteredActual = [];
@@ -3407,10 +3482,10 @@
 
     const values = assignments.map((clusterId, index) => {
       const sameCluster = clusters[clusterId].filter((item) => item !== index);
-      const a =
-        sameCluster.length === 0
-          ? 0
-          : average(sameCluster.map((otherIndex) => distances[index][otherIndex]));
+      if (!sameCluster.length) {
+        return 0;
+      }
+      const a = average(sameCluster.map((otherIndex) => distances[index][otherIndex]));
 
       let b = Infinity;
       clusters.forEach((cluster, otherClusterId) => {
@@ -3421,7 +3496,7 @@
         b = Math.min(b, candidate);
       });
 
-      if (!Number.isFinite(b) && !a) {
+      if (!Number.isFinite(b)) {
         return 0;
       }
       return (b - a) / Math.max(a, b);
@@ -3503,7 +3578,7 @@
       .join(" | ");
   }
 
-  function renderWeek6SplitSvg(svg, split) {
+  function renderSplitCurveSvg(svg, split) {
     const width = 540;
     const height = 420;
     const margin = { top: 20, right: 20, bottom: 48, left: 56 };
@@ -3532,7 +3607,7 @@
       markers;
   }
 
-  function renderWeek6TreeSvg(svg, points, axes, tree) {
+  function renderTreeSliceSvg(svg, points, axes, tree) {
     const width = 540;
     const height = 420;
     const margin = { top: 20, right: 20, bottom: 48, left: 56 };
@@ -4295,5 +4370,14 @@
       .replaceAll("<", "&lt;")
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;");
+  }
+
+  if (typeof window !== "undefined") {
+    window.ML_STUDIO_TEST_API = {
+      adjustedRandIndex,
+      createKFolds,
+      createTrainTestSplit,
+      silhouetteScore
+    };
   }
 })();
