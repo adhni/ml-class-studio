@@ -31,6 +31,7 @@
               <option value="week9">Week 9: Clustering methods</option>
               <option value="week10">Week 10: Model-based clustering</option>
               <option value="week11">Week 11: Cluster evaluation</option>
+              <option value="examPrep">Exam Prep</option>
             </select>
           </div>
         </div>
@@ -68,6 +69,7 @@
         </div>
 
         <div class="home-action-row">
+          <button class="primary-btn" type="button" data-view-target="examPrep">Open Exam Prep</button>
           <button class="primary-btn" type="button" data-view-target="foundations">Start with Foundations</button>
           <button class="secondary-btn" type="button" data-view-target="week2">Begin lecture sequence</button>
           <button class="secondary-btn" type="button" data-view-target="week9">Jump to clustering</button>
@@ -91,6 +93,12 @@
             <h3>Compare a full clustering workflow</h3>
             <p>Jump straight to clustering, model-based clustering, and cluster evaluation with Wine and toy datasets.</p>
             <button class="card-btn" type="button" data-view-target="week9">Open Week 9</button>
+          </article>
+          <article class="launch-card">
+            <span class="meta-pill launch-pill">Exam practice</span>
+            <h3>Work from marks to answer structure</h3>
+            <p>Use focused drills for calculations, output reading, and marking-guide style answers.</p>
+            <button class="card-btn" type="button" data-view-target="examPrep">Open Exam Prep</button>
           </article>
         </section>
 
@@ -801,6 +809,414 @@ It does not implement self-organising maps, so treat SOMs as an explicit known g
           <div id="hierSummary" class="mono-block"></div>
           <p class="caption" id="hierSummaryCaption"></p>
         </article>
+      </section>
+
+      <section id="exam-prep" class="card section week-section exam-prep-section" data-views="examPrep">
+        <div class="section-title">
+          <span class="kicker">Exam Prep</span>
+          <h3>Priority Map And Worked Drills</h3>
+        </div>
+        <p class="section-note">
+          Use this page for exam mechanics: short written answers, output reading, and hand calculations. The existing week studios remain the place to build visual intuition.
+        </p>
+
+        <section class="exam-priority-grid" aria-label="Exam topic priority by 2025 mark weight">
+          <article class="exam-priority-card high">
+            <span>20 marks</span>
+            <strong>Decision trees + random forests</strong>
+          </article>
+          <article class="exam-priority-card high">
+            <span>20 marks</span>
+            <strong>Logistic regression + neural networks</strong>
+          </article>
+          <article class="exam-priority-card high">
+            <span>19 marks</span>
+            <strong>Clustering calculations</strong>
+          </article>
+          <article class="exam-priority-card">
+            <span>15 marks</span>
+            <strong>Visualisation + PCA</strong>
+          </article>
+          <article class="exam-priority-card">
+            <span>14 marks</span>
+            <strong>Model evaluation + tuning</strong>
+          </article>
+          <article class="exam-priority-card">
+            <span>12 marks</span>
+            <strong>XAI + SVM + kNN</strong>
+          </article>
+        </section>
+
+        <section class="exam-study-route" aria-label="Recommended study order">
+          <div class="section-title compact-section-title">
+            <span class="kicker">Start Here</span>
+            <h3>Recommended Order</h3>
+          </div>
+          <ol class="exam-route-list">
+            <li><strong>Trees + forests</strong><span>Gini, printed tree output, CART, random forests</span></li>
+            <li><strong>Logistic + neural nets</strong><span>Probability calculation, network anatomy, parameter count</span></li>
+            <li><strong>Clustering</strong><span>k-means iteration, single-linkage dendrogram</span></li>
+            <li><strong>PCA + visualisation</strong><span>variance, loadings, tours, standardisation</span></li>
+            <li><strong>Evaluation + tuning</strong><span>ROC-AUC, accuracy, cross-validation</span></li>
+            <li><strong>XAI + SVM + kNN</strong><span>SHAP, support vectors, neighbour voting</span></li>
+          </ol>
+        </section>
+
+        <section class="exam-card-grid" aria-label="High-yield exam practice cards">
+          <article class="exam-card">
+            <span class="topic-tag">PCA</span>
+            <h4>PCA Variance And Loadings</h4>
+            <div class="exam-card-meta">
+              <span>Medium priority</span>
+              <span>2025 Q1e</span>
+            </div>
+            <p class="exam-flow"><strong>Flow:</strong> Understand Week 2 -> drill table reading -> attempt 2025 Q1.</p>
+            <p><strong>Question:</strong> Given eigenvalues and loading columns, identify variance explained and which variables dominate PC1 or PC2.</p>
+            <p class="small-note"><strong>Tested skill:</strong> Read tables, not just plots.</p>
+            <details class="foldout exam-foldout">
+              <summary>Worked answer</summary>
+              <p>Divide each eigenvalue by the total eigenvalue sum to get the proportion explained. Add proportions for cumulative variance. For loadings, compare absolute values within a PC; the largest absolute loadings are the variables contributing most strongly, with the sign giving direction.</p>
+            </details>
+            <details class="foldout exam-foldout">
+              <summary>Marking checklist</summary>
+              <ul class="compact-list">
+                <li>Uses eigenvalue divided by total variance.</li>
+                <li>Mentions cumulative variance when choosing PCs.</li>
+                <li>Uses absolute loading size for contribution.</li>
+                <li>Interprets signs as direction, not importance size.</li>
+              </ul>
+            </details>
+            <p class="caption">Common mistake: saying a negative loading is less important just because it is negative.</p>
+            <button class="card-btn compact-action-btn" type="button" data-view-target="week2">Open Week 2</button>
+          </article>
+
+          <article class="exam-card">
+            <span class="topic-tag">Visualisation</span>
+            <h4>PCA, Tours, And Standardisation</h4>
+            <div class="exam-card-meta">
+              <span>Medium priority</span>
+              <span>2025 Q1a-d</span>
+            </div>
+            <p class="exam-flow"><strong>Flow:</strong> Understand Week 2 -> write short answer -> check one-mark points.</p>
+            <p><strong>Question:</strong> Explain why a tour can be preferable to a scatterplot matrix, and why PCA should often use standardised variables.</p>
+            <p class="small-note"><strong>Tested skill:</strong> Short answer with one reason per mark.</p>
+            <details class="foldout exam-foldout">
+              <summary>Worked answer</summary>
+              <p>A scatterplot matrix shows pairwise variable views, while a tour shows changing low-dimensional projections that can reveal structure involving combinations of variables. PCA should be standardised when variables use different scales because otherwise large-scale variables can dominate the maximum-variance directions.</p>
+            </details>
+            <details class="foldout exam-foldout">
+              <summary>Marking checklist</summary>
+              <ul class="compact-list">
+                <li>Contrasts pairwise views with combined projections.</li>
+                <li>States that tours can reveal multivariate structure.</li>
+                <li>States PCA maximises variance.</li>
+                <li>Explains scale domination without standardisation.</li>
+              </ul>
+            </details>
+            <p class="caption">Common mistake: describing PCA and tours as the same because both use projections.</p>
+          </article>
+
+          <article class="exam-card">
+            <span class="topic-tag">Evaluation</span>
+            <h4>ROC-AUC Vs Accuracy</h4>
+            <div class="exam-card-meta">
+              <span>Medium priority</span>
+              <span>2025 Q2a-b</span>
+            </div>
+            <p class="exam-flow"><strong>Flow:</strong> Understand Week 3 -> explain threshold logic -> attempt 2025 Q2.</p>
+            <p><strong>Question:</strong> Explain how the ROC curve is produced and why ROC-AUC can be preferable to accuracy.</p>
+            <p class="small-note"><strong>Tested skill:</strong> Threshold logic and model-choice justification.</p>
+            <details class="foldout exam-foldout">
+              <summary>Worked answer</summary>
+              <p>For every possible probability threshold, convert predicted probabilities into class predictions and calculate the true positive rate and false positive rate. Plot those points to form the ROC curve; AUC summarises the curve. Accuracy uses one threshold, while ROC-AUC checks performance across thresholds.</p>
+            </details>
+            <details class="foldout exam-foldout">
+              <summary>Marking checklist</summary>
+              <ul class="compact-list">
+                <li>Mentions predicted probabilities.</li>
+                <li>Mentions all possible thresholds.</li>
+                <li>Names TPR and FPR.</li>
+                <li>Explains one-threshold accuracy limitation.</li>
+              </ul>
+            </details>
+            <p class="caption">Common mistake: treating ROC-AUC as accuracy with a different name.</p>
+            <button class="card-btn compact-action-btn" type="button" data-view-target="week3">Open Week 3</button>
+          </article>
+
+          <article class="exam-card">
+            <span class="topic-tag">Tuning</span>
+            <h4>Cross-Validation And Hyperparameters</h4>
+            <div class="exam-card-meta">
+              <span>Medium priority</span>
+              <span>2025 Q2d-e</span>
+            </div>
+            <p class="exam-flow"><strong>Flow:</strong> Understand Week 3 -> describe CV steps -> choose from validation output.</p>
+            <p><strong>Question:</strong> Describe k-fold cross-validation and how it supports hyperparameter tuning.</p>
+            <p class="small-note"><strong>Tested skill:</strong> Procedural explanation.</p>
+            <details class="foldout exam-foldout">
+              <summary>Worked answer</summary>
+              <p>Split the training data into k folds. Train on k-1 folds and validate on the held-out fold, repeating until each fold has been held out. Average the validation score for each hyperparameter setting, then choose the setting with the best out-of-sample validation performance.</p>
+            </details>
+            <details class="foldout exam-foldout">
+              <summary>Marking checklist</summary>
+              <ul class="compact-list">
+                <li>Defines k subsets/folds.</li>
+                <li>Trains on k-1 folds.</li>
+                <li>Predicts the held-out fold.</li>
+                <li>Compares validation scores across hyperparameters.</li>
+              </ul>
+            </details>
+            <p class="caption">Common mistake: using the test set repeatedly during tuning.</p>
+          </article>
+
+          <article class="exam-card">
+            <span class="topic-tag">Logistic</span>
+            <h4>Logistic Probability Calculation</h4>
+            <div class="exam-card-meta high">
+              <span>High priority</span>
+              <span>2025 Q3a/e</span>
+            </div>
+            <p class="exam-flow"><strong>Flow:</strong> Understand Week 4 -> calculate probability -> write model form cleanly.</p>
+            <p><strong>Question:</strong> Given beta values and predictors, compute a probability and predicted class.</p>
+            <p class="small-note"><strong>Tested skill:</strong> Formula substitution.</p>
+            <details class="foldout exam-foldout">
+              <summary>Worked answer</summary>
+              <p>First calculate the score: eta = beta0 + beta1 x1 + beta2 x2 + ... . Convert to probability with p = exp(eta) / (1 + exp(eta)), equivalently p = 1 / (1 + exp(-eta)). Predict class 1 if p is above the chosen threshold.</p>
+            </details>
+            <details class="foldout exam-foldout">
+              <summary>Marking checklist</summary>
+              <ul class="compact-list">
+                <li>Correct linear score.</li>
+                <li>Correct logistic transform.</li>
+                <li>Uses the stated threshold.</li>
+                <li>Reports probability and class.</li>
+              </ul>
+            </details>
+            <p class="caption">Common mistake: comparing the raw logit score directly with 0.5.</p>
+            <button class="card-btn compact-action-btn" type="button" data-view-target="week4">Open Week 4</button>
+          </article>
+
+          <article class="exam-card">
+            <span class="topic-tag">Neural nets</span>
+            <h4>Network Anatomy And Parameters</h4>
+            <div class="exam-card-meta high">
+              <span>High priority</span>
+              <span>2025 Q3b-f</span>
+            </div>
+            <p class="exam-flow"><strong>Flow:</strong> Understand Week 6 -> count parameters -> critique activation choice.</p>
+            <p><strong>Question:</strong> For p inputs, s hidden units, and one binary output, draw the network and count parameters.</p>
+            <p class="small-note"><strong>Tested skill:</strong> Architecture reading.</p>
+            <details class="foldout exam-foldout">
+              <summary>Worked answer</summary>
+              <p>With one hidden layer, each hidden unit has p input weights plus one bias, giving s(p + 1). The binary output has s hidden-to-output weights plus one bias, giving s + 1. Total parameters: s(p + 1) + s + 1.</p>
+            </details>
+            <details class="foldout exam-foldout">
+              <summary>Marking checklist</summary>
+              <ul class="compact-list">
+                <li>Correct number of input nodes.</li>
+                <li>Correct number of hidden units.</li>
+                <li>Includes hidden-layer biases.</li>
+                <li>Includes output weights and output bias.</li>
+              </ul>
+            </details>
+            <p class="caption">Common mistake: forgetting bias terms. Linear hidden activations also collapse the network back to a linear model.</p>
+            <button class="card-btn compact-action-btn" type="button" data-view-target="week6">Open Week 6</button>
+          </article>
+
+          <article class="exam-card">
+            <span class="topic-tag">Trees</span>
+            <h4>Gini Split Calculation</h4>
+            <div class="exam-card-meta high">
+              <span>High priority</span>
+              <span>2025 Q4b</span>
+            </div>
+            <p class="exam-flow"><strong>Flow:</strong> Understand Week 5 -> calculate split purity -> compare with marking guide.</p>
+            <p><strong>Question:</strong> Calculate weighted Gini for a proposed classification-tree split.</p>
+            <p class="small-note"><strong>Tested skill:</strong> Hand calculation.</p>
+            <details class="foldout exam-foldout">
+              <summary>Worked answer</summary>
+              <p>For each child node, calculate class proportions p_k and Gini = sum p_k(1 - p_k), equivalently 1 - sum p_k^2. Weight each child Gini by its sample fraction and add them. A lower weighted Gini means purer child nodes.</p>
+            </details>
+            <details class="foldout exam-foldout">
+              <summary>Marking checklist</summary>
+              <ul class="compact-list">
+                <li>Finds left and right class proportions.</li>
+                <li>Calculates each child Gini.</li>
+                <li>Uses child sample weights.</li>
+                <li>Interprets lower Gini as better purity.</li>
+              </ul>
+            </details>
+            <p class="caption">Common mistake: averaging child Gini values without weighting by node size.</p>
+            <button class="card-btn compact-action-btn" type="button" data-view-target="week5">Open Week 5</button>
+          </article>
+
+          <article class="exam-card">
+            <span class="topic-tag">Tree output</span>
+            <h4>Read An rpart-Style Output</h4>
+            <div class="exam-card-meta high">
+              <span>High priority</span>
+              <span>Common 2019/2024</span>
+            </div>
+            <p class="exam-flow"><strong>Flow:</strong> Understand Week 5 -> read printed output -> compute terminal-node error.</p>
+            <p><strong>Question:</strong> Interpret `n`, `loss`, `yval`, `yprob`, terminal nodes, and training error from printed tree output.</p>
+            <p class="small-note"><strong>Tested skill:</strong> Output reading.</p>
+            <details class="foldout exam-foldout">
+              <summary>Worked answer</summary>
+              <p>In a node, `n` is the number of observations, `yval` is the predicted class, `yprob` gives class proportions, and `loss` is the count not in the predicted class. Starred nodes are terminal leaves. Training error can be read by summing terminal-node losses and dividing by the total observations.</p>
+            </details>
+            <details class="foldout exam-foldout">
+              <summary>Marking checklist</summary>
+              <ul class="compact-list">
+                <li>Defines `n` correctly.</li>
+                <li>Defines `loss` correctly.</li>
+                <li>Uses `yval` as the prediction.</li>
+                <li>Identifies terminal leaves and training error.</li>
+              </ul>
+            </details>
+            <p class="caption">Common mistake: treating `loss` as probability rather than a count.</p>
+          </article>
+
+          <article class="exam-card">
+            <span class="topic-tag">Forests</span>
+            <h4>CART And Random Forests</h4>
+            <div class="exam-card-meta high">
+              <span>High priority</span>
+              <span>2025 Q4c-e</span>
+            </div>
+            <p class="exam-flow"><strong>Flow:</strong> Understand Week 5 -> explain CART -> justify forest stability.</p>
+            <p><strong>Question:</strong> Describe CART fitting and justify why a random forest can improve on a single tree.</p>
+            <p class="small-note"><strong>Tested skill:</strong> Algorithm explanation.</p>
+            <details class="foldout exam-foldout">
+              <summary>Worked answer</summary>
+              <p>CART searches variables and candidate split points to optimise a split criterion such as Gini, then repeats recursively until stopping rules are met. Random forests fit many trees on bootstrapped observations and feature subsets, then average or vote across trees, reducing the instability of one flexible tree.</p>
+            </details>
+            <details class="foldout exam-foldout">
+              <summary>Marking checklist</summary>
+              <ul class="compact-list">
+                <li>Mentions split criterion.</li>
+                <li>Mentions search over variables and split points.</li>
+                <li>Mentions stopping rules.</li>
+                <li>Mentions many trees, observation subsets, feature subsets, and averaging/voting.</li>
+              </ul>
+            </details>
+            <p class="caption">Common mistake: saying forests avoid overfitting only because they are deeper.</p>
+          </article>
+
+          <article class="exam-card">
+            <span class="topic-tag">kNN</span>
+            <h4>KNN Distance And Vote Probability</h4>
+            <div class="exam-card-meta low">
+              <span>Lower priority</span>
+              <span>2025 Q5d</span>
+            </div>
+            <p class="exam-flow"><strong>Flow:</strong> Understand Foundations -> sort neighbours -> report probabilities.</p>
+            <p><strong>Question:</strong> Given a test point and training table, compute distances, choose K neighbours, and report class probabilities.</p>
+            <p class="small-note"><strong>Tested skill:</strong> Manual neighbour calculation.</p>
+            <details class="foldout exam-foldout">
+              <summary>Worked answer</summary>
+              <p>Compute Euclidean distance from the test point to each training point, sort from smallest to largest, and keep the nearest K rows. Without distance weighting, each class probability is its count among the K neighbours divided by K. Predict the class with the largest probability.</p>
+            </details>
+            <details class="foldout exam-foldout">
+              <summary>Marking checklist</summary>
+              <ul class="compact-list">
+                <li>Correct distance formula.</li>
+                <li>Correct neighbour ordering.</li>
+                <li>Uses exactly K neighbours.</li>
+                <li>Reports probabilities as counts divided by K.</li>
+              </ul>
+            </details>
+            <p class="caption">Common mistake: counting all nearby-looking points instead of exactly K neighbours.</p>
+            <button class="card-btn compact-action-btn" type="button" data-view-target="foundations">Open Foundations</button>
+          </article>
+
+          <article class="exam-card">
+            <span class="topic-tag">XAI + SVM</span>
+            <h4>SVM Cost And SHAP Interpretation</h4>
+            <div class="exam-card-meta low">
+              <span>Lower priority</span>
+              <span>2025 Q5b-c</span>
+            </div>
+            <p class="exam-flow"><strong>Flow:</strong> Understand Weeks 7-8 -> define terms -> justify from plot wording.</p>
+            <p><strong>Question:</strong> Interpret SVM cost/margins/support vectors and define a SHAP value.</p>
+            <p class="small-note"><strong>Tested skill:</strong> Model interpretation language.</p>
+            <details class="foldout exam-foldout">
+              <summary>Worked answer</summary>
+              <p>A larger SVM cost penalises margin violations more strongly, usually giving a narrower margin with fewer tolerated mistakes. Support vectors are the points that determine the margin. A SHAP value is a local feature contribution, comparing predictions with and without a feature while averaging over possible subsets of the other features.</p>
+            </details>
+            <details class="foldout exam-foldout">
+              <summary>Marking checklist</summary>
+              <ul class="compact-list">
+                <li>Connects larger cost to stronger penalty for violations.</li>
+                <li>Identifies support vectors as margin-defining points.</li>
+                <li>Defines SHAP as local feature contribution.</li>
+                <li>Mentions averaging over feature subsets/coalitions.</li>
+              </ul>
+            </details>
+            <p class="caption">Common mistake: saying SHAP is just ordinary global feature importance.</p>
+            <button class="card-btn compact-action-btn" type="button" data-view-target="week8">Open Week 8</button>
+          </article>
+
+          <article class="exam-card">
+            <span class="topic-tag">Clustering</span>
+            <h4>K-Means And Single Linkage</h4>
+            <div class="exam-card-meta high">
+              <span>High priority</span>
+              <span>2025 Q6b-c</span>
+            </div>
+            <p class="exam-flow"><strong>Flow:</strong> Understand Week 9 -> do one iteration -> draw dendrogram heights.</p>
+            <p><strong>Question:</strong> Perform one k-means update and construct a small single-linkage dendrogram from distances.</p>
+            <p class="small-note"><strong>Tested skill:</strong> Step-by-step clustering calculation.</p>
+            <details class="foldout exam-foldout">
+              <summary>Worked answer</summary>
+              <p>For k-means, assign each observation to the closest current centre, then update each centre to the mean of its assigned points. For single linkage, merge the closest pair or clusters first; cluster-to-cluster distance is the minimum distance between any member pair. Dendrogram heights are the merge distances.</p>
+            </details>
+            <details class="foldout exam-foldout">
+              <summary>Marking checklist</summary>
+              <ul class="compact-list">
+                <li>Calculates distances to current k-means centres.</li>
+                <li>Updates centres using assigned-point means.</li>
+                <li>Uses minimum pairwise distance for single linkage.</li>
+                <li>Labels dendrogram merges with correct heights.</li>
+              </ul>
+            </details>
+            <p class="caption">Common mistake: using average or complete linkage while the question asks for single linkage.</p>
+            <button class="card-btn compact-action-btn" type="button" data-view-target="week9">Open Week 9</button>
+          </article>
+        </section>
+
+        <section class="past-paper-panel" aria-label="Past paper references">
+          <div class="section-title compact-section-title">
+            <span class="kicker">References</span>
+            <h3>Past Paper Map</h3>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th>Local file</th>
+                <th>Use it for</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>2019</td>
+                <td><code>ML Exam/MLExam-2019.pdf</code> and solution</td>
+                <td>Older mechanics and comparison practice.</td>
+              </tr>
+              <tr>
+                <td>2024</td>
+                <td><code>ML Exam/MLExam-2024.pdf</code> and solution</td>
+                <td>Recent output-reading and calculation practice.</td>
+              </tr>
+              <tr>
+                <td>2025</td>
+                <td><code>ML Exam/MLExam-2025.html</code></td>
+                <td>Current mark-weight blueprint and rubric style.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="caption">These are local references, not public app assets. Use them beside this page when doing timed practice.</p>
+        </section>
       </section>
     </main>
   </div>
