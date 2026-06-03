@@ -80,6 +80,13 @@
       summary: "Open one focused studio at a time.",
       prompt: "Start with Foundations for week-1 style basics, or open the lecture week you need. Related worksheets are referenced by tutorial number."
     },
+    examPrep: {
+      label: "Exam Prep",
+      title: "Worked Drill Cards",
+      summary: "Practise the mechanics that show up in past-paper marking guides.",
+      prompt:
+        "Use this page after the visual studios. It is deliberately worksheet-like: read the question, try the answer, then reveal the worked answer and marking checklist."
+    },
     foundations: {
       label: "Foundations",
       title: "Basics + KNN",
@@ -727,6 +734,7 @@
   function applyViewPreset(viewId, rerun = true) {
     const view = VIEWS[viewId];
     if (!view || !view.preset) {
+      syncControlsFromState();
       if (rerun) {
         runAnalysis();
       }
@@ -813,19 +821,21 @@
   function renderAppChrome() {
     const view = VIEWS[state.viewId] || VIEWS.home;
     const isHome = state.viewId === "home";
+    const isExamPrep = state.viewId === "examPrep";
+    const isStudio = !isHome && !isExamPrep;
     const visibleControls = new Set(view.controls || []);
-    const showSettingsDrawer = !isHome && state.settingsOpen;
+    const showSettingsDrawer = isStudio && state.settingsOpen;
 
-    if (isHome) {
+    if (isHome || isExamPrep) {
       state.settingsOpen = false;
     }
 
     document.body.dataset.view = state.viewId;
     document.body.classList.toggle("settings-open", showSettingsDrawer);
     setVisible(elements.homeView, isHome);
-    setVisible(elements.moreSettingsPanel, !isHome);
+    setVisible(elements.moreSettingsPanel, isStudio);
     setVisible(elements.settingsBackdrop, showSettingsDrawer);
-    setVisible(elements.quickControlsBar, !isHome);
+    setVisible(elements.quickControlsBar, isStudio);
     setVisible(elements.weekShell, !isHome);
     setVisible(elements.currentWeekBlock, !isHome);
     elements.settingsToggleBtn.setAttribute("aria-expanded", String(showSettingsDrawer));
@@ -833,7 +843,7 @@
     elements.moreSettingsPanel.setAttribute("aria-hidden", String(!showSettingsDrawer));
 
     elements.controlGroups.forEach((group) => {
-      setVisible(group, !isHome && visibleControls.has(group.dataset.controlGroup));
+      setVisible(group, isStudio && visibleControls.has(group.dataset.controlGroup));
     });
     elements.weekSections.forEach((section) => {
       const allowed = (section.dataset.views || "").split(/\s+/).includes(state.viewId);
@@ -851,7 +861,8 @@
     elements.viewTutorialPath.textContent = view.tutorialPath ? `Related worksheet: ${view.tutorialPath}` : "";
     setVisible(elements.tutorialPath, !isHome && Boolean(view.tutorialPath));
     setVisible(elements.viewTutorialPath, !isHome && Boolean(view.tutorialPath));
-    setVisible(elements.viewPresetBtn, !isHome);
+    setVisible(elements.applyPresetBtn, isStudio);
+    setVisible(elements.viewPresetBtn, isStudio);
     setVisible(elements.clusterEvaluationPanel, state.viewId === "week11");
     setVisible(elements.modelClusteringPanel, state.viewId === "week10");
     setVisible(elements.week10ScopePanel, state.viewId === "week10");
@@ -904,7 +915,7 @@
   }
 
   function renderQuickControls() {
-    if (state.viewId === "home") {
+    if (state.viewId === "home" || state.viewId === "examPrep") {
       return;
     }
 
@@ -928,7 +939,7 @@
 
   function setSettingsOpen(nextOpen) {
     const wasOpen = state.settingsOpen;
-    state.settingsOpen = Boolean(nextOpen) && state.viewId !== "home";
+    state.settingsOpen = Boolean(nextOpen) && state.viewId !== "home" && state.viewId !== "examPrep";
     if (state.settingsOpen && !wasOpen) {
       settingsReturnFocus = document.activeElement;
     }
