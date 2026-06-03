@@ -734,6 +734,7 @@
   function applyViewPreset(viewId, rerun = true) {
     const view = VIEWS[viewId];
     if (!view || !view.preset) {
+      syncControlsFromState();
       if (rerun) {
         runAnalysis();
       }
