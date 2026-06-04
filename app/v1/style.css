@@ -597,6 +597,40 @@ body.settings-open .settings-drawer {
   gap: 16px;
 }
 
+.exam-mode-row {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.exam-mode-row .caption {
+  margin: 0;
+}
+
+.exam-mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.exam-mode-toggle input {
+  width: 18px;
+  height: 18px;
+}
+
+.exam-mode-active .exam-card .exam-foldout {
+  display: none;
+}
+
 .exam-priority-grid {
   display: grid;
   gap: 10px;
@@ -669,6 +703,10 @@ body.settings-open .settings-drawer {
   margin-top: 0;
   min-height: 148px;
   background: #fff;
+}
+
+.compact-drill-table {
+  margin-top: 0;
 }
 
 .exam-drill-controls {

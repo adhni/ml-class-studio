@@ -819,6 +819,13 @@ It does not implement self-organising maps, so treat SOMs as an explicit known g
         <p class="section-note">
           Use this page for exam mechanics: short written answers, output reading, and hand calculations. The existing week studios remain the place to build visual intuition.
         </p>
+        <div class="exam-mode-row">
+          <label class="exam-mode-toggle" for="examModeToggle">
+            <input type="checkbox" id="examModeToggle">
+            <span>Exam mode</span>
+          </label>
+          <p class="caption" id="examModeStatus">Worked-answer foldouts are visible.</p>
+        </div>
 
         <section class="exam-priority-grid" aria-label="Exam topic priority by 2025 mark weight">
           <article class="exam-priority-card high">
@@ -1025,6 +1032,84 @@ d(A,B)=2, d(A,C)=6, d(B,C)=4</pre>
               </div>
               <p class="small-note exam-feedback" id="clusterFeedback" aria-live="polite">
                 Do the assignment step before updating the k-means centres.
+              </p>
+            </div>
+          </article>
+
+          <article class="exam-drill-card">
+            <div class="exam-drill-prompt">
+              <span class="topic-tag">PCA</span>
+              <h4>PCA Table Reader</h4>
+              <table class="data-table compact-drill-table">
+                <thead>
+                  <tr>
+                    <th>PC</th>
+                    <th>Eigenvalue</th>
+                    <th>Temp loading</th>
+                    <th>Pressure loading</th>
+                    <th>Volume loading</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>PC1</td>
+                    <td>2.40</td>
+                    <td>0.65</td>
+                    <td>0.70</td>
+                    <td>-0.29</td>
+                  </tr>
+                  <tr>
+                    <td>PC2</td>
+                    <td>0.45</td>
+                    <td>0.10</td>
+                    <td>-0.34</td>
+                    <td>0.93</td>
+                  </tr>
+                  <tr>
+                    <td>PC3</td>
+                    <td>0.15</td>
+                    <td>-0.75</td>
+                    <td>0.62</td>
+                    <td>0.22</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="caption">Total variance is the sum of eigenvalues. Contribution size uses absolute loading values.</p>
+            </div>
+            <div class="exam-drill-controls">
+              <label class="exam-drill-control" for="pcaPc1Variance">
+                <span>Variance explained by PC1?</span>
+                <select id="pcaPc1Variance">
+                  <option value="">Choose</option>
+                  <option value="20%">20%</option>
+                  <option value="60%">60%</option>
+                  <option value="80%">80%</option>
+                </select>
+              </label>
+              <label class="exam-drill-control" for="pcaCumulativeVariance">
+                <span>Cumulative variance for PC1 + PC2?</span>
+                <select id="pcaCumulativeVariance">
+                  <option value="">Choose</option>
+                  <option value="80%">80%</option>
+                  <option value="95%">95%</option>
+                  <option value="300%">300%</option>
+                </select>
+              </label>
+              <label class="exam-drill-control" for="pcaDominantPc2">
+                <span>Which variable dominates PC2?</span>
+                <select id="pcaDominantPc2">
+                  <option value="">Choose</option>
+                  <option value="Temp">Temp</option>
+                  <option value="Pressure">Pressure</option>
+                  <option value="Volume">Volume</option>
+                </select>
+              </label>
+              <div class="exam-drill-actions">
+                <button class="card-btn compact-action-btn" type="button" id="pcaCheckBtn">Check answers</button>
+                <button class="card-btn compact-action-btn" type="button" id="pcaResetBtn">Reset</button>
+              </div>
+              <p class="small-note exam-feedback" id="pcaFeedback" aria-live="polite">
+                Divide eigenvalues by the total, then compare absolute loading values.
               </p>
             </div>
           </article>

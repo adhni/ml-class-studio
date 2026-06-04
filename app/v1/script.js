@@ -391,6 +391,8 @@
       "viewPrompt",
       "viewTutorialPath",
       "viewPresetBtn",
+      "examModeToggle",
+      "examModeStatus",
       "datasetSelect",
       "analysisSeed",
       "analysisSeed_num",
@@ -537,12 +539,19 @@
       "clusterFirstMerge",
       "clusterCheckBtn",
       "clusterResetBtn",
-      "clusterFeedback"
+      "clusterFeedback",
+      "pcaPc1Variance",
+      "pcaCumulativeVariance",
+      "pcaDominantPc2",
+      "pcaCheckBtn",
+      "pcaResetBtn",
+      "pcaFeedback"
     ];
 
     ids.forEach((id) => {
       elements[id] = document.getElementById(id);
     });
+    elements.examPrep = document.getElementById("exam-prep");
     elements.weekSections = Array.from(document.querySelectorAll(".week-section"));
     elements.controlGroups = Array.from(document.querySelectorAll("[data-control-group]"));
     elements.viewButtons = Array.from(document.querySelectorAll("[data-view-target]"));
@@ -694,6 +703,17 @@
     if (elements.clusterResetBtn) {
       elements.clusterResetBtn.addEventListener("click", resetClusteringDrill);
     }
+    if (elements.pcaCheckBtn) {
+      elements.pcaCheckBtn.addEventListener("click", checkPcaDrill);
+    }
+    if (elements.pcaResetBtn) {
+      elements.pcaResetBtn.addEventListener("click", resetPcaDrill);
+    }
+    if (elements.examModeToggle) {
+      elements.examModeToggle.addEventListener("change", () => {
+        applyExamMode(elements.examModeToggle.checked);
+      });
+    }
     window.addEventListener("hashchange", () => {
       const nextView = getViewFromHash();
       if (nextView && nextView !== state.viewId) {
@@ -836,6 +856,55 @@
       feedbackId: "clusterFeedback",
       initialMessage: "Do the assignment step before updating the k-means centres."
     });
+  }
+
+  function checkPcaDrill() {
+    checkExamDrill({
+      questions: [
+        {
+          id: "pcaPc1Variance",
+          answer: "80%",
+          hint: "PC1 variance is 2.40 divided by the eigenvalue total"
+        },
+        {
+          id: "pcaCumulativeVariance",
+          answer: "95%",
+          hint: "add PC1 and PC2 eigenvalues before dividing by the total"
+        },
+        {
+          id: "pcaDominantPc2",
+          answer: "Volume",
+          hint: "compare absolute loadings, not signs"
+        }
+      ],
+      feedbackId: "pcaFeedback",
+      successMessage:
+        "Correct. Total variance is 3.00, so PC1 explains 2.40 / 3.00 = 80%, PC1 + PC2 explain 2.85 / 3.00 = 95%, and Volume dominates PC2 because |0.93| is largest."
+    });
+  }
+
+  function resetPcaDrill() {
+    resetExamDrill({
+      inputIds: ["pcaPc1Variance", "pcaCumulativeVariance", "pcaDominantPc2"],
+      feedbackId: "pcaFeedback",
+      initialMessage: "Divide eigenvalues by the total, then compare absolute loading values."
+    });
+  }
+
+  function applyExamMode(isActive) {
+    if (elements.examPrep) {
+      elements.examPrep.classList.toggle("exam-mode-active", isActive);
+      if (isActive) {
+        elements.examPrep.querySelectorAll(".exam-card .exam-foldout[open]").forEach((foldout) => {
+          foldout.open = false;
+        });
+      }
+    }
+    if (elements.examModeStatus) {
+      elements.examModeStatus.textContent = isActive
+        ? "Worked-answer foldouts are hidden for self-testing."
+        : "Worked-answer foldouts are visible.";
+    }
   }
 
   function checkExamDrill({ questions, feedbackId, successMessage }) {
