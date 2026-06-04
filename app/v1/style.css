@@ -635,6 +635,93 @@ body.settings-open .settings-drawer {
   background: #fff;
 }
 
+.exam-drill-panel {
+  border: 1px solid #c9dce4;
+  border-radius: 12px;
+  padding: 14px;
+  background: #f7fbfd;
+  display: grid;
+  gap: 12px;
+}
+
+.exam-drill-card {
+  border: 1px solid #d8e4ea;
+  border-radius: 10px;
+  padding: 12px;
+  background: #fff;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+  align-items: start;
+}
+
+.exam-drill-prompt {
+  display: grid;
+  gap: 8px;
+}
+
+.exam-drill-prompt h4 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.tree-output-block {
+  margin-top: 0;
+  min-height: 148px;
+  background: #fff;
+}
+
+.exam-drill-controls {
+  display: grid;
+  gap: 10px;
+}
+
+.exam-drill-control {
+  display: grid;
+  gap: 5px;
+}
+
+.exam-drill-control span {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.exam-drill-control select {
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 7px 9px;
+  background: #fff;
+  color: var(--text);
+}
+
+.exam-drill-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.exam-feedback {
+  border: 1px solid #d8e1e8;
+  border-radius: 9px;
+  padding: 9px 10px;
+  background: #fff;
+}
+
+.exam-feedback.correct {
+  border-color: #b8d8c2;
+  background: #f1f8f3;
+  color: #245633;
+}
+
+.exam-feedback.needs-work {
+  border-color: #e3cfaa;
+  background: #fff8ea;
+  color: #6d4f13;
+}
+
 .exam-route-list {
   list-style: none;
   counter-reset: exam-step;
@@ -941,6 +1028,7 @@ svg {
   .quick-controls-grid,
   .exam-priority-grid,
   .exam-route-list,
+  .exam-drill-card,
   .exam-card-grid,
   .panel-grid.two,
   .panel-grid.three {

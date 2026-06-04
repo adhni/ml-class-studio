@@ -862,6 +862,174 @@ It does not implement self-organising maps, so treat SOMs as an explicit known g
           </ol>
         </section>
 
+        <section class="exam-drill-panel" aria-label="Interactive high-yield exam drills">
+          <div class="section-title compact-section-title">
+            <span class="kicker">High-Yield Drills</span>
+            <h3>Output And Calculation Practice</h3>
+          </div>
+          <p class="section-note">
+            Use these before opening the worked-answer cards. They practise the mechanics the exam can ask directly: output reading, formula substitution, and hand clustering.
+          </p>
+          <article class="exam-drill-card">
+            <div class="exam-drill-prompt">
+              <span class="topic-tag">Tree output</span>
+              <h4>Tree Output Reader</h4>
+              <pre class="mono-block tree-output-block">node), split, n, loss, yval, (yprob)
+      * denotes terminal node
+
+1) root 5 2 No (0.60 0.40)
+  2) Balance &lt; 50 3 1 No (0.67 0.33) *
+  3) Balance &gt;= 50 2 0 Yes (0.00 1.00) *</pre>
+              <p class="caption">Training error is the sum of terminal-node losses divided by the root-node count.</p>
+            </div>
+            <div class="exam-drill-controls">
+              <label class="exam-drill-control" for="treeReaderTerminalNodes">
+                <span>How many terminal nodes?</span>
+                <select id="treeReaderTerminalNodes">
+                  <option value="">Choose</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                </select>
+              </label>
+              <label class="exam-drill-control" for="treeReaderRootN">
+                <span>What is root-node n?</span>
+                <select id="treeReaderRootN">
+                  <option value="">Choose</option>
+                  <option value="2">2</option>
+                  <option value="5">5</option>
+                  <option value="50">50</option>
+                </select>
+              </label>
+              <label class="exam-drill-control" for="treeReaderNode2Prediction">
+                <span>What class does node 2 predict?</span>
+                <select id="treeReaderNode2Prediction">
+                  <option value="">Choose</option>
+                  <option value="No">No</option>
+                  <option value="Yes">Yes</option>
+                </select>
+              </label>
+              <label class="exam-drill-control" for="treeReaderTrainingError">
+                <span>What is the training error?</span>
+                <select id="treeReaderTrainingError">
+                  <option value="">Choose</option>
+                  <option value="0/5">0/5 = 0%</option>
+                  <option value="1/5">1/5 = 20%</option>
+                  <option value="2/5">2/5 = 40%</option>
+                </select>
+              </label>
+              <div class="exam-drill-actions">
+                <button class="card-btn compact-action-btn" type="button" id="treeReaderCheckBtn">Check answers</button>
+                <button class="card-btn compact-action-btn" type="button" id="treeReaderResetBtn">Reset</button>
+              </div>
+              <p class="small-note exam-feedback" id="treeReaderFeedback" aria-live="polite">
+                Read the starred rows first, then answer from the printed output.
+              </p>
+            </div>
+          </article>
+
+          <article class="exam-drill-card">
+            <div class="exam-drill-prompt">
+              <span class="topic-tag">Logistic</span>
+              <h4>Logistic Probability Calculator</h4>
+              <pre class="mono-block tree-output-block">Model:
+eta = -1.20 + 0.80 * hours + 0.50 * attended
+p = 1 / (1 + exp(-eta))
+
+Student:
+hours = 2
+attended = 1
+threshold = 0.50</pre>
+              <p class="caption">Calculate the linear score first, then transform it into a probability.</p>
+            </div>
+            <div class="exam-drill-controls">
+              <label class="exam-drill-control" for="logisticEta">
+                <span>What is eta?</span>
+                <select id="logisticEta">
+                  <option value="">Choose</option>
+                  <option value="0.10">0.10</option>
+                  <option value="0.90">0.90</option>
+                  <option value="2.10">2.10</option>
+                </select>
+              </label>
+              <label class="exam-drill-control" for="logisticProbability">
+                <span>What is p, approximately?</span>
+                <select id="logisticProbability">
+                  <option value="">Choose</option>
+                  <option value="0.29">0.29</option>
+                  <option value="0.71">0.71</option>
+                  <option value="0.90">0.90</option>
+                </select>
+              </label>
+              <label class="exam-drill-control" for="logisticClass">
+                <span>Predicted class at threshold 0.50?</span>
+                <select id="logisticClass">
+                  <option value="">Choose</option>
+                  <option value="0">Class 0</option>
+                  <option value="1">Class 1</option>
+                </select>
+              </label>
+              <div class="exam-drill-actions">
+                <button class="card-btn compact-action-btn" type="button" id="logisticCheckBtn">Check answers</button>
+                <button class="card-btn compact-action-btn" type="button" id="logisticResetBtn">Reset</button>
+              </div>
+              <p class="small-note exam-feedback" id="logisticFeedback" aria-live="polite">
+                Start with eta. Do not compare eta directly with 0.50.
+              </p>
+            </div>
+          </article>
+
+          <article class="exam-drill-card">
+            <div class="exam-drill-prompt">
+              <span class="topic-tag">Clustering</span>
+              <h4>K-Means And Single Linkage</h4>
+              <pre class="mono-block tree-output-block">K-means, one dimension:
+current centres: C1 = 2, C2 = 8
+points: 1, 3, 7, 9
+
+Single linkage distances:
+d(A,B)=2, d(A,C)=6, d(B,C)=4</pre>
+              <p class="caption">For k-means, assign to the closest centre then average assigned points. For single linkage, merge the closest pair first.</p>
+            </div>
+            <div class="exam-drill-controls">
+              <label class="exam-drill-control" for="clusterAssignments">
+                <span>Which k-means assignments are correct?</span>
+                <select id="clusterAssignments">
+                  <option value="">Choose</option>
+                  <option value="C1:1,3;C2:7,9">C1: 1,3 and C2: 7,9</option>
+                  <option value="C1:1;C2:3,7,9">C1: 1 and C2: 3,7,9</option>
+                  <option value="C1:1,3,7;C2:9">C1: 1,3,7 and C2: 9</option>
+                </select>
+              </label>
+              <label class="exam-drill-control" for="clusterUpdatedCenters">
+                <span>What are the updated centres?</span>
+                <select id="clusterUpdatedCenters">
+                  <option value="">Choose</option>
+                  <option value="2,8">2 and 8</option>
+                  <option value="2,7">2 and 7</option>
+                  <option value="4,8">4 and 8</option>
+                </select>
+              </label>
+              <label class="exam-drill-control" for="clusterFirstMerge">
+                <span>First single-linkage merge?</span>
+                <select id="clusterFirstMerge">
+                  <option value="">Choose</option>
+                  <option value="AB">A and B at height 2</option>
+                  <option value="BC">B and C at height 4</option>
+                  <option value="AC">A and C at height 6</option>
+                </select>
+              </label>
+              <div class="exam-drill-actions">
+                <button class="card-btn compact-action-btn" type="button" id="clusterCheckBtn">Check answers</button>
+                <button class="card-btn compact-action-btn" type="button" id="clusterResetBtn">Reset</button>
+              </div>
+              <p class="small-note exam-feedback" id="clusterFeedback" aria-live="polite">
+                Do the assignment step before updating the k-means centres.
+              </p>
+            </div>
+          </article>
+        </section>
+
         <section class="exam-card-grid" aria-label="High-yield exam practice cards">
           <article class="exam-card">
             <span class="topic-tag">PCA</span>
