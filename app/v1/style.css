@@ -879,6 +879,76 @@ body.settings-open .settings-drawer {
   border-radius: 12px;
   padding: 12px;
   background: #fff;
+  display: grid;
+  gap: 12px;
+}
+
+.past-paper-mode-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(220px, 0.45fr) minmax(0, 1fr);
+  align-items: stretch;
+}
+
+.past-paper-select {
+  border: 1px solid #d8e4ea;
+  border-radius: 10px;
+  padding: 10px;
+  background: #f8fafb;
+}
+
+.past-paper-focus {
+  border: 1px solid #c9dce4;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #f3f8fb;
+  display: grid;
+  gap: 5px;
+}
+
+.past-paper-focus span {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.past-paper-focus strong {
+  font-size: 16px;
+}
+
+.past-paper-focus p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.past-paper-workflow {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.past-paper-column {
+  border: 1px solid #e0e7ed;
+  border-radius: 10px;
+  padding: 10px;
+  background: #f8fafb;
+}
+
+.past-paper-column h4 {
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+
+.past-paper-list li {
+  display: grid;
+  gap: 3px;
+}
+
+.past-paper-list span {
+  color: var(--muted);
+  font-size: 12px;
 }
 
 .compact-section-title {
@@ -1068,6 +1138,8 @@ svg {
   .exam-route-list,
   .exam-drill-card,
   .exam-card-grid,
+  .past-paper-mode-grid,
+  .past-paper-workflow,
   .panel-grid.two,
   .panel-grid.three {
     grid-template-columns: 1fr;

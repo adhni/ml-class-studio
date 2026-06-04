@@ -363,6 +363,7 @@
       syncControlsFromState();
     }
     syncXaiOptions();
+    renderPastPaperMode();
     runAnalysis();
   }
 
@@ -393,6 +394,11 @@
       "viewPresetBtn",
       "examModeToggle",
       "examModeStatus",
+      "pastPaperSelect",
+      "pastPaperFocus",
+      "pastPaperPlan",
+      "pastPaperDrills",
+      "pastPaperFiles",
       "datasetSelect",
       "analysisSeed",
       "analysisSeed_num",
@@ -714,6 +720,9 @@
         applyExamMode(elements.examModeToggle.checked);
       });
     }
+    if (elements.pastPaperSelect) {
+      elements.pastPaperSelect.addEventListener("change", renderPastPaperMode);
+    }
     window.addEventListener("hashchange", () => {
       const nextView = getViewFromHash();
       if (nextView && nextView !== state.viewId) {
@@ -747,6 +756,162 @@
   function setPairValue(rangeId, numberId, value) {
     elements[rangeId].value = value;
     elements[numberId].value = value;
+  }
+
+  function renderPastPaperMode() {
+    if (!elements.pastPaperSelect || !elements.pastPaperPlan) {
+      return;
+    }
+    const plans = pastPaperPlans();
+    const paper = plans[elements.pastPaperSelect.value] || plans["2025"];
+
+    elements.pastPaperFocus.innerHTML = `
+      <span>${escapeHtml(paper.badge)}</span>
+      <strong>${escapeHtml(paper.title)}</strong>
+      <p>${escapeHtml(paper.focus)}</p>
+    `;
+    elements.pastPaperPlan.innerHTML = paper.attempt
+      .map((item) => `<li><strong>${escapeHtml(item.label)}</strong><span>${escapeHtml(item.detail)}</span></li>`)
+      .join("");
+    elements.pastPaperDrills.innerHTML = paper.drills
+      .map((item) => `<li><strong>${escapeHtml(item.label)}</strong><span>${escapeHtml(item.detail)}</span></li>`)
+      .join("");
+    elements.pastPaperFiles.innerHTML = paper.files
+      .map((item) => `<li><code>${escapeHtml(item.path)}</code><span>${escapeHtml(item.detail)}</span></li>`)
+      .join("");
+  }
+
+  function pastPaperPlans() {
+    return {
+      2025: {
+        badge: "Current blueprint",
+        title: "Use 2025 as the main timed rehearsal.",
+        focus:
+          "This paper is the best guide to current mark weight: trees, logistic/neural nets, clustering, PCA, and evaluation.",
+        attempt: [
+          {
+            label: "Q1 visualisation + PCA",
+            detail: "Answer the short explanations first, then use the PCA table reader."
+          },
+          {
+            label: "Q2 evaluation + tuning",
+            detail: "Write threshold and cross-validation explanations before opening worked answers."
+          },
+          {
+            label: "Q3-Q6 mechanics",
+            detail: "Do logistic, trees, kNN/SVM/XAI, and clustering under timed conditions."
+          }
+        ],
+        drills: [
+          {
+            label: "PCA Table Reader",
+            detail: "Use after Q1e if variance or loadings feel slow."
+          },
+          {
+            label: "Logistic Probability Calculator",
+            detail: "Use before checking Q3 probability and classification answers."
+          },
+          {
+            label: "Tree Output + Clustering",
+            detail: "Use before reviewing Q4 and Q6 calculation steps."
+          }
+        ],
+        files: [
+          {
+            path: "ML Exam/MLExam-2025.html",
+            detail: "Main current-format paper and rubric style."
+          }
+        ]
+      },
+      2024: {
+        badge: "Recent mechanics",
+        title: "Use 2024 to practise output reading and calculations.",
+        focus:
+          "This is the best secondary rehearsal once the 2025 flow is familiar.",
+        attempt: [
+          {
+            label: "Start with output-reading questions",
+            detail: "Mark every symbol in printed model output before reading solutions."
+          },
+          {
+            label: "Then do calculation questions",
+            detail: "Write formulas and intermediate values, not only final answers."
+          },
+          {
+            label: "Finish with explanation questions",
+            detail: "Compare against the card checklists and tighten wording."
+          }
+        ],
+        drills: [
+          {
+            label: "Tree Output Reader",
+            detail: "Use for printed tree nodes, losses, predictions, and terminal-node error."
+          },
+          {
+            label: "Logistic + Clustering drills",
+            detail: "Use for formula substitution and step-by-step hand calculations."
+          },
+          {
+            label: "Exam Mode",
+            detail: "Turn it on before retrying weak cards so answers stay hidden."
+          }
+        ],
+        files: [
+          {
+            path: "ML Exam/MLExam-2024.pdf",
+            detail: "Recent paper for output-reading practice."
+          },
+          {
+            path: "ML Exam/MLExam-2024Sol.pdf",
+            detail: "Use only after a timed attempt."
+          }
+        ]
+      },
+      2019: {
+        badge: "Older comparison",
+        title: "Use 2019 for extra mechanics, not as the main blueprint.",
+        focus:
+          "Older papers are useful for repeated practice, but prioritise current topics and wording from 2025.",
+        attempt: [
+          {
+            label: "Pick matching mechanics",
+            detail: "Focus on questions that resemble current trees, clustering, PCA, or evaluation tasks."
+          },
+          {
+            label: "Skip outdated emphasis",
+            detail: "Do not over-invest in topics outside the current priority map."
+          },
+          {
+            label: "Redo weak mechanics",
+            detail: "After checking solutions, repeat the matching drill until the steps are automatic."
+          }
+        ],
+        drills: [
+          {
+            label: "Tree Output Reader",
+            detail: "Use for any printed-output interpretation."
+          },
+          {
+            label: "PCA Table Reader",
+            detail: "Use for eigenvalue, cumulative variance, and loading questions."
+          },
+          {
+            label: "Clustering Drill",
+            detail: "Use for k-means updates and linkage-distance reasoning."
+          }
+        ],
+        files: [
+          {
+            path: "ML Exam/MLExam-2019.pdf",
+            detail: "Older paper for additional practice."
+          },
+          {
+            path: "ML Exam/MLExam-2019Sol.pdf",
+            detail: "Use for checking mechanics after attempting."
+          }
+        ]
+      }
+    };
   }
 
   function checkTreeReaderDrill() {
