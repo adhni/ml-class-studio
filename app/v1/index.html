@@ -1437,38 +1437,37 @@ d(A,B)=2, d(A,C)=6, d(B,C)=4</pre>
           </article>
         </section>
 
-        <section class="past-paper-panel" aria-label="Past paper references">
+        <section class="past-paper-panel" aria-label="Past paper mode">
           <div class="section-title compact-section-title">
-            <span class="kicker">References</span>
-            <h3>Past Paper Map</h3>
+            <span class="kicker">Past Paper Mode</span>
+            <h3>Attempt Plan</h3>
           </div>
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Year</th>
-                <th>Local file</th>
-                <th>Use it for</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>2019</td>
-                <td><code>ML Exam/MLExam-2019.pdf</code> and solution</td>
-                <td>Older mechanics and comparison practice.</td>
-              </tr>
-              <tr>
-                <td>2024</td>
-                <td><code>ML Exam/MLExam-2024.pdf</code> and solution</td>
-                <td>Recent output-reading and calculation practice.</td>
-              </tr>
-              <tr>
-                <td>2025</td>
-                <td><code>ML Exam/MLExam-2025.html</code></td>
-                <td>Current mark-weight blueprint and rubric style.</td>
-              </tr>
-            </tbody>
-          </table>
-          <p class="caption">These are local references, not public app assets. Use them beside this page when doing timed practice.</p>
+          <div class="past-paper-mode-grid">
+            <label class="exam-drill-control past-paper-select" for="pastPaperSelect">
+              <span>Choose paper</span>
+              <select id="pastPaperSelect">
+                <option value="2025">2025 current blueprint</option>
+                <option value="2024">2024 recent mechanics</option>
+                <option value="2019">2019 older mechanics</option>
+              </select>
+            </label>
+            <div class="past-paper-focus" id="pastPaperFocus" aria-live="polite"></div>
+          </div>
+          <div class="past-paper-workflow" aria-label="Selected past paper workflow">
+            <article class="past-paper-column">
+              <h4>Attempt First</h4>
+              <ol class="compact-list past-paper-list" id="pastPaperPlan"></ol>
+            </article>
+            <article class="past-paper-column">
+              <h4>Use These Drills</h4>
+              <ul class="compact-list past-paper-list" id="pastPaperDrills"></ul>
+            </article>
+            <article class="past-paper-column">
+              <h4>Local Reference</h4>
+              <ul class="compact-list past-paper-list" id="pastPaperFiles"></ul>
+            </article>
+          </div>
+          <p class="caption">Use the local paper beside this page. Attempt first, drill only the weak mechanics, then review the worked-answer cards.</p>
         </section>
       </section>
     </main>
