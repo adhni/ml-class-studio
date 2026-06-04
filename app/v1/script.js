@@ -391,6 +391,8 @@
       "viewPrompt",
       "viewTutorialPath",
       "viewPresetBtn",
+      "examModeToggle",
+      "examModeStatus",
       "datasetSelect",
       "analysisSeed",
       "analysisSeed_num",
@@ -518,12 +520,38 @@
       "modelClusterPlot",
       "modelClusterCaption",
       "hierSummary",
-      "hierSummaryCaption"
+      "hierSummaryCaption",
+      "treeReaderTerminalNodes",
+      "treeReaderRootN",
+      "treeReaderNode2Prediction",
+      "treeReaderTrainingError",
+      "treeReaderCheckBtn",
+      "treeReaderResetBtn",
+      "treeReaderFeedback",
+      "logisticEta",
+      "logisticProbability",
+      "logisticClass",
+      "logisticCheckBtn",
+      "logisticResetBtn",
+      "logisticFeedback",
+      "clusterAssignments",
+      "clusterUpdatedCenters",
+      "clusterFirstMerge",
+      "clusterCheckBtn",
+      "clusterResetBtn",
+      "clusterFeedback",
+      "pcaPc1Variance",
+      "pcaCumulativeVariance",
+      "pcaDominantPc2",
+      "pcaCheckBtn",
+      "pcaResetBtn",
+      "pcaFeedback"
     ];
 
     ids.forEach((id) => {
       elements[id] = document.getElementById(id);
     });
+    elements.examPrep = document.getElementById("exam-prep");
     elements.weekSections = Array.from(document.querySelectorAll(".week-section"));
     elements.controlGroups = Array.from(document.querySelectorAll("[data-control-group]"));
     elements.viewButtons = Array.from(document.querySelectorAll("[data-view-target]"));
@@ -657,6 +685,35 @@
         navigateToView(button.dataset.viewTarget);
       });
     });
+    if (elements.treeReaderCheckBtn) {
+      elements.treeReaderCheckBtn.addEventListener("click", checkTreeReaderDrill);
+    }
+    if (elements.treeReaderResetBtn) {
+      elements.treeReaderResetBtn.addEventListener("click", resetTreeReaderDrill);
+    }
+    if (elements.logisticCheckBtn) {
+      elements.logisticCheckBtn.addEventListener("click", checkLogisticDrill);
+    }
+    if (elements.logisticResetBtn) {
+      elements.logisticResetBtn.addEventListener("click", resetLogisticDrill);
+    }
+    if (elements.clusterCheckBtn) {
+      elements.clusterCheckBtn.addEventListener("click", checkClusteringDrill);
+    }
+    if (elements.clusterResetBtn) {
+      elements.clusterResetBtn.addEventListener("click", resetClusteringDrill);
+    }
+    if (elements.pcaCheckBtn) {
+      elements.pcaCheckBtn.addEventListener("click", checkPcaDrill);
+    }
+    if (elements.pcaResetBtn) {
+      elements.pcaResetBtn.addEventListener("click", resetPcaDrill);
+    }
+    if (elements.examModeToggle) {
+      elements.examModeToggle.addEventListener("change", () => {
+        applyExamMode(elements.examModeToggle.checked);
+      });
+    }
     window.addEventListener("hashchange", () => {
       const nextView = getViewFromHash();
       if (nextView && nextView !== state.viewId) {
@@ -690,6 +747,205 @@
   function setPairValue(rangeId, numberId, value) {
     elements[rangeId].value = value;
     elements[numberId].value = value;
+  }
+
+  function checkTreeReaderDrill() {
+    checkExamDrill({
+      questions: [
+        {
+          id: "treeReaderTerminalNodes",
+          answer: "2",
+          hint: "terminal nodes are the starred rows"
+        },
+        {
+          id: "treeReaderRootN",
+          answer: "5",
+          hint: "root-node n is the first count after root"
+        },
+        {
+          id: "treeReaderNode2Prediction",
+          answer: "No",
+          hint: "yval is the predicted class"
+        },
+        {
+          id: "treeReaderTrainingError",
+          answer: "1/5",
+          hint: "sum terminal losses, then divide by root n"
+        }
+      ],
+      feedbackId: "treeReaderFeedback",
+      successMessage:
+        "Correct. There are 2 terminal nodes, root n is 5, node 2 predicts No, and training error is (1 + 0) / 5 = 20%."
+    });
+  }
+
+  function resetTreeReaderDrill() {
+    resetExamDrill({
+      inputIds: [
+        "treeReaderTerminalNodes",
+        "treeReaderRootN",
+        "treeReaderNode2Prediction",
+        "treeReaderTrainingError"
+      ],
+      feedbackId: "treeReaderFeedback",
+      initialMessage: "Read the starred rows first, then answer from the printed output."
+    });
+  }
+
+  function checkLogisticDrill() {
+    checkExamDrill({
+      questions: [
+        {
+          id: "logisticEta",
+          answer: "0.90",
+          hint: "eta = -1.20 + 0.80(2) + 0.50(1)"
+        },
+        {
+          id: "logisticProbability",
+          answer: "0.71",
+          hint: "use p = 1 / (1 + exp(-eta))"
+        },
+        {
+          id: "logisticClass",
+          answer: "1",
+          hint: "compare the probability, not eta, with the threshold"
+        }
+      ],
+      feedbackId: "logisticFeedback",
+      successMessage:
+        "Correct. eta = -1.20 + 1.60 + 0.50 = 0.90, p is about 0.71, so the predicted class is 1."
+    });
+  }
+
+  function resetLogisticDrill() {
+    resetExamDrill({
+      inputIds: ["logisticEta", "logisticProbability", "logisticClass"],
+      feedbackId: "logisticFeedback",
+      initialMessage: "Start with eta. Do not compare eta directly with 0.50."
+    });
+  }
+
+  function checkClusteringDrill() {
+    checkExamDrill({
+      questions: [
+        {
+          id: "clusterAssignments",
+          answer: "C1:1,3;C2:7,9",
+          hint: "assign each point to its closest current centre"
+        },
+        {
+          id: "clusterUpdatedCenters",
+          answer: "2,8",
+          hint: "average the points assigned to each cluster"
+        },
+        {
+          id: "clusterFirstMerge",
+          answer: "AB",
+          hint: "single linkage starts with the smallest pairwise distance"
+        }
+      ],
+      feedbackId: "clusterFeedback",
+      successMessage:
+        "Correct. Points 1 and 3 average to 2, points 7 and 9 average to 8, and A-B merges first at height 2."
+    });
+  }
+
+  function resetClusteringDrill() {
+    resetExamDrill({
+      inputIds: ["clusterAssignments", "clusterUpdatedCenters", "clusterFirstMerge"],
+      feedbackId: "clusterFeedback",
+      initialMessage: "Do the assignment step before updating the k-means centres."
+    });
+  }
+
+  function checkPcaDrill() {
+    checkExamDrill({
+      questions: [
+        {
+          id: "pcaPc1Variance",
+          answer: "80%",
+          hint: "PC1 variance is 2.40 divided by the eigenvalue total"
+        },
+        {
+          id: "pcaCumulativeVariance",
+          answer: "95%",
+          hint: "add PC1 and PC2 eigenvalues before dividing by the total"
+        },
+        {
+          id: "pcaDominantPc2",
+          answer: "Volume",
+          hint: "compare absolute loadings, not signs"
+        }
+      ],
+      feedbackId: "pcaFeedback",
+      successMessage:
+        "Correct. Total variance is 3.00, so PC1 explains 2.40 / 3.00 = 80%, PC1 + PC2 explain 2.85 / 3.00 = 95%, and Volume dominates PC2 because |0.93| is largest."
+    });
+  }
+
+  function resetPcaDrill() {
+    resetExamDrill({
+      inputIds: ["pcaPc1Variance", "pcaCumulativeVariance", "pcaDominantPc2"],
+      feedbackId: "pcaFeedback",
+      initialMessage: "Divide eigenvalues by the total, then compare absolute loading values."
+    });
+  }
+
+  function applyExamMode(isActive) {
+    if (elements.examPrep) {
+      elements.examPrep.classList.toggle("exam-mode-active", isActive);
+      if (isActive) {
+        elements.examPrep.querySelectorAll(".exam-card .exam-foldout[open]").forEach((foldout) => {
+          foldout.open = false;
+        });
+      }
+    }
+    if (elements.examModeStatus) {
+      elements.examModeStatus.textContent = isActive
+        ? "Worked-answer foldouts are hidden for self-testing."
+        : "Worked-answer foldouts are visible.";
+    }
+  }
+
+  function checkExamDrill({ questions, feedbackId, successMessage }) {
+    const misses = questions.filter((question) => {
+      return elements[question.id].value !== question.answer;
+    });
+    const correctCount = questions.length - misses.length;
+
+    if (misses.length === 0) {
+      setExamDrillFeedback(feedbackId, successMessage, true);
+      return;
+    }
+
+    setExamDrillFeedback(
+      feedbackId,
+      `${correctCount}/${questions.length} correct. Recheck: ${misses.map((miss) => miss.hint).join("; ")}.`,
+      false
+    );
+  }
+
+  function resetExamDrill({ inputIds, feedbackId, initialMessage }) {
+    inputIds.forEach((id) => {
+      if (elements[id]) {
+        elements[id].value = "";
+      }
+    });
+    setExamDrillFeedback(feedbackId, initialMessage, null);
+  }
+
+  function setExamDrillFeedback(feedbackId, message, isCorrect) {
+    const feedback = elements[feedbackId];
+    if (!feedback) {
+      return;
+    }
+    feedback.textContent = message;
+    feedback.className = "small-note exam-feedback";
+    if (isCorrect === true) {
+      feedback.classList.add("correct");
+    } else if (isCorrect === false) {
+      feedback.classList.add("needs-work");
+    }
   }
 
   function populateDatasetSelector() {
