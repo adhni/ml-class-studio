@@ -814,7 +814,7 @@ It does not implement self-organising maps, so treat SOMs as an explicit known g
       <section id="exam-prep" class="card section week-section exam-prep-section" data-views="examPrep">
         <div class="section-title">
           <span class="kicker">Exam Prep</span>
-          <h3>Priority Map And Worked Drills</h3>
+          <h3>Exam Workflow And Worked Drills</h3>
         </div>
         <p class="section-note">
           Use this page for exam mechanics: short written answers, output reading, and hand calculations. The existing week studios remain the place to build visual intuition.
@@ -827,7 +827,62 @@ It does not implement self-organising maps, so treat SOMs as an explicit known g
           <p class="caption" id="examModeStatus">Worked-answer foldouts are visible.</p>
         </div>
 
-        <section class="exam-priority-grid" aria-label="Exam topic priority by 2025 mark weight">
+        <nav class="exam-jump-row" aria-label="Exam prep sections">
+          <button type="button" data-exam-jump-target="exam-start">Start</button>
+          <button type="button" data-exam-jump-target="exam-papers">Past Papers</button>
+          <button type="button" data-exam-jump-target="exam-drills">Drills</button>
+          <button type="button" data-exam-jump-target="exam-cards">Worked Cards</button>
+        </nav>
+
+        <section id="exam-start" class="exam-study-route" aria-label="Recommended exam prep workflow">
+          <div class="section-title compact-section-title">
+            <span class="kicker">Start Here</span>
+            <h3>Study Workflow</h3>
+          </div>
+          <ol class="exam-route-list">
+            <li><strong>Choose paper</strong><span>Use Past Paper Mode to pick today's paper and attempt route.</span></li>
+            <li><strong>Turn on Exam Mode</strong><span>Hide worked answers while you attempt questions.</span></li>
+            <li><strong>Attempt first</strong><span>Write the answer before opening any checklist or solution.</span></li>
+            <li><strong>Drill weak mechanics</strong><span>Use only the drill that matches the question you missed.</span></li>
+            <li><strong>Review cards</strong><span>Check wording, formulas, and marking points after the attempt.</span></li>
+            <li><strong>Redo misses</strong><span>Repeat weak calculations until the steps are automatic.</span></li>
+          </ol>
+        </section>
+
+        <section id="exam-papers" class="past-paper-panel" aria-label="Past paper mode">
+          <div class="section-title compact-section-title">
+            <span class="kicker">Past Paper Mode</span>
+            <h3>Attempt Plan</h3>
+          </div>
+          <div class="past-paper-mode-grid">
+            <label class="exam-drill-control past-paper-select" for="pastPaperSelect">
+              <span>Choose paper</span>
+              <select id="pastPaperSelect">
+                <option value="2025">2025 current blueprint</option>
+                <option value="2024">2024 recent mechanics</option>
+                <option value="2019">2019 older mechanics</option>
+              </select>
+            </label>
+            <div class="past-paper-focus" id="pastPaperFocus" aria-live="polite"></div>
+          </div>
+          <div class="past-paper-workflow" aria-label="Selected past paper workflow">
+            <article class="past-paper-column">
+              <h4>Attempt First</h4>
+              <ol class="compact-list past-paper-list" id="pastPaperPlan"></ol>
+            </article>
+            <article class="past-paper-column">
+              <h4>Use These Drills</h4>
+              <ul class="compact-list past-paper-list" id="pastPaperDrills"></ul>
+            </article>
+            <article class="past-paper-column">
+              <h4>Local Reference</h4>
+              <ul class="compact-list past-paper-list" id="pastPaperFiles"></ul>
+            </article>
+          </div>
+          <p class="caption">Use the local paper beside this page. Attempt first, drill only the weak mechanics, then review the worked-answer cards.</p>
+        </section>
+
+        <section id="exam-priority" class="exam-priority-grid" aria-label="Exam topic priority by 2025 mark weight">
           <article class="exam-priority-card high">
             <span>20 marks</span>
             <strong>Decision trees + random forests</strong>
@@ -854,22 +909,7 @@ It does not implement self-organising maps, so treat SOMs as an explicit known g
           </article>
         </section>
 
-        <section class="exam-study-route" aria-label="Recommended study order">
-          <div class="section-title compact-section-title">
-            <span class="kicker">Start Here</span>
-            <h3>Recommended Order</h3>
-          </div>
-          <ol class="exam-route-list">
-            <li><strong>Trees + forests</strong><span>Gini, printed tree output, CART, random forests</span></li>
-            <li><strong>Logistic + neural nets</strong><span>Probability calculation, network anatomy, parameter count</span></li>
-            <li><strong>Clustering</strong><span>k-means iteration, single-linkage dendrogram</span></li>
-            <li><strong>PCA + visualisation</strong><span>variance, loadings, tours, standardisation</span></li>
-            <li><strong>Evaluation + tuning</strong><span>ROC-AUC, accuracy, cross-validation</span></li>
-            <li><strong>XAI + SVM + kNN</strong><span>SHAP, support vectors, neighbour voting</span></li>
-          </ol>
-        </section>
-
-        <section class="exam-drill-panel" aria-label="Interactive high-yield exam drills">
+        <section id="exam-drills" class="exam-drill-panel" aria-label="Interactive high-yield exam drills">
           <div class="section-title compact-section-title">
             <span class="kicker">High-Yield Drills</span>
             <h3>Output And Calculation Practice</h3>
@@ -1115,7 +1155,15 @@ d(A,B)=2, d(A,C)=6, d(B,C)=4</pre>
           </article>
         </section>
 
-        <section class="exam-card-grid" aria-label="High-yield exam practice cards">
+        <section id="exam-cards" class="exam-card-groups" aria-label="High-yield exam practice cards">
+          <div class="section-title compact-section-title">
+            <span class="kicker">Worked Cards</span>
+            <h3>Review By Topic</h3>
+          </div>
+
+          <section class="exam-card-group" aria-label="PCA and visualisation worked cards">
+            <h4>PCA + Visualisation</h4>
+            <div class="exam-card-grid">
           <article class="exam-card">
             <span class="topic-tag">PCA</span>
             <h4>PCA Variance And Loadings</h4>
@@ -1168,7 +1216,12 @@ d(A,B)=2, d(A,C)=6, d(B,C)=4</pre>
             </details>
             <p class="caption">Common mistake: describing PCA and tours as the same because both use projections.</p>
           </article>
+            </div>
+          </section>
 
+          <section class="exam-card-group" aria-label="Evaluation and tuning worked cards">
+            <h4>Evaluation + Tuning</h4>
+            <div class="exam-card-grid">
           <article class="exam-card">
             <span class="topic-tag">Evaluation</span>
             <h4>ROC-AUC Vs Accuracy</h4>
@@ -1221,7 +1274,12 @@ d(A,B)=2, d(A,C)=6, d(B,C)=4</pre>
             </details>
             <p class="caption">Common mistake: using the test set repeatedly during tuning.</p>
           </article>
+            </div>
+          </section>
 
+          <section class="exam-card-group" aria-label="Logistic regression and neural networks worked cards">
+            <h4>Logistic + Neural Nets</h4>
+            <div class="exam-card-grid">
           <article class="exam-card">
             <span class="topic-tag">Logistic</span>
             <h4>Logistic Probability Calculation</h4>
@@ -1275,7 +1333,12 @@ d(A,B)=2, d(A,C)=6, d(B,C)=4</pre>
             <p class="caption">Common mistake: forgetting bias terms. Linear hidden activations also collapse the network back to a linear model.</p>
             <button class="card-btn compact-action-btn" type="button" data-view-target="week6">Open Week 6</button>
           </article>
+            </div>
+          </section>
 
+          <section class="exam-card-group" aria-label="Decision trees and random forests worked cards">
+            <h4>Trees + Forests</h4>
+            <div class="exam-card-grid">
           <article class="exam-card">
             <span class="topic-tag">Trees</span>
             <h4>Gini Split Calculation</h4>
@@ -1354,7 +1417,12 @@ d(A,B)=2, d(A,C)=6, d(B,C)=4</pre>
             </details>
             <p class="caption">Common mistake: saying forests avoid overfitting only because they are deeper.</p>
           </article>
+            </div>
+          </section>
 
+          <section class="exam-card-group" aria-label="kNN, SVM, and XAI worked cards">
+            <h4>kNN + SVM + XAI</h4>
+            <div class="exam-card-grid">
           <article class="exam-card">
             <span class="topic-tag">kNN</span>
             <h4>KNN Distance And Vote Probability</h4>
@@ -1408,7 +1476,12 @@ d(A,B)=2, d(A,C)=6, d(B,C)=4</pre>
             <p class="caption">Common mistake: saying SHAP is just ordinary global feature importance.</p>
             <button class="card-btn compact-action-btn" type="button" data-view-target="week8">Open Week 8</button>
           </article>
+            </div>
+          </section>
 
+          <section class="exam-card-group" aria-label="Clustering worked cards">
+            <h4>Clustering</h4>
+            <div class="exam-card-grid">
           <article class="exam-card">
             <span class="topic-tag">Clustering</span>
             <h4>K-Means And Single Linkage</h4>
@@ -1435,40 +1508,10 @@ d(A,B)=2, d(A,C)=6, d(B,C)=4</pre>
             <p class="caption">Common mistake: using average or complete linkage while the question asks for single linkage.</p>
             <button class="card-btn compact-action-btn" type="button" data-view-target="week9">Open Week 9</button>
           </article>
+            </div>
+          </section>
         </section>
 
-        <section class="past-paper-panel" aria-label="Past paper mode">
-          <div class="section-title compact-section-title">
-            <span class="kicker">Past Paper Mode</span>
-            <h3>Attempt Plan</h3>
-          </div>
-          <div class="past-paper-mode-grid">
-            <label class="exam-drill-control past-paper-select" for="pastPaperSelect">
-              <span>Choose paper</span>
-              <select id="pastPaperSelect">
-                <option value="2025">2025 current blueprint</option>
-                <option value="2024">2024 recent mechanics</option>
-                <option value="2019">2019 older mechanics</option>
-              </select>
-            </label>
-            <div class="past-paper-focus" id="pastPaperFocus" aria-live="polite"></div>
-          </div>
-          <div class="past-paper-workflow" aria-label="Selected past paper workflow">
-            <article class="past-paper-column">
-              <h4>Attempt First</h4>
-              <ol class="compact-list past-paper-list" id="pastPaperPlan"></ol>
-            </article>
-            <article class="past-paper-column">
-              <h4>Use These Drills</h4>
-              <ul class="compact-list past-paper-list" id="pastPaperDrills"></ul>
-            </article>
-            <article class="past-paper-column">
-              <h4>Local Reference</h4>
-              <ul class="compact-list past-paper-list" id="pastPaperFiles"></ul>
-            </article>
-          </div>
-          <p class="caption">Use the local paper beside this page. Attempt first, drill only the weak mechanics, then review the worked-answer cards.</p>
-        </section>
       </section>
     </main>
   </div>
