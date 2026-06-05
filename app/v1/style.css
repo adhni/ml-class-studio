@@ -597,6 +597,14 @@ body.settings-open .settings-drawer {
   gap: 16px;
 }
 
+#exam-start,
+#exam-papers,
+#exam-priority,
+#exam-drills,
+#exam-cards {
+  scroll-margin-top: 18px;
+}
+
 .exam-mode-row {
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -629,6 +637,33 @@ body.settings-open .settings-drawer {
 
 .exam-mode-active .exam-card .exam-foldout {
   display: none;
+}
+
+.exam-jump-row {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 8px;
+  background: #fff;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.exam-jump-row a {
+  border: 1px solid #d8e1e8;
+  border-radius: 9px;
+  padding: 7px 10px;
+  color: var(--text);
+  background: #f8fafb;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.exam-jump-row a:hover {
+  border-color: #c9dce4;
+  color: var(--accent);
+  background: #f3f8fb;
 }
 
 .exam-priority-grid {
@@ -810,6 +845,24 @@ body.settings-open .settings-drawer {
   display: grid;
   gap: 12px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.exam-card-groups {
+  display: grid;
+  gap: 14px;
+}
+
+.exam-card-group {
+  display: grid;
+  gap: 10px;
+}
+
+.exam-card-group > h4 {
+  margin: 0;
+  border-bottom: 1px solid #e0e7ed;
+  padding-bottom: 7px;
+  color: var(--text);
+  font-size: 16px;
 }
 
 .exam-card {
