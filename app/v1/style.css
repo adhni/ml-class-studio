@@ -649,18 +649,18 @@ body.settings-open .settings-drawer {
   flex-wrap: wrap;
 }
 
-.exam-jump-row a {
+.exam-jump-row button {
   border: 1px solid #d8e1e8;
   border-radius: 9px;
   padding: 7px 10px;
   color: var(--text);
   background: #f8fafb;
+  cursor: pointer;
   font-size: 13px;
   font-weight: 700;
-  text-decoration: none;
 }
 
-.exam-jump-row a:hover {
+.exam-jump-row button:hover {
   border-color: #c9dce4;
   color: var(--accent);
   background: #f3f8fb;

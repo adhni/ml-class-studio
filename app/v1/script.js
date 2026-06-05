@@ -561,6 +561,7 @@
     elements.weekSections = Array.from(document.querySelectorAll(".week-section"));
     elements.controlGroups = Array.from(document.querySelectorAll("[data-control-group]"));
     elements.viewButtons = Array.from(document.querySelectorAll("[data-view-target]"));
+    elements.examJumpButtons = Array.from(document.querySelectorAll("[data-exam-jump-target]"));
   }
 
   function bindControls() {
@@ -689,6 +690,14 @@
     elements.viewButtons.forEach((button) => {
       button.addEventListener("click", () => {
         navigateToView(button.dataset.viewTarget);
+      });
+    });
+    elements.examJumpButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const target = document.getElementById(button.dataset.examJumpTarget);
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
       });
     });
     if (elements.treeReaderCheckBtn) {
